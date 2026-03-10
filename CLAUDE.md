@@ -47,6 +47,13 @@ Assets/_Project/
 └── Fonts/
 ```
 
+## Git Workflow
+- **Never commit directly to master.** Always create a feature branch and open a PR.
+- Branch naming: `feature/<short-description>`, `fix/<short-description>`, or `docs/<short-description>`
+- Keep branches focused — one feature or fix per branch.
+- Write clear PR titles and descriptions summarizing what changed and why.
+- After the PR is merged, delete the feature branch.
+
 ## README
 Keep `README.md` up to date as the project evolves. When making changes that affect any of the following, update the corresponding section in the README:
 - Project status or current milestone/phase
