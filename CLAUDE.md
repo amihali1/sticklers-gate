@@ -47,6 +47,13 @@ Assets/_Project/
 └── Fonts/
 ```
 
+## README
+Keep `README.md` up to date as the project evolves. When making changes that affect any of the following, update the corresponding section in the README:
+- Project status or current milestone/phase
+- Project structure (new folders, reorganization)
+- Tech stack changes or new dependencies
+- New features, systems, or classes added
+
 ## Key Reminders
 - Target platforms: Android (API 24+), iOS (14+), landscape only
 - TextMeshPro for all text, DOTween for animations, new Input System for touch
