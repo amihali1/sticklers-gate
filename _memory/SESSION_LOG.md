@@ -27,3 +27,29 @@
 - _memory/ folder (this system)
 
 **Next session:** Install Unity, create project, start Phase 0 Task 0.1
+
+## Session 2 — March 10, 2026
+**Focus:** Project setup + Phase 1 + Phase 2 implementation
+**What happened:**
+- Created private GitHub repo (github.com/amihali1/sticklers-gate)
+- Added .gitignore (Unity), CLAUDE.md (project instructions), README.md
+- Set up git workflow rules (feature branches + PRs, no direct master commits)
+- Installed Unity 6 LTS (6000.3.10f1), created project in SticklersGate/
+- Configured: landscape-only, SticklerStudios company, SticklersGate product, Android API 24+
+- Created full folder structure with .gitkeep and .meta files
+- Phase 1 complete: GameEnums, GameConstants, StatBlock, AbilitySO, CharacterClassSO, EnemySO, EncounterSO
+- Phase 2 complete: DiceRoller, CombatUnit, DamageCalculator, EnemyAI, CombatStateMachine
+
+**Decisions made:**
+- Unity 6 LTS (not Unity 2022 as originally planned — using what's installed)
+- Product name is SticklersGate (with L), namespace is SticklersGate.*
+- Company name: SticklerStudios
+- StatusEffectType includes None as first value (default)
+- GetModifier uses Mathf.FloorToInt for correct negative rounding
+- Enemies die immediately when downed (no death saves)
+- DealsDamage/Heals checks include flat bonuses
+
+**PRs merged:** #1 (Unity setup), #2 (enums/constants), #3 (ScriptableObjects)
+**PRs in review:** #4 (combat engine)
+
+**Next session:** Review PR #4, then Phase 3 (Combat UI)

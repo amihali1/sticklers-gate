@@ -4,14 +4,14 @@
 
 **What we keep:**
 - d20 attack rolls vs Armor Class
-- Ability score modifiers: (score - 10) / 2 rounded down
+- Ability score modifiers: floor((score - 10) / 2) — uses Mathf.FloorToInt for correct negative rounding
 - Initiative: d20 + DEX modifier
 - Damage dice per weapon/spell
 - Advantage/Disadvantage: roll 2d20, take best/worst
 - Crit on nat 20 (double damage dice, not modifier)
 - Crit fail on nat 1 (Stick Break: lose next turn + comedy)
-- Saving throws: d20 + modifier vs DC
-- Death saves: 3 successes = stabilize, 3 fails = death
+- Saving throws: d20 + modifier vs DC (nat 20 always succeeds, nat 1 always fails)
+- Death saves: 3 successes = stabilize, 3 fails = death, nat 20 = revive with 1 HP, nat 1 = two failures
 
 **What we simplified:**
 - No movement grid — front row / back row only
@@ -25,71 +25,39 @@
 - Stick Break on nat 1 (lose next turn, comic animation)
 - Narrator interruptions on notable rolls
 - Plot Armor: main characters don't permadeath in story mode (return with 1 HP after combat)
+- Enemies die immediately when downed (no death saves)
+- Advantage from Invisible, disadvantage from Frightened/Poisoned
+- Burning: 1d6 fire damage at turn start
 
 ## Combat Flow
 ```
 Setup → Roll Initiative → [Turn Loop: TurnStart → Choose Action → Choose Target → Resolve → TurnEnd → Check End] → Victory/Defeat
 ```
 Enemy turns use AI decision instead of player input.
+Player turns pause coroutine loop, resume via SubmitPlayerAction().
 
-## Data Models
+## Data Models — All Implemented
 
-### AbilitySO (ScriptableObject)
-Defines any combat action. Key fields: name, category (MeleeAttack/RangedAttack/Spell/Heal/Buff/Debuff), target type, damage dice (count + sides), damage type, ability score modifier, cooldown turns, heal dice, status effect application, narrator quips for hit/miss/crit.
+### ScriptableObjects (Scripts/Data/)
+- **StatBlock** — Serializable struct, six ability scores, GetScore(), GetModifier(). Throws on invalid AbilityScore.
+- **AbilitySO** — Combat action definition. Damage dice, heal dice, flat bonuses, status effect, cooldown, narrator quips. Helper properties: DealsDamage, Heals, AppliesStatusEffect, HasCooldown.
+- **CharacterClassSO** — Class definition. Base stats, AC, hit dice, abilities at levels 1/3/5, sprites. GetMaxHPAtLevel() (clamped 1–MAX_LEVEL), GetAbilitiesAtLevel() (null-safe).
+- **EnemySO** — Enemy definition. Stats, abilities, AI params (aggression, target pref, retreat threshold), rewards, sprites, narrator quips.
+- **EncounterSO** — Encounter config. EnemySpawn[] (SO ref + row + name override), victory condition, narrator lines.
 
-**Status:** Not implemented yet
+### Runtime Classes (Scripts/Combat/)
+- **CombatUnit** — Mutable runtime state from SOs. Factory methods: FromPlayerCharacter(), FromEnemy(). Manages HP, death saves, status effects, ability cooldowns, BonusAC. Events: OnDamageTaken, OnHealed, OnDeath, OnStatusEffectApplied/Removed.
+- **RuntimeAbility** — Tracks cooldown state of an AbilitySO at runtime.
+- **ActiveStatusEffect** — Tracks remaining duration of a status effect.
+- **DamageCalculator** — Static. ResolveAttack(), ResolveHeal(), ResolveSavingThrow(). Returns AttackResult/HealResult/SaveResult structs.
+- **EnemyAI** — Static. Decide() returns AIDecision (ability + target). Priority: self-heal if low → pick target by preference → pick strongest ability. 20% random suboptimal.
+- **CombatStateMachine** — MonoBehaviour. Coroutine-based turn loop. Events for UI: OnCombatStarted, OnTurnStarted, OnPlayerActionNeeded, OnAttackResolved, OnHealResolved, OnUnitDowned, OnUnitDied, OnDeathSaveResult, OnNarratorQuip, OnInitiativeRolled, OnCombatResult, OnPhaseChanged, OnCombatEnded.
 
-### CharacterClassSO (ScriptableObject)
-Defines a playable class. Key fields: class name/type, base stats (HP, AC, 6 ability scores), hit dice sides, abilities at levels 1/3/5, sprites, flavor text, preferred combat row. Helper methods: GetMaxHPAtLevel(), GetAbilitiesAtLevel(), GetModifier().
+### Utilities (Scripts/Utils/)
+- **DiceRoller** — Static. Roll(), RollMultiple(), RollD20(), RollWithAdvantage/Disadvantage(), IsCriticalHit/Fail(), GetModifier(). History of last 20 rolls.
 
-**Status:** Not implemented yet
+## Enums (Scripts/Data/GameEnums.cs) — Implemented
+AbilityScore, DamageType, AbilityTargetType, AbilityCategory, StatusEffectType (includes None), CombatPhase, CharacterClassType, CombatRow, EnemyTier, AITargetPreference, VictoryCondition
 
-### EnemySO (ScriptableObject)
-Defines an enemy type. Key fields: name, tier (Minion/Standard/Elite/Boss), stats, abilities, AI behavior (aggression, target preference, retreat threshold), rewards (XP, gold range, loot), sprites, narrator quips.
-
-**Status:** Not implemented yet
-
-### EncounterSO (ScriptableObject)
-Defines a combat encounter. Key fields: enemy lineup (EnemySpawn structs with SO ref + row + name override), difficulty, victory condition (DefeatAll/DefeatBoss/SurviveTurns), background, narrator intro/victory/defeat lines.
-
-**Status:** Not implemented yet
-
-### CombatUnit (Runtime Class, not SO)
-Mutable runtime state of a combatant. Created from CharacterClassSO or EnemySO at combat start. Fields: identity, copied stats, current HP, initiative, row, alive/conscious flags, death save counters, runtime abilities with cooldown tracking, active status effects. Events: OnDamageTaken, OnHealed, OnDeath, OnStatusEffectApplied/Removed. Factory methods: FromPlayerCharacter(), FromEnemy().
-
-**Status:** Not implemented yet
-
-### DamageCalculator (Static Class)
-ResolveAttack(): d20 + modifier vs AC → hit/miss/crit → roll damage → apply. ResolveHeal(): roll heal dice → apply. ResolveSavingThrow(): d20 + modifier vs DC. Returns result structs (AttackResult, HealResult, SaveResult) with full roll details for UI display.
-
-**Status:** Not implemented yet
-
-### CombatStateMachine (MonoBehaviour)
-Central controller. Manages turn order queue, current phase, action selection. Emits events for UI: OnCombatStarted, OnTurnStarted, OnPlayerActionNeeded, OnActionResolved, OnUnitDied, OnNarratorQuip, OnCombatEnded, etc. Never references UI directly.
-
-**Status:** Not implemented yet
-
-### EnemyAI (Static Class)
-Priority logic: self-preservation (flee if low HP) → heal self → select target by preference (LowestHP/HighestThreat/Random/Healers) → pick strongest off-cooldown ability. 20% random suboptimal choice for flavor.
-
-**Status:** Not implemented yet
-
-### DiceRoller (Static Utility)
-Roll(sides), RollMultiple(count, sides), RollD20(), RollWithAdvantage/Disadvantage(), IsCriticalHit/Fail(), GetModifier(). Stores last 20 rolls in history for combat log.
-
-**Status:** Not implemented yet
-
-## Enums Needed
-- AbilityScore: STR, DEX, CON, INT, WIS, CHA
-- DamageType: Slashing, Piercing, Bludgeoning, Fire, Cold, Lightning, Radiant, Necrotic, Psychic
-- AbilityTargetType: SingleEnemy, SingleAlly, AllEnemies, AllAllies, Self
-- AbilityCategory: MeleeAttack, RangedAttack, Spell, Heal, Buff, Debuff
-- StatusEffect: Poisoned, Stunned, Blessed, Shielded, Burning, Frozen, Frightened, Invisible
-- CombatPhase: Setup, RollInitiative, TurnStart, PlayerChooseAction, PlayerChooseTarget, ResolveAction, TurnEnd, CheckEndCondition, Victory, Defeat
-- CharacterClassType: Sticknight, Stickromancer, Stickrogue, Stickeric
-- CombatRow: FrontRow, BackRow
-
-**Status:** Not implemented yet
-
-## Constants
-BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS_NEEDED=3, DEATH_SAVE_FAIL_NEEDED=3
+## Constants (Scripts/Data/GameConstants.cs) — Implemented
+BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS/FAIL_NEEDED=3, BACK_ROW_AC_BONUS=2, DEFEND_AC_BONUS=2, FLEE_DC=12, XP_THRESHOLDS[]
