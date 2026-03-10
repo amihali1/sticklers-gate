@@ -35,13 +35,14 @@ sticklers-gate/
 ├── CLAUDE.md              # Claude Code instructions
 ├── _docs/                 # Game design document and pipeline tasks
 ├── _memory/               # Project memory (status, architecture, combat, content)
-└── Assets/_Project/       # Unity project (not yet created)
-    ├── Scripts/            # C# source code
-    ├── Data/               # ScriptableObject assets
-    ├── Scenes/             # Unity scenes
-    ├── Art/                # Sprites, UI, backgrounds, effects
-    ├── Audio/              # Music and SFX
-    └── Prefabs/            # Reusable prefabs
+└── SticklersGate/         # Unity project
+    └── Assets/_Project/
+        ├── Scripts/        # C# source code
+        ├── Data/           # ScriptableObject assets
+        ├── Scenes/         # Unity scenes
+        ├── Art/            # Sprites, UI, backgrounds, effects
+        ├── Audio/          # Music and SFX
+        └── Prefabs/        # Reusable prefabs
 ```
 
 ## Classes

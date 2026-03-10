@@ -37,7 +37,7 @@ Full GDD is at `_docs/Sticklers_Gate_GDD.md`. Refer to it for detailed design sp
 
 ## Unity Project Structure
 ```
-Assets/_Project/
+SticklersGate/Assets/_Project/
 ├── Scripts/{Core,Combat,Characters,UI,Dialogue,World,Inventory,Data,Utils,Tests}
 ├── Data/{Classes,Abilities,Enemies,Encounters,Items,Dialogue}
 ├── Prefabs/{Combat,UI,Characters}

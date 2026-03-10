@@ -18,7 +18,7 @@ Everything is data-driven via ScriptableObjects. Game logic reads from SO assets
 
 ## Folder Structure
 ```
-Assets/_Project/
+SticklersGate/Assets/_Project/
 ├── Scripts/
 │   ├── Core/         — GameManager, save/load, scene management
 │   ├── Combat/       — Turn system, damage calc, status effects
