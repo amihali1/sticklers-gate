@@ -1,0 +1,54 @@
+# Stickler's Gate — Claude Code Instructions
+
+## Project Overview
+Turn-based RPG for Android/iOS built in Unity 2D (C#). D&D 5e-inspired mechanics, stick-figure art, sarcastic narrator. Parody of Baldur's Gate.
+
+## Memory System
+Project memory lives in `_memory/`. Always read `_memory/PROJECT_STATUS.md` at the start of a session to understand current progress. Consult other memory files as needed:
+- `ARCHITECTURE.md` — tech decisions, folder structure, coding conventions
+- `COMBAT_SYSTEM.md` — combat rules, data models, state machine design
+- `CONTENT.md` — classes, enemies, encounters, narrator quips, story
+- `SESSION_LOG.md` — brief log of each session's work
+
+Update memory files at the end of a session to reflect what was built, decided, or changed.
+
+## Game Design Document
+Full GDD is at `_docs/Sticklers_Gate_GDD.md`. Refer to it for detailed design specs.
+
+## Coding Conventions (C# / Unity)
+- **Namespaces:** `StickersGate.Combat`, `StickersGate.Data`, `StickersGate.UI`, `StickersGate.Utils`
+- **Naming:** PascalCase classes/methods/properties, _camelCase private fields, UPPER_SNAKE constants, PascalCase enums
+- **ScriptableObjects:** PascalCase + SO suffix (e.g., `CharacterClassSO`)
+- **Interfaces:** I prefix (e.g., `IDamageable`)
+- **One class per file**, filename matches class name
+- **`[SerializeField] private`** over public for inspector fields
+- **XML doc comments** on all public classes and methods
+- **MonoBehaviours stay thin** — logic in plain C# classes
+- **Composition over inheritance**
+- **C# events** for decoupling (not UnityEvents unless inspector wiring needed)
+- **No singletons** except GameManager
+- **Using order:** System → UnityEngine → project namespaces
+
+## Architecture
+- ScriptableObject-driven data layer — no magic numbers in code
+- Runtime models are plain C# classes (e.g., `CombatUnit`), SOs are never mutated at runtime
+- Event-driven UI — state machine emits events, UI subscribes
+- Command pattern for combat actions
+
+## Unity Project Structure
+```
+Assets/_Project/
+├── Scripts/{Core,Combat,Characters,UI,Dialogue,World,Inventory,Data,Utils,Tests}
+├── Data/{Classes,Abilities,Enemies,Encounters,Items,Dialogue}
+├── Prefabs/{Combat,UI,Characters}
+├── Scenes/
+├── Art/{StickFigures,UI,Backgrounds,Effects}
+├── Audio/{Music,SFX,UI}
+└── Fonts/
+```
+
+## Key Reminders
+- Target platforms: Android (API 24+), iOS (14+), landscape only
+- TextMeshPro for all text, DOTween for animations, new Input System for touch
+- Simplified D&D 5e: cooldowns instead of spell slots, front/back row instead of grid movement
+- 4 classes: Sticknight, Stickromancer, Stickrogue, Stickeric
