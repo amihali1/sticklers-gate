@@ -16,7 +16,7 @@ Update memory files at the end of a session to reflect what was built, decided, 
 Full GDD is at `_docs/Sticklers_Gate_GDD.md`. Refer to it for detailed design specs.
 
 ## Coding Conventions (C# / Unity)
-- **Namespaces:** `StickersGate.Combat`, `StickersGate.Data`, `StickersGate.UI`, `StickersGate.Utils`
+- **Namespaces:** `SticklersGate.Combat`, `SticklersGate.Data`, `SticklersGate.UI`, `SticklersGate.Utils`
 - **Naming:** PascalCase classes/methods/properties, _camelCase private fields, UPPER_SNAKE constants, PascalCase enums
 - **ScriptableObjects:** PascalCase + SO suffix (e.g., `CharacterClassSO`)
 - **Interfaces:** I prefix (e.g., `IDamageable`)

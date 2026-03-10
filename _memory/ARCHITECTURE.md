@@ -51,7 +51,7 @@ SticklersGate/Assets/_Project/
 - Methods: PascalCase
 - Parameters/locals: camelCase
 
-**Namespaces:** `StickersGate.Combat`, `StickersGate.Data`, `StickersGate.UI`, `StickersGate.Utils`
+**Namespaces:** `SticklersGate.Combat`, `SticklersGate.Data`, `SticklersGate.UI`, `SticklersGate.Utils`
 
 **Rules:**
 - One class per file, filename matches class name
