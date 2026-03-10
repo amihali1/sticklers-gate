@@ -73,12 +73,12 @@ namespace SticklersGate.Data
         /// <summary>
         /// Whether this ability deals damage.
         /// </summary>
-        public bool DealsDamage => _damageDiceCount > 0 && _damageDiceSides > 0;
+        public bool DealsDamage => (_damageDiceCount > 0 && _damageDiceSides > 0) || _flatDamageBonus > 0;
 
         /// <summary>
         /// Whether this ability heals.
         /// </summary>
-        public bool Heals => _healDiceCount > 0 && _healDiceSides > 0;
+        public bool Heals => (_healDiceCount > 0 && _healDiceSides > 0) || _flatHealBonus > 0;
 
         /// <summary>
         /// Whether this ability applies a status effect.
