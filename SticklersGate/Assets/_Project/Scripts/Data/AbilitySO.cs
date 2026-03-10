@@ -83,7 +83,7 @@ namespace SticklersGate.Data
         /// <summary>
         /// Whether this ability applies a status effect.
         /// </summary>
-        public bool AppliesStatusEffect => _effectDurationTurns > 0;
+        public bool AppliesStatusEffect => _appliesEffect != StatusEffectType.None && _effectDurationTurns > 0;
 
         /// <summary>
         /// Whether this ability has a cooldown.

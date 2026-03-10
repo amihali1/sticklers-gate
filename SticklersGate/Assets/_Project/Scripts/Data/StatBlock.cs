@@ -29,7 +29,7 @@ namespace SticklersGate.Data
                 AbilityScore.Intelligence => intelligence,
                 AbilityScore.Wisdom => wisdom,
                 AbilityScore.Charisma => charisma,
-                _ => 10
+                _ => throw new System.ArgumentOutOfRangeException(nameof(ability), ability, "Unhandled AbilityScore value.")
             };
         }
 
@@ -38,7 +38,7 @@ namespace SticklersGate.Data
         /// </summary>
         public int GetModifier(AbilityScore ability)
         {
-            return (GetScore(ability) - 10) / 2;
+            return Mathf.FloorToInt((GetScore(ability) - 10) / 2f);
         }
     }
 }

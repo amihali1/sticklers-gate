@@ -60,6 +60,7 @@ namespace SticklersGate.Data
     /// </summary>
     public enum StatusEffectType
     {
+        None,
         Poisoned,
         Stunned,
         Blessed,
