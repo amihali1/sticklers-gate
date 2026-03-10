@@ -53,6 +53,9 @@ namespace SticklersGate.Data
         /// </summary>
         public int GetMaxHPAtLevel(int level)
         {
+            if (level < 1) level = 1;
+            if (level > GameConstants.MAX_LEVEL) level = GameConstants.MAX_LEVEL;
+
             int conMod = _baseStats.GetModifier(AbilityScore.Constitution);
             int hp = _hitDiceSides + conMod;
 
@@ -69,16 +72,22 @@ namespace SticklersGate.Data
         /// </summary>
         public AbilitySO[] GetAbilitiesAtLevel(int level)
         {
-            int count = _level1Abilities.Length;
-            if (level >= 3) count += _level3Abilities.Length;
-            if (level >= 5) count += _level5Abilities.Length;
+            if (level < 1) level = 1;
+
+            var l1 = _level1Abilities ?? System.Array.Empty<AbilitySO>();
+            var l3 = _level3Abilities ?? System.Array.Empty<AbilitySO>();
+            var l5 = _level5Abilities ?? System.Array.Empty<AbilitySO>();
+
+            int count = l1.Length;
+            if (level >= 3) count += l3.Length;
+            if (level >= 5) count += l5.Length;
 
             var abilities = new AbilitySO[count];
             int index = 0;
 
-            foreach (var a in _level1Abilities) abilities[index++] = a;
-            if (level >= 3) foreach (var a in _level3Abilities) abilities[index++] = a;
-            if (level >= 5) foreach (var a in _level5Abilities) abilities[index++] = a;
+            foreach (var a in l1) abilities[index++] = a;
+            if (level >= 3) foreach (var a in l3) abilities[index++] = a;
+            if (level >= 5) foreach (var a in l5) abilities[index++] = a;
 
             return abilities;
         }
