@@ -17,6 +17,8 @@ namespace SticklersGate.Utils
         /// </summary>
         public static int Roll(int sides)
         {
+            if (sides <= 0) return 0;
+
             int result = Random.Range(1, sides + 1);
             AddToHistory(result);
             return result;

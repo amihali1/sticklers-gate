@@ -72,6 +72,13 @@ namespace SticklersGate.Combat
             result.TotalAttackRoll = result.D20Roll + result.Modifier;
             result.TargetAC = target.EffectiveAC;
 
+            // Back row gets AC bonus vs melee attacks
+            if (target.Row == CombatRow.BackRow &&
+                (ability.Category == AbilityCategory.MeleeAttack))
+            {
+                result.TargetAC += GameConstants.BACK_ROW_AC_BONUS;
+            }
+
             // Determine hit (nat 20 always hits, nat 1 always misses)
             if (result.IsCriticalHit)
                 result.IsHit = true;
@@ -107,6 +114,7 @@ namespace SticklersGate.Combat
         /// </summary>
         public static HealResult ResolveHeal(CombatUnit healer, AbilitySO ability)
         {
+            // healer param reserved for future stat-scaled healing
             var result = new HealResult();
 
             result.DiceRolled = DiceRoller.RollMultiple(ability.HealDiceCount, ability.HealDiceSides);

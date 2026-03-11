@@ -103,23 +103,26 @@ namespace SticklersGate.Combat
                     // Skip dead or fully incapacitated units
                     if (!unit.IsAlive) continue;
 
-                    // Handle downed units (death saves)
+                    // Handle downed units (death saves, skip if stabilized)
                     if (!unit.IsConscious)
                     {
-                        yield return HandleDeathSaves(unit);
+                        if (!unit.IsStabilized)
+                        {
+                            yield return HandleDeathSaves(unit);
+                        }
                         continue;
                     }
 
-                    // Skip stunned units
+                    // Turn start: always tick effects and cooldowns (even if stunned)
+                    SetPhase(CombatPhase.TurnStart);
+                    unit.TickTurnStart();
+
+                    // Skip stunned units (after ticking so stun can expire)
                     if (unit.HasStatusEffect(StatusEffectType.Stunned))
                     {
                         OnNarratorQuip?.Invoke($"{unit.Name} is stunned and loses their turn!");
                         continue;
                     }
-
-                    // Turn start: tick effects and cooldowns
-                    SetPhase(CombatPhase.TurnStart);
-                    unit.TickTurnStart();
 
                     // Apply burning damage at turn start
                     if (unit.HasStatusEffect(StatusEffectType.Burning))
@@ -176,6 +179,13 @@ namespace SticklersGate.Combat
         /// </summary>
         public void SubmitPlayerAction(RuntimeAbility ability, CombatUnit target)
         {
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseTarget)
+                return;
+
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer)
+                return;
+
             StartCoroutine(ResolvePlayerAction(ability, target));
         }
 
@@ -253,6 +263,13 @@ namespace SticklersGate.Combat
                     if (!target.IsConscious)
                     {
                         OnUnitDowned?.Invoke(target);
+
+                        // Enemies die immediately when downed
+                        if (!target.IsPlayer)
+                        {
+                            target.Die();
+                            OnUnitDied?.Invoke(target);
+                        }
                     }
 
                     // Narrator quips
@@ -313,15 +330,17 @@ namespace SticklersGate.Combat
                 yield break;
             }
 
-            // Nat 1: two failures
-            bool success = roll >= 10;
-            if (DiceRoller.IsCriticalFail(roll))
-            {
-                unit.RecordDeathSave(false);
-                success = false;
-            }
+            bool isCriticalFail = DiceRoller.IsCriticalFail(roll);
+            bool success = !isCriticalFail && roll >= 10;
 
+            // Apply primary death save result
             bool resolved = unit.RecordDeathSave(success);
+
+            // Nat 1: apply second failure only if still alive
+            if (isCriticalFail && unit.IsAlive)
+            {
+                resolved = unit.RecordDeathSave(false);
+            }
             OnDeathSaveResult?.Invoke(unit, success);
 
             if (resolved && !unit.IsAlive)

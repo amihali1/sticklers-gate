@@ -86,6 +86,7 @@ namespace SticklersGate.Combat
         public bool IsConscious { get; private set; } = true;
         public int DeathSaveSuccesses { get; private set; }
         public int DeathSaveFailures { get; private set; }
+        public bool IsStabilized { get; private set; }
         public int BonusAC { get; set; }
 
         // --- Abilities & Effects ---
@@ -203,6 +204,7 @@ namespace SticklersGate.Combat
             if (!IsConscious && CurrentHP > 0)
             {
                 IsConscious = true;
+                IsStabilized = false;
                 DeathSaveSuccesses = 0;
                 DeathSaveFailures = 0;
             }
@@ -218,7 +220,7 @@ namespace SticklersGate.Combat
                 DeathSaveSuccesses++;
                 if (DeathSaveSuccesses >= GameConstants.DEATH_SAVE_SUCCESS_NEEDED)
                 {
-                    // Stabilized — still at 0 HP but no longer dying
+                    IsStabilized = true;
                     return true;
                 }
             }
@@ -241,6 +243,7 @@ namespace SticklersGate.Combat
         {
             CurrentHP = 1;
             IsConscious = true;
+            IsStabilized = false;
             DeathSaveSuccesses = 0;
             DeathSaveFailures = 0;
         }

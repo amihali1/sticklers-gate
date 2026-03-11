@@ -27,6 +27,7 @@ namespace SticklersGate.Combat
         /// </summary>
         public static AIDecision Decide(CombatUnit enemy, List<CombatUnit> playerUnits, List<CombatUnit> enemyUnits)
         {
+            // enemyUnits reserved for future group tactics (ally healing, coordinated attacks)
             var decision = new AIDecision();
             var enemyData = enemy.EnemyData;
 
