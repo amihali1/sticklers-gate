@@ -158,7 +158,7 @@ Define the following enums:
 
 6. CombatPhase — Setup, RollInitiative, TurnStart, PlayerChooseAction, PlayerChooseTarget, ResolveAction, TurnEnd, CheckEndCondition, Victory, Defeat
 
-7. CharacterClassType — Sticknight, Stickromancer, Stickrogue, Stickeric
+7. CharacterClassType — Sticknight, Stickwizard, Stickrogue, Stickeric
 
 8. CombatRow — FrontRow, BackRow (for simplified positioning)
 
@@ -298,7 +298,7 @@ Provide feedback. If changes are needed, specify exact code corrections.
 
 **DESIGNER prompt:**
 ```
-Design the CharacterClassSO ScriptableObject for Stickler's Gate. This defines a playable class like Sticknight (Fighter) or Stickromancer (Wizard).
+Design the CharacterClassSO ScriptableObject for Stickler's Gate. This defines a playable class like Sticknight (Fighter) or Stickwizard (Wizard).
 
 Retrieve "game-enums" and "ability-so-design" from memory.
 
@@ -973,7 +973,7 @@ STICKNIGHT (Fighter):
 - Hurt: leaning backward, lines for impact
 - Death: fallen flat, X eyes
 
-STICKROMANCER (Wizard):
+STICKWIZARD (Wizard):
 - Distinguishing feature: triangle hat (wizard hat) + wavy lines at hand (magic)
 - Idle: standing with staff (long line with circle top)
 - Attack: both arms forward, star burst at hands
@@ -1119,7 +1119,7 @@ Define all abilities with exact dice, damage types, cooldowns, and quips.
 
 Classes to define:
 1. Sticknight (Fighter) — tanky melee, high HP, high AC, STR-based
-2. Stickromancer (Wizard) — glass cannon, low HP, INT-based spells
+2. Stickwizard (Wizard) — glass cannon, low HP, INT-based spells
 3. Stickrogue (Rogue) — burst damage, DEX-based, sneak attack mechanic
 4. Stickeric (Cleric) — healer/support, WIS-based, can also deal radiant damage
 

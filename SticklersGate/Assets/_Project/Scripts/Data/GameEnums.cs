@@ -94,7 +94,7 @@ namespace SticklersGate.Data
     public enum CharacterClassType
     {
         Sticknight,
-        Stickromancer,
+        Stickwizard,
         Stickrogue,
         Stickeric
     }

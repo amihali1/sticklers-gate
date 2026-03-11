@@ -15,7 +15,7 @@
   - (Level 3) Action Surge: 3d6 + STR slashing, 3 turn cooldown
   - (Level 5) Champion's Strike: 4d6 + STR slashing, auto-crit if target below 25% HP, 4 turn cooldown
 
-### Stickromancer (Wizard)
+### Stickwizard (Wizard)
 - **Role:** Ranged AoE DPS
 - **Stats:** STR 8, DEX 14, CON 12, INT 18, WIS 13, CHA 10
 - **HP:** d6 hit die, base HP 26
