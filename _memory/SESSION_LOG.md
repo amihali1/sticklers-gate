@@ -53,3 +53,37 @@
 **PRs in review:** #4 (combat engine)
 
 **Next session:** Review PR #4, then Phase 3 (Combat UI)
+
+## Session 3 — March 10, 2026
+**Focus:** Phase 3 — Combat UI implementation
+**What happened:**
+- Implemented all Phase 3 tasks (3.1–3.4) on `feature/combat-ui` branch
+- Created 10 new UI scripts covering the full combat interface
+- Added SubmitDefend() to CombatStateMachine for defend action support
+- Programmatic stick figures via LineRenderer (no sprite assets needed)
+- Narrator system with typewriter animation and message queue
+- Unit tests for TargetPanel.GetValidTargets and defend mechanics
+
+**Scripts created (Scripts/UI/):**
+- CombatUIController — main controller wiring events to sub-components
+- ActionPanel — ability buttons + defend for player turns
+- TargetPanel — target selection with static GetValidTargets()
+- UnitHPBar — HP bar bound to CombatUnit events
+- TurnOrderDisplay — initiative order display
+- NarratorDisplay — typewriter text overlay with queue
+- DamagePopup — floating damage/heal numbers
+- CombatResultPanel — victory/defeat screen
+- StickFigureRenderer — programmatic stick figures with 6 poses
+- CombatSceneSetup — scene bootstrapper
+
+**Tests created:**
+- TargetPanelTests (8 tests) — target filtering by type, dead/unconscious exclusion, enemy perspective
+- CombatDefendTests (2 tests) — bonus AC application and reset on tick
+
+**Decisions made:**
+- Programmatic stick figures using LineRenderer (no sprite generation)
+- Color-coded figures: players by class type, enemies by tier
+- SubmitDefend() is a dedicated path in CombatStateMachine (not a hack via SubmitPlayerAction)
+- Using Unity UI Text (not TextMeshPro yet — TMP install deferred)
+
+**Next session:** Open PR, address review, then Phase 4 (Content: define 4 classes + 3 enemies + test encounter)

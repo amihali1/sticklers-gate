@@ -19,7 +19,7 @@ namespace SticklersGate.Combat
         public event Action<CombatUnit> OnTurnStarted;
         public event Action<CombatUnit> OnTurnEnded;
         public event Action<CombatUnit> OnPlayerActionNeeded;
-        public event Action<CombatUnit, AttackResult> OnAttackResolved;
+        public event Action<CombatUnit, CombatUnit, AttackResult> OnAttackResolved;
         public event Action<CombatUnit, CombatUnit, HealResult> OnHealResolved;
         public event Action<CombatUnit> OnUnitDowned;
         public event Action<CombatUnit> OnUnitDied;
@@ -189,6 +189,23 @@ namespace SticklersGate.Combat
             StartCoroutine(ResolvePlayerAction(ability, target));
         }
 
+        /// <summary>
+        /// Called by UI when the player chooses to defend. Grants bonus AC and ends the turn.
+        /// </summary>
+        public void SubmitDefend()
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseTarget)
+                return;
+
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer)
+                return;
+
+            CurrentUnit.BonusAC = GameConstants.DEFEND_AC_BONUS;
+            OnNarratorQuip?.Invoke($"{CurrentUnit.Name} takes a defensive stance. (+{GameConstants.DEFEND_AC_BONUS} AC)");
+            SetPhase(CombatPhase.TurnEnd);
+        }
+
         private IEnumerator ResolvePlayerAction(RuntimeAbility ability, CombatUnit target)
         {
             SetPhase(CombatPhase.ResolveAction);
@@ -236,7 +253,7 @@ namespace SticklersGate.Combat
                                     actor.HasStatusEffect(StatusEffectType.Poisoned);
 
                 var result = DamageCalculator.ResolveAttack(actor, target, ability, advantage, disadvantage);
-                OnAttackResolved?.Invoke(actor, result);
+                OnAttackResolved?.Invoke(actor, target, result);
 
                 if (result.IsHit)
                 {

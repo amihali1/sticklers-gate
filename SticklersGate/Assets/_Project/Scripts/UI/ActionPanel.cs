@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using SticklersGate.Combat;
+using SticklersGate.Data;
+
+namespace SticklersGate.UI
+{
+    /// <summary>
+    /// Displays available actions for the current player's turn.
+    /// Shows ability buttons and a Defend button.
+    /// </summary>
+    public class ActionPanel : MonoBehaviour
+    {
+        [Header("References")]
+        [SerializeField] private Transform _buttonContainer;
+        [SerializeField] private GameObject _abilityButtonPrefab;
+        [SerializeField] private Button _defendButton;
+
+        [Header("Colors")]
+        [SerializeField] private Color _readyColor = Color.white;
+        [SerializeField] private Color _cooldownColor = new Color(0.5f, 0.5f, 0.5f);
+
+        /// <summary>
+        /// Fired when the player selects an ability. Passes the RuntimeAbility.
+        /// </summary>
+        public event Action<RuntimeAbility> OnAbilitySelected;
+
+        /// <summary>
+        /// Fired when the player chooses to defend.
+        /// </summary>
+        public event Action OnDefendSelected;
+
+        private readonly List<GameObject> _spawnedButtons = new List<GameObject>();
+
+        /// <summary>
+        /// Show action buttons for the given unit's available abilities.
+        /// </summary>
+        public void ShowActions(CombatUnit unit)
+        {
+            ClearButtons();
+            gameObject.SetActive(true);
+
+            foreach (var ability in unit.Abilities)
+            {
+                if (_abilityButtonPrefab == null || _buttonContainer == null) break;
+
+                var go = Instantiate(_abilityButtonPrefab, _buttonContainer);
+                _spawnedButtons.Add(go);
+
+                var buttonText = go.GetComponentInChildren<Text>();
+                var button = go.GetComponent<Button>();
+
+                if (buttonText != null)
+                {
+                    string label = ability.Data.AbilityName;
+                    if (!ability.IsReady)
+                    {
+                        label += $" ({ability.CurrentCooldown})";
+                    }
+                    buttonText.text = label;
+                }
+
+                if (button != null)
+                {
+                    bool isReady = ability.IsReady;
+                    button.interactable = isReady;
+
+                    var colors = button.colors;
+                    colors.normalColor = isReady ? _readyColor : _cooldownColor;
+                    button.colors = colors;
+
+                    var capturedAbility = ability;
+                    button.onClick.AddListener(() => OnAbilitySelected?.Invoke(capturedAbility));
+                }
+            }
+
+            if (_defendButton != null)
+            {
+                _defendButton.gameObject.SetActive(true);
+                _defendButton.onClick.RemoveAllListeners();
+                _defendButton.onClick.AddListener(() => OnDefendSelected?.Invoke());
+            }
+        }
+
+        /// <summary>
+        /// Hide the action panel.
+        /// </summary>
+        public void Hide()
+        {
+            ClearButtons();
+            gameObject.SetActive(false);
+        }
+
+        private void ClearButtons()
+        {
+            foreach (var go in _spawnedButtons)
+            {
+                if (go != null) Destroy(go);
+            }
+            _spawnedButtons.Clear();
+        }
+    }
+}
