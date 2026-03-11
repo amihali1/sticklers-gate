@@ -4,7 +4,7 @@
 - **Engine:** Unity 6 LTS (6000.3.10f1), C#
 - **Platforms:** Android (API 24+) + iOS, Landscape
 - **Current Milestone:** 1 — "First Blood" (Combat Prototype)
-- **Current Phase:** 2 — Combat Engine (in review)
+- **Current Phase:** 3 — Combat UI (in progress)
 - **Unity Installed:** Yes
 - **Repo:** github.com/amihali1/sticklers-gate (private)
 - **Unity Project Folder:** SticklersGate/
@@ -30,10 +30,10 @@
 - [x] 2.5 Enemy AI (PR #4)
 
 ### Phase 3: Combat UI
-- [ ] 3.1 Combat scene layout
-- [ ] 3.2 Combat UI controller + sub-components
-- [ ] 3.3 Stick figure sprites
-- [ ] 3.4 Narrator system
+- [x] 3.1 Combat scene layout (CombatSceneSetup)
+- [x] 3.2 Combat UI controller + sub-components (CombatUIController, ActionPanel, TargetPanel, UnitHPBar, TurnOrderDisplay, DamagePopup, CombatResultPanel)
+- [x] 3.3 Stick figure rendering (programmatic StickFigureRenderer via LineRenderer)
+- [x] 3.4 Narrator system (NarratorDisplay with typewriter + queue)
 
 ### Phase 4: Content
 - [ ] 4.1 Define 4 classes (stats & abilities)
@@ -45,10 +45,10 @@
 - [ ] 5.3 Polish pass
 
 ## Next Action
-Review and merge PR #4 (combat engine), then start Phase 3 (Combat UI).
+Open PR for Phase 3 Combat UI scripts, then start Phase 4 (Content: define classes, enemies, test encounter).
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
 - .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
 
-## Session Count: 2
+## Session Count: 3

@@ -51,7 +51,19 @@ Player turns pause coroutine loop, resume via SubmitPlayerAction().
 - **ActiveStatusEffect** — Tracks remaining duration of a status effect.
 - **DamageCalculator** — Static. ResolveAttack(), ResolveHeal(), ResolveSavingThrow(). Returns AttackResult/HealResult/SaveResult structs.
 - **EnemyAI** — Static. Decide() returns AIDecision (ability + target). Priority: self-heal if low → pick target by preference → pick strongest ability. 20% random suboptimal.
-- **CombatStateMachine** — MonoBehaviour. Coroutine-based turn loop. Events for UI: OnCombatStarted, OnTurnStarted, OnPlayerActionNeeded, OnAttackResolved, OnHealResolved, OnUnitDowned, OnUnitDied, OnDeathSaveResult, OnNarratorQuip, OnInitiativeRolled, OnCombatResult, OnPhaseChanged, OnCombatEnded.
+- **CombatStateMachine** — MonoBehaviour. Coroutine-based turn loop. SubmitPlayerAction() + SubmitDefend(). Events for UI: OnCombatStarted, OnTurnStarted, OnPlayerActionNeeded, OnAttackResolved, OnHealResolved, OnUnitDowned, OnUnitDied, OnDeathSaveResult, OnNarratorQuip, OnInitiativeRolled, OnCombatResult, OnPhaseChanged, OnCombatEnded.
+
+### UI Classes (Scripts/UI/) — Implemented
+- **CombatUIController** — Main controller. Subscribes to CombatStateMachine events, coordinates all sub-components. Handles ability→target→submit flow.
+- **ActionPanel** — Shows ability buttons + defend button for player turns. Events: OnAbilitySelected, OnDefendSelected.
+- **TargetPanel** — Target selection after ability pick. Static GetValidTargets() for filtering by AbilityTargetType. Events: OnTargetSelected, OnCancelled.
+- **UnitHPBar** — HP bar with fill color (healthy/wounded/critical), name label, HP text. Binds to CombatUnit events.
+- **TurnOrderDisplay** — Horizontal list of unit names showing initiative order, highlights active unit.
+- **NarratorDisplay** — Top-of-screen text overlay with typewriter animation and message queue. Configurable speed/duration/fade.
+- **DamagePopup** — Floating text that rises and fades. Self-destructs. Used for damage numbers, heal amounts, miss/crit text.
+- **CombatResultPanel** — Victory/defeat screen with title, subtitle, colored background.
+- **StickFigureRenderer** — Programmatic stick figures via LineRenderer. Poses: Idle, Attack, Hit, Death, Defend, Cast. Color-coded by class (player) or tier (enemy). Circle head drawn with line segments.
+- **CombatSceneSetup** — Scene bootstrapper. Creates player party from SO data, spawns stick figures at position transforms, starts encounter.
 
 ### Utilities (Scripts/Utils/)
 - **DiceRoller** — Static. Roll(), RollMultiple(), RollD20(), RollWithAdvantage/Disadvantage(), IsCriticalHit/Fail(), GetModifier(). History of last 20 rolls.

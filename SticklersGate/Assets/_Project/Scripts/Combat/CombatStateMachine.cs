@@ -189,6 +189,23 @@ namespace SticklersGate.Combat
             StartCoroutine(ResolvePlayerAction(ability, target));
         }
 
+        /// <summary>
+        /// Called by UI when the player chooses to defend. Grants bonus AC and ends the turn.
+        /// </summary>
+        public void SubmitDefend()
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseTarget)
+                return;
+
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer)
+                return;
+
+            CurrentUnit.BonusAC = GameConstants.DEFEND_AC_BONUS;
+            OnNarratorQuip?.Invoke($"{CurrentUnit.Name} takes a defensive stance. (+{GameConstants.DEFEND_AC_BONUS} AC)");
+            SetPhase(CombatPhase.TurnEnd);
+        }
+
         private IEnumerator ResolvePlayerAction(RuntimeAbility ability, CombatUnit target)
         {
             SetPhase(CombatPhase.ResolveAction);
