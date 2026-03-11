@@ -41,7 +41,7 @@
   - (Level 3) Assassinate: 6d6 + DEX piercing, 4 turn cooldown
   - (Level 5) Shadow Step: 4d6 + DEX piercing + applies Invisible for 1 turn, 4 turn cooldown
 
-### Stickeric (Cleric)
+### Stickleric (Cleric)
 - **Role:** Healer / Support
 - **Stats:** STR 14, DEX 10, CON 14, INT 10, WIS 18, CHA 13
 - **HP:** d8 hit die, base HP 38

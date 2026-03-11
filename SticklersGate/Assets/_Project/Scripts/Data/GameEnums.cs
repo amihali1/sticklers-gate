@@ -96,7 +96,7 @@ namespace SticklersGate.Data
         Sticknight,
         Stickwizard,
         Stickrogue,
-        Stickeric
+        Stickleric
     }
 
     /// <summary>

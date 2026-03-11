@@ -158,7 +158,7 @@ Define the following enums:
 
 6. CombatPhase — Setup, RollInitiative, TurnStart, PlayerChooseAction, PlayerChooseTarget, ResolveAction, TurnEnd, CheckEndCondition, Victory, Defeat
 
-7. CharacterClassType — Sticknight, Stickwizard, Stickrogue, Stickeric
+7. CharacterClassType — Sticknight, Stickwizard, Stickrogue, Stickleric
 
 8. CombatRow — FrontRow, BackRow (for simplified positioning)
 
@@ -822,7 +822,7 @@ Decision logic (priority order):
 3. TARGET SELECTION based on aiTargetPreference:
    - LowestHP: pick the alive player character with lowest current HP
    - HighestThreat: pick the player character that dealt most damage last round (needs a simple damage tracker)
-   - Healers: prioritize Stickeric class, then lowest HP
+   - Healers: prioritize Stickleric class, then lowest HP
    - Random: pick any alive player character at random
 4. ABILITY SELECTION: Pick the highest-damage ability that's off cooldown. If all on cooldown, use basic attack (index 0, which should always have 0 cooldown).
 5. AGGRESSION MODIFIER: Roll a random float. If it's > aiAggression, pick a weaker/safer ability instead of the strongest one. This adds unpredictability.
@@ -987,7 +987,7 @@ STICKROGUE (Rogue):
 - Hurt: spinning backward
 - Death: dramatic sprawl
 
-STICKERIC (Cleric):
+STICKLERIC (Cleric):
 - Distinguishing feature: halo (circle above head) + plus/cross symbol on body
 - Idle: hands together in prayer pose
 - Attack: arms raised, radiating lines
@@ -1074,7 +1074,7 @@ PLAYER DEATH quips (when a party member goes down):
 - e.g., "Your friend collapses. Dramatically. They practiced this."
 
 HEAL quips:
-- e.g., "The Stickeric waves their hands and somehow biology works again."
+- e.g., "The Stickleric waves their hands and somehow biology works again."
 
 COMBAT START quips:
 - e.g., "Roll for initiative! Or, as I like to call it, roll for who gets to suffer first."
@@ -1121,7 +1121,7 @@ Classes to define:
 1. Sticknight (Fighter) — tanky melee, high HP, high AC, STR-based
 2. Stickwizard (Wizard) — glass cannon, low HP, INT-based spells
 3. Stickrogue (Rogue) — burst damage, DEX-based, sneak attack mechanic
-4. Stickeric (Cleric) — healer/support, WIS-based, can also deal radiant damage
+4. Stickleric (Cleric) — healer/support, WIS-based, can also deal radiant damage
 
 For each class provide:
 - All stat values

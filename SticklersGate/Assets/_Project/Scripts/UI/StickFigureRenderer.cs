@@ -406,7 +406,7 @@ namespace SticklersGate.UI
                     return new Color(0.7f, 0.3f, 0.9f);  // Purple
                 case Data.CharacterClassType.Stickrogue:
                     return new Color(0.3f, 0.7f, 0.3f);  // Green
-                case Data.CharacterClassType.Stickeric:
+                case Data.CharacterClassType.Stickleric:
                     return new Color(0.9f, 0.8f, 0.3f);  // Gold
                 default:
                     return Color.white;
