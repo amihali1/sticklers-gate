@@ -25,7 +25,7 @@ namespace SticklersGate.Tests
                 }
                 type = type.BaseType;
             }
-            throw new System.Exception($"Field '{fieldName}' not found on {obj.GetType().Name}");
+            Assert.Fail($"Field '{fieldName}' not found on {obj.GetType().Name}");
         }
 
         // ====================================================================
@@ -420,18 +420,25 @@ namespace SticklersGate.Tests
         }
 
         [Test]
-        public void EachClass_HasPrimaryStatOf18OrHigher()
+        public void EachClass_HasHighPrimaryStat()
         {
-            // Sticknight primary: STR 16 (not 18, uses standard array differently)
+            // Sticknight primary: STR 16 (fighter trades max primary for better spread)
             // Stickwizard primary: INT 18
             // Stickrogue primary: DEX 18
             // Stickleric primary: WIS 18
-            Assert.AreEqual(18, new StatBlock { strength = 8, dexterity = 14, constitution = 12,
-                intelligence = 18, wisdom = 13, charisma = 10 }.GetScore(AbilityScore.Intelligence));
-            Assert.AreEqual(18, new StatBlock { strength = 10, dexterity = 18, constitution = 12,
-                intelligence = 13, wisdom = 10, charisma = 14 }.GetScore(AbilityScore.Dexterity));
-            Assert.AreEqual(18, new StatBlock { strength = 14, dexterity = 10, constitution = 14,
-                intelligence = 10, wisdom = 18, charisma = 13 }.GetScore(AbilityScore.Wisdom));
+            var knightStats = new StatBlock { strength = 16, dexterity = 13, constitution = 14,
+                intelligence = 10, wisdom = 12, charisma = 8 };
+            var wizardStats = new StatBlock { strength = 8, dexterity = 14, constitution = 12,
+                intelligence = 18, wisdom = 13, charisma = 10 };
+            var rogueStats = new StatBlock { strength = 10, dexterity = 18, constitution = 12,
+                intelligence = 13, wisdom = 10, charisma = 14 };
+            var clericStats = new StatBlock { strength = 14, dexterity = 10, constitution = 14,
+                intelligence = 10, wisdom = 18, charisma = 13 };
+
+            Assert.GreaterOrEqual(knightStats.GetScore(AbilityScore.Strength), 16, "Knight STR should be >= 16");
+            Assert.AreEqual(18, wizardStats.GetScore(AbilityScore.Intelligence), "Wizard INT should be 18");
+            Assert.AreEqual(18, rogueStats.GetScore(AbilityScore.Dexterity), "Rogue DEX should be 18");
+            Assert.AreEqual(18, clericStats.GetScore(AbilityScore.Wisdom), "Cleric WIS should be 18");
         }
     }
 }

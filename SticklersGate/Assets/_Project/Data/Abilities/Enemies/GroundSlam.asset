@@ -15,7 +15,7 @@ MonoBehaviour:
   _abilityName: Ground Slam
   _category: 0
   _targetType: 2
-  _description: The ogre slams the ground, sending shockwaves through the front line.
+  _description: The ogre slams the ground, sending shockwaves through all enemies.
   _damageDiceCount: 1
   _damageDiceSides: 10
   _damageType: 2

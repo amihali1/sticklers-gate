@@ -78,7 +78,7 @@
 
 ### Stick Ogre (Elite)
 - **Stats:** HP 68, AC 11, STR 19, DEX 8, CON 16, INT 5, WIS 7, CHA 4
-- **Abilities:** Greatclub (2d8 + STR bludgeoning), Ground Slam (1d10 + STR bludgeoning, AllEnemies front row)
+- **Abilities:** Greatclub (2d8 + STR bludgeoning), Ground Slam (1d10 + STR bludgeoning, AllEnemies)
 - **AI:** HighestThreat targeting, aggression 0.95, can't flee
 - **Rewards:** 200 XP, 15-30 gold
 - **Intro:** "An ogre lumbers forward. It's drawn with a thicker pen. You can tell it's important."
