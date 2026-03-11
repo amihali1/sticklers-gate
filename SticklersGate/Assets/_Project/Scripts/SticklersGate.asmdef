@@ -2,7 +2,7 @@
     "name": "SticklersGate",
     "rootNamespace": "SticklersGate",
     "references": [
-        "UnityEngine.UI"
+        "Unity.ugui"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
