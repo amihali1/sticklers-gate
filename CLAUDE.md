@@ -10,7 +10,10 @@ Project memory lives in `_memory/`. Always read `_memory/PROJECT_STATUS.md` at t
 - `CONTENT.md` — classes, enemies, encounters, narrator quips, story
 - `SESSION_LOG.md` — brief log of each session's work
 
-Update memory files at the end of a session to reflect what was built, decided, or changed.
+**Memory must be kept in sync with every PR:**
+- **Start of session:** Read `PROJECT_STATUS.md` to understand current state.
+- **Each PR:** Include memory file updates in the PR commits. Update `PROJECT_STATUS.md` (check off tasks, update next action), and update any other relevant memory files (ARCHITECTURE, COMBAT_SYSTEM, CONTENT) when designs are implemented or changed.
+- **End of session:** Update `SESSION_LOG.md` with a summary of what was done.
 
 ## Game Design Document
 Full GDD is at `_docs/Sticklers_Gate_GDD.md`. Refer to it for detailed design specs.
