@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: CureWounds
+  m_EditorClassIdentifier:
+  _abilityName: Cure Wounds
+  _category: 3
+  _targetType: 1
+  _description: Channel divine energy to mend an ally's wounds. You're welcome.
+  _damageDiceCount: 0
+  _damageDiceSides: 0
+  _damageType: 0
+  _abilityModifier: 0
+  _flatDamageBonus: 0
+  _healDiceCount: 2
+  _healDiceSides: 8
+  _flatHealBonus: 4
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 2
+  _unlockLevel: 1
+  _hitQuips: 
+  - The cleric waves their hands and somehow biology works again.
+  - Healing delivered with only mild passive-aggression.
+  _missQuips: []
+  _critQuips: []

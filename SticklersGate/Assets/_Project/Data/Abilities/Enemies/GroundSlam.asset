@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: GroundSlam
+  m_EditorClassIdentifier:
+  _abilityName: Ground Slam
+  _category: 0
+  _targetType: 2
+  _description: The ogre slams the ground, sending shockwaves through the front line.
+  _damageDiceCount: 1
+  _damageDiceSides: 10
+  _damageType: 2
+  _abilityModifier: 0
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 3
+  _unlockLevel: 1
+  _hitQuips: 
+  - The ground shakes! Everyone in the front row feels that!
+  - SLAM! The notebook page ripples from the impact!
+  _missQuips: 
+  - The ground slam misses everyone somehow. The ogre is confused.
+  - The slam hits the ground but everyone jumps in time.
+  _critQuips: 
+  - CRITICAL GROUND SLAM! The earth itself is offended!

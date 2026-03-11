@@ -4,7 +4,7 @@
 - **Engine:** Unity 6 LTS (6000.3.10f1), C#
 - **Platforms:** Android (API 24+) + iOS, Landscape
 - **Current Milestone:** 1 — "First Blood" (Combat Prototype)
-- **Current Phase:** 3 — Combat UI (in progress)
+- **Current Phase:** 4 — Content (in progress)
 - **Unity Installed:** Yes
 - **Repo:** github.com/amihali1/sticklers-gate (private)
 - **Unity Project Folder:** SticklersGate/
@@ -36,8 +36,8 @@
 - [x] 3.4 Narrator system (NarratorDisplay with typewriter + queue)
 
 ### Phase 4: Content
-- [ ] 4.1 Define 4 classes (stats & abilities)
-- [ ] 4.2 Define 3 enemies + test encounter
+- [x] 4.1 Define 4 classes (stats & abilities) — 16 AbilitySO + 4 CharacterClassSO assets (PR #9)
+- [x] 4.2 Define 3 enemies + test encounter — 5 enemy AbilitySO + 3 EnemySO + 1 EncounterSO assets (PR #9)
 
 ### Phase 5: Integration
 - [ ] 5.1 Combat scene wiring
@@ -45,10 +45,10 @@
 - [ ] 5.3 Polish pass
 
 ## Next Action
-Open PR for Phase 3 Combat UI scripts, then start Phase 4 (Content: define classes, enemies, test encounter).
+Start Phase 5 (Integration: wire combat scene, integration testing, polish pass).
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
 - .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
 
-## Session Count: 3
+## Session Count: 4

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: SneakAttack
+  m_EditorClassIdentifier:
+  _abilityName: Sneak Attack
+  _category: 0
+  _targetType: 0
+  _description: A precise strike exploiting the target's blind spots.
+  _damageDiceCount: 3
+  _damageDiceSides: 6
+  _damageType: 1
+  _abilityModifier: 1
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 0
+  _unlockLevel: 1
+  _hitQuips: 
+  - The dagger finds its mark. The rogue winks.
+  - Sneak attack! The enemy didn't see that coming. That's the point.
+  _missQuips: 
+  - The sneak attack fails. Not very sneaky.
+  - You missed. The rogue pretends it was intentional.
+  _critQuips: 
+  - CRITICAL SNEAK ATTACK! The rogue hits so hard the enemy questions reality!

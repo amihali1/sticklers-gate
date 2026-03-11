@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: RustyShiv
+  m_EditorClassIdentifier:
+  _abilityName: Rusty Shiv
+  _category: 0
+  _targetType: 0
+  _description: A crude stab with a rusty blade. Tetanus sold separately.
+  _damageDiceCount: 1
+  _damageDiceSides: 4
+  _damageType: 0
+  _abilityModifier: 1
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 0
+  _unlockLevel: 1
+  _hitQuips: 
+  - The goblin stabs with something rusty. It's barely a weapon.
+  - Ow. That was... actually that was barely a scratch.
+  _missQuips: 
+  - The goblin flails wildly and hits nothing.
+  - The shiv misses. The goblin looks confused by this.
+  _critQuips: 
+  - The goblin lands a lucky hit! Even it looks surprised!

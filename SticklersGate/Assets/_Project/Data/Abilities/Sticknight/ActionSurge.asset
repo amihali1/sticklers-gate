@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: ActionSurge
+  m_EditorClassIdentifier:
+  _abilityName: Action Surge
+  _category: 0
+  _targetType: 0
+  _description: Channel your fighting spirit into a devastating flurry of strikes.
+  _damageDiceCount: 3
+  _damageDiceSides: 6
+  _damageType: 0
+  _abilityModifier: 0
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 3
+  _unlockLevel: 3
+  _hitQuips: 
+  - A flurry of blows! The fighter is showing off.
+  - Three strikes and you're out. Wait, wrong sport.
+  _missQuips: 
+  - All that surging for nothing.
+  - The action surged, but the aim didn't.
+  _critQuips: 
+  - Action Surge CRITICAL! The enemy is reconsidering their life choices!

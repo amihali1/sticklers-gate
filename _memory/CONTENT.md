@@ -54,7 +54,7 @@
   - (Level 3) Guiding Bolt: 4d6 + WIS radiant, 3 turn cooldown
   - (Level 5) Mass Heal: heals 3d8 + WIS mod, AllAllies, 5 turn cooldown
 
-**Status:** Designed, not yet implemented as SO assets
+**Status:** Implemented as SO assets (PR #9)
 
 ---
 
@@ -84,7 +84,7 @@
 - **Intro:** "An ogre lumbers forward. It's drawn with a thicker pen. You can tell it's important."
 - **Death:** "The ogre falls with a tremor that shakes the very notebook."
 
-**Status:** Designed, not yet implemented as SO assets
+**Status:** Implemented as SO assets (PR #9)
 
 ---
 
@@ -101,7 +101,7 @@
 - **Defeat narration:**
   - "You lost to three goblins. I'm not angry, I'm just... no, I'm angry."
 
-**Status:** Designed, not implemented
+**Status:** Implemented as SO asset (PR #9)
 
 ---
 
