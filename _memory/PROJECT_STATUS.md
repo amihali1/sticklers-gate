@@ -1,31 +1,33 @@
 # PROJECT STATUS — Stickler's Gate
 
 ## Quick Reference
-- **Engine:** Unity 2D (LTS), C#
-- **Platforms:** Android + iOS, Landscape
+- **Engine:** Unity 6 LTS (6000.3.10f1), C#
+- **Platforms:** Android (API 24+) + iOS, Landscape
 - **Current Milestone:** 1 — "First Blood" (Combat Prototype)
-- **Current Phase:** 0 — Project Bootstrap
-- **Unity Installed:** No (setup guide ready)
+- **Current Phase:** 2 — Combat Engine (in review)
+- **Unity Installed:** Yes
+- **Repo:** github.com/amihali1/sticklers-gate (private)
+- **Unity Project Folder:** SticklersGate/
 
 ## Milestone 1 Progress
 
 ### Phase 0: Project Bootstrap
-- [ ] 0.1 Unity project created & configured
-- [ ] 0.2 Coding conventions established
+- [x] 0.1 Unity project created & configured (PR #1)
+- [x] 0.2 Coding conventions established (CLAUDE.md + ARCHITECTURE.md)
 
 ### Phase 1: Core Data Model
-- [ ] 1.1 Game enums & constants
-- [ ] 1.2 AbilitySO (ScriptableObject)
-- [ ] 1.3 CharacterClassSO
-- [ ] 1.4 EnemySO
-- [ ] 1.5 EncounterSO
+- [x] 1.1 Game enums & constants (PR #2)
+- [x] 1.2 AbilitySO (PR #3)
+- [x] 1.3 CharacterClassSO (PR #3)
+- [x] 1.4 EnemySO (PR #3)
+- [x] 1.5 EncounterSO (PR #3)
 
 ### Phase 2: Combat Engine
-- [ ] 2.1 Dice roller utility
-- [ ] 2.2 CombatUnit (runtime model)
-- [ ] 2.3 Damage calculator
-- [ ] 2.4 Combat state machine
-- [ ] 2.5 Enemy AI
+- [x] 2.1 Dice roller utility (PR #4)
+- [x] 2.2 CombatUnit runtime model (PR #4)
+- [x] 2.3 Damage calculator (PR #4)
+- [x] 2.4 Combat state machine (PR #4)
+- [x] 2.5 Enemy AI (PR #4)
 
 ### Phase 3: Combat UI
 - [ ] 3.1 Combat scene layout
@@ -43,10 +45,10 @@
 - [ ] 5.3 Polish pass
 
 ## Next Action
-Install Unity and create the project (see Unity_Setup_Guide.md).
-Then start Phase 0, Task 0.1.
+Review and merge PR #4 (combat engine), then start Phase 3 (Combat UI).
 
 ## Known Issues / Decisions Pending
-- None yet
+- Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
+- .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
 
-## Session Count: 1
+## Session Count: 2

@@ -1,7 +1,7 @@
 # ARCHITECTURE — Stickler's Gate
 
 ## Tech Stack
-- Unity 2D, Built-In Render Pipeline, Latest LTS
+- Unity 6 LTS (6000.3.10f1), Built-In Render Pipeline
 - C# with .NET managed by Unity
 - TextMeshPro for text, DOTween for animation, Input System for touch
 - ScriptableObject-driven data architecture
