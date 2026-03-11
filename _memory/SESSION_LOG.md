@@ -16,7 +16,7 @@
 - Unity LTS with Built-In 2D Render Pipeline (no URP needed)
 - ScriptableObject-driven architecture
 - Simplified D&D 5e rules (cooldowns instead of spell slots, front/back row instead of grid)
-- 4 classes: Sticknight, Stickwizard, Stickrogue, Stickeric
+- 4 classes: Sticknight, Stickwizard, Stickrogue, Stickleric
 - Phase 1 art: simple programmatic stick figures via LineRenderer
 - Event-driven UI (state machine emits, UI subscribes)
 

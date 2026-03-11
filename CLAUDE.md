@@ -75,4 +75,4 @@ Keep `README.md` up to date as the project evolves. When making changes that aff
 - Target platforms: Android (API 24+), iOS (14+), landscape only
 - TextMeshPro for all text, DOTween for animations, new Input System for touch
 - Simplified D&D 5e: cooldowns instead of spell slots, front/back row instead of grid movement
-- 4 classes: Sticknight, Stickwizard, Stickrogue, Stickeric
+- 4 classes: Sticknight, Stickwizard, Stickrogue, Stickleric

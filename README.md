@@ -52,7 +52,7 @@ sticklers-gate/
 | Sticknight | Tank / Melee DPS | "Hits things. Gets hit. Hits things harder." |
 | Stickwizard | Ranged AoE DPS | "Glass cannon. Emphasis on glass." |
 | Stickrogue | Burst DPS / Utility | "Steals your gold. Then your heart. Then your gold again." |
-| Stickeric | Healer / Support | "Prays for you. Judges you. Heals you anyway." |
+| Stickleric | Healer / Support | "Prays for you. Judges you. Heals you anyway." |
 
 ## Documentation
 
