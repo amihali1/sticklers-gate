@@ -1,7 +1,9 @@
 {
     "name": "SticklersGate",
     "rootNamespace": "SticklersGate",
-    "references": [],
+    "references": [
+        "UnityEngine.UI"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
