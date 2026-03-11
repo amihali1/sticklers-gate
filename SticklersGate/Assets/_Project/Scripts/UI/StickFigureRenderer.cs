@@ -402,7 +402,7 @@ namespace SticklersGate.UI
             {
                 case Data.CharacterClassType.Sticknight:
                     return new Color(0.6f, 0.6f, 0.9f);  // Steel blue
-                case Data.CharacterClassType.Stickromancer:
+                case Data.CharacterClassType.Stickwizard:
                     return new Color(0.7f, 0.3f, 0.9f);  // Purple
                 case Data.CharacterClassType.Stickrogue:
                     return new Color(0.3f, 0.7f, 0.3f);  // Green

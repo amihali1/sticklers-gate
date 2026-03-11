@@ -50,7 +50,7 @@ sticklers-gate/
 | Class | Role | Flavor |
 |-------|------|--------|
 | Sticknight | Tank / Melee DPS | "Hits things. Gets hit. Hits things harder." |
-| Stickromancer | Ranged AoE DPS | "Glass cannon. Emphasis on glass." |
+| Stickwizard | Ranged AoE DPS | "Glass cannon. Emphasis on glass." |
 | Stickrogue | Burst DPS / Utility | "Steals your gold. Then your heart. Then your gold again." |
 | Stickeric | Healer / Support | "Prays for you. Judges you. Heals you anyway." |
 
