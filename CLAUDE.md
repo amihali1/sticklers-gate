@@ -32,6 +32,13 @@ Full GDD is at `_docs/Sticklers_Gate_GDD.md`. Refer to it for detailed design sp
 - **No singletons** except GameManager
 - **Using order:** System → UnityEngine → project namespaces
 
+## Testing
+- Write unit tests for all testable code (static utilities, pure logic classes, data models).
+- Tests live in `SticklersGate/Assets/_Project/Scripts/Tests/Editor/` using NUnit and the Unity Test Framework.
+- Test assembly: `SticklersGate.Tests.Editor` (references `SticklersGate` main assembly).
+- Include tests in the same PR as the code they cover — don't defer testing to a separate PR.
+- Use `ScriptableObject.CreateInstance<T>()` and reflection to set `[SerializeField]` fields in tests.
+
 ## Architecture
 - ScriptableObject-driven data layer — no magic numbers in code
 - Runtime models are plain C# classes (e.g., `CombatUnit`), SOs are never mutated at runtime
