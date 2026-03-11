@@ -70,6 +70,7 @@ namespace SticklersGate.Tests.Editor
                 }
                 type = type.BaseType;
             }
+            Assert.Fail($"Field '{fieldName}' was not found on type '{obj.GetType().FullName}' or its base types.");
         }
     }
 }

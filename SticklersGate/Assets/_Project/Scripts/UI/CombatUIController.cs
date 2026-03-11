@@ -187,7 +187,7 @@ namespace SticklersGate.UI
             }
         }
 
-        private void HandleAttackResolved(CombatUnit attacker, AttackResult result)
+        private void HandleAttackResolved(CombatUnit attacker, CombatUnit target, AttackResult result)
         {
             string message;
             Color color;
@@ -213,7 +213,8 @@ namespace SticklersGate.UI
                 color = Color.gray;
             }
 
-            SpawnDamagePopup(message, color, attacker);
+            // Show popup over the target, not the attacker
+            SpawnDamagePopup(message, color, result.IsHit ? target : attacker);
         }
 
         private void HandleHealResolved(CombatUnit healer, CombatUnit target, HealResult result)
@@ -299,14 +300,28 @@ namespace SticklersGate.UI
         {
             _unitPositions.Clear();
 
-            for (int i = 0; i < _combatStateMachine.PlayerUnits.Count && i < _playerPositions.Length; i++)
+            if (_playerPositions == null)
             {
-                _unitPositions[_combatStateMachine.PlayerUnits[i]] = _playerPositions[i];
+                Debug.LogWarning("CombatUIController: _playerPositions array is not assigned.", this);
+            }
+            else
+            {
+                for (int i = 0; i < _combatStateMachine.PlayerUnits.Count && i < _playerPositions.Length; i++)
+                {
+                    _unitPositions[_combatStateMachine.PlayerUnits[i]] = _playerPositions[i];
+                }
             }
 
-            for (int i = 0; i < _combatStateMachine.EnemyUnits.Count && i < _enemyPositions.Length; i++)
+            if (_enemyPositions == null)
             {
-                _unitPositions[_combatStateMachine.EnemyUnits[i]] = _enemyPositions[i];
+                Debug.LogWarning("CombatUIController: _enemyPositions array is not assigned.", this);
+            }
+            else
+            {
+                for (int i = 0; i < _combatStateMachine.EnemyUnits.Count && i < _enemyPositions.Length; i++)
+                {
+                    _unitPositions[_combatStateMachine.EnemyUnits[i]] = _enemyPositions[i];
+                }
             }
         }
 

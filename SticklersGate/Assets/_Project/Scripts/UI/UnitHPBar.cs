@@ -24,6 +24,7 @@ namespace SticklersGate.UI
         [SerializeField] private Color _enemyBgColor = new Color(0.4f, 0.15f, 0.15f, 0.8f);
 
         private CombatUnit _unit;
+        private Color _defaultNameColor = Color.white;
 
         /// <summary>
         /// Bind this HP bar to a CombatUnit and subscribe to its events.
@@ -33,7 +34,11 @@ namespace SticklersGate.UI
             Unbind();
             _unit = unit;
 
-            if (_nameText != null) _nameText.text = unit.Name;
+            if (_nameText != null)
+            {
+                _nameText.text = unit.Name;
+                _defaultNameColor = _nameText.color;
+            }
             if (_backgroundImage != null)
                 _backgroundImage.color = unit.IsPlayer ? _playerBgColor : _enemyBgColor;
 
@@ -79,13 +84,14 @@ namespace SticklersGate.UI
                 _hpText.text = $"{_unit.CurrentHP}/{_unit.MaxHP}";
             }
 
-            if (!_unit.IsAlive)
+            if (_nameText != null)
             {
-                if (_nameText != null) _nameText.color = Color.gray;
-            }
-            else if (!_unit.IsConscious)
-            {
-                if (_nameText != null) _nameText.color = new Color(1f, 0.5f, 0.5f);
+                if (!_unit.IsAlive)
+                    _nameText.color = Color.gray;
+                else if (!_unit.IsConscious)
+                    _nameText.color = new Color(1f, 0.5f, 0.5f);
+                else
+                    _nameText.color = _defaultNameColor;
             }
         }
 

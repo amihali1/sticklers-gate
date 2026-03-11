@@ -11,7 +11,6 @@ namespace SticklersGate.UI
     {
         [Header("Colors")]
         [SerializeField] private Color _bodyColor = Color.white;
-        [SerializeField] private Color _outlineColor = Color.black;
         [SerializeField] private float _lineWidth = 0.05f;
 
         [Header("Scale")]
@@ -26,7 +25,8 @@ namespace SticklersGate.UI
         private LineRenderer _headCircle;
 
         private StickPose _currentPose = StickPose.Idle;
-        private CombatUnit _unit;
+
+        private static Material _sharedLineMaterial;
 
         /// <summary>
         /// Poses available for the stick figure.
@@ -44,10 +44,10 @@ namespace SticklersGate.UI
         /// <summary>
         /// Bind this renderer to a CombatUnit and set initial pose.
         /// </summary>
-        public void Bind(CombatUnit unit, bool facingRight)
+        public void Bind(CombatUnit unit, bool facingRight, float height = 2f)
         {
-            _unit = unit;
             _facingRight = facingRight;
+            _height = height;
 
             // Determine color by class or enemy type
             if (unit.IsPlayer)
@@ -103,7 +103,13 @@ namespace SticklersGate.UI
             go.transform.SetParent(transform, false);
 
             var lr = go.AddComponent<LineRenderer>();
-            lr.material = new Material(Shader.Find("Sprites/Default"));
+
+            if (_sharedLineMaterial == null)
+            {
+                _sharedLineMaterial = new Material(Shader.Find("Sprites/Default"));
+            }
+            lr.sharedMaterial = _sharedLineMaterial;
+
             lr.startColor = _bodyColor;
             lr.endColor = _bodyColor;
             lr.startWidth = _lineWidth;

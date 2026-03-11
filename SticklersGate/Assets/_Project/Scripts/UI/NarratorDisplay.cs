@@ -45,6 +45,12 @@ namespace SticklersGate.UI
             {
                 string message = _messageQueue.Dequeue();
 
+                if (_narratorText == null)
+                {
+                    Debug.LogWarning("NarratorDisplay: _narratorText is not assigned.", this);
+                    continue;
+                }
+
                 // Fade in
                 _narratorText.text = "";
                 yield return FadeCanvasGroup(0f, 1f, _fadeDuration * 0.5f);

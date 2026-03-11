@@ -19,7 +19,7 @@ namespace SticklersGate.Combat
         public event Action<CombatUnit> OnTurnStarted;
         public event Action<CombatUnit> OnTurnEnded;
         public event Action<CombatUnit> OnPlayerActionNeeded;
-        public event Action<CombatUnit, AttackResult> OnAttackResolved;
+        public event Action<CombatUnit, CombatUnit, AttackResult> OnAttackResolved;
         public event Action<CombatUnit, CombatUnit, HealResult> OnHealResolved;
         public event Action<CombatUnit> OnUnitDowned;
         public event Action<CombatUnit> OnUnitDied;
@@ -253,7 +253,7 @@ namespace SticklersGate.Combat
                                     actor.HasStatusEffect(StatusEffectType.Poisoned);
 
                 var result = DamageCalculator.ResolveAttack(actor, target, ability, advantage, disadvantage);
-                OnAttackResolved?.Invoke(actor, result);
+                OnAttackResolved?.Invoke(actor, target, result);
 
                 if (result.IsHit)
                 {

@@ -28,6 +28,7 @@ namespace SticklersGate.UI
         [SerializeField] private float _stickFigureHeight = 2f;
 
         private readonly List<StickFigureRenderer> _stickFigures = new List<StickFigureRenderer>();
+        private readonly Dictionary<CombatUnit, StickFigureRenderer> _unitFigureMap = new Dictionary<CombatUnit, StickFigureRenderer>();
 
         private void Start()
         {
@@ -77,26 +78,30 @@ namespace SticklersGate.UI
             go.transform.localPosition = Vector3.zero;
 
             var renderer = go.AddComponent<StickFigureRenderer>();
-            renderer.Bind(unit, facingRight);
+            renderer.Bind(unit, facingRight, _stickFigureHeight);
+            _unitFigureMap[unit] = renderer;
 
             return renderer;
         }
 
-        private void HandleAttackAnimation(CombatUnit attacker, AttackResult result)
+        private void HandleAttackAnimation(CombatUnit attacker, CombatUnit target, AttackResult result)
         {
-            foreach (var figure in _stickFigures)
+            if (_unitFigureMap.TryGetValue(attacker, out var attackerFigure))
             {
-                // We'll need to track which figure belongs to which unit
-                // For now, this is a placeholder — will be improved with
-                // a dictionary mapping in the next iteration
+                attackerFigure.SetPose(StickFigureRenderer.StickPose.Attack);
+            }
+
+            if (result.IsHit && _unitFigureMap.TryGetValue(target, out var targetFigure))
+            {
+                targetFigure.SetPose(StickFigureRenderer.StickPose.Hit);
             }
         }
 
         private void HandleDeathAnimation(CombatUnit unit)
         {
-            foreach (var figure in _stickFigures)
+            if (_unitFigureMap.TryGetValue(unit, out var figure))
             {
-                // Same as above — placeholder for death animation
+                figure.ShowDeath();
             }
         }
     }
