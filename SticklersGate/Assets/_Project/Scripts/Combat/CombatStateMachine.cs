@@ -242,20 +242,22 @@ namespace SticklersGate.Combat
             _inventory.Remove(item);
             OnItemUsed?.Invoke(user, item);
 
-            if (item.Heals)
-            {
-                target.Heal(item.HealAmount);
-                OnHealResolved?.Invoke(user, target,
-                    new HealResult { TotalHealed = item.HealAmount });
-                OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName} on {target.Name}. +{item.HealAmount} HP!");
-            }
+            var targets = GatherTargets(user, target, item.TargetType);
 
-            if (item.DealsDamage)
+            foreach (var t in targets)
             {
-                var targets = GatherTargets(user, target, item.TargetType);
-                foreach (var t in targets)
+                if (!t.IsAlive) continue;
+
+                if (item.Heals)
                 {
-                    if (!t.IsAlive || !t.IsConscious) continue;
+                    t.Heal(item.HealAmount);
+                    OnHealResolved?.Invoke(user, t,
+                        new HealResult { TotalHealed = item.HealAmount });
+                    OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName} on {t.Name}. +{item.HealAmount} HP!");
+                }
+
+                if (item.DealsDamage && t.IsConscious)
+                {
                     t.TakeDamage(item.DamageAmount);
                     OnNarratorQuip?.Invoke($"{user.Name} throws {item.ItemName} at {t.Name}! {item.DamageAmount} damage!");
 
@@ -269,17 +271,22 @@ namespace SticklersGate.Combat
                         }
                     }
                 }
-            }
 
-            if (item.RemovesStatus)
-            {
-                target.RemoveStatusEffect(item.RemovesEffect);
-                OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName}. {item.RemovesEffect} removed from {target.Name}!");
-            }
+                if (item.RemovesStatus)
+                {
+                    t.RemoveStatusEffect(item.RemovesEffect);
+                    OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName}. {item.RemovesEffect} removed from {t.Name}!");
+                }
 
-            if (item.AppliesEffect != StatusEffectType.None && item.EffectDuration > 0)
-            {
-                target.ApplyStatusEffect(item.AppliesEffect, item.EffectDuration);
+                if (item.AppliesEffect != StatusEffectType.None && item.EffectDuration > 0)
+                {
+                    t.ApplyStatusEffect(item.AppliesEffect, item.EffectDuration);
+                }
+
+                if (targets.Count > 1)
+                {
+                    yield return new WaitForSeconds(0.15f);
+                }
             }
 
             // Quips
@@ -349,7 +356,22 @@ namespace SticklersGate.Combat
                 }
                 else if (ability.AppliesStatusEffect)
                 {
-                    currentTarget.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns);
+                    bool applyEffect = true;
+                    if (ability.SavingThrowDC > 0)
+                    {
+                        var save = DamageCalculator.ResolveSavingThrow(
+                            currentTarget, ability.SavingThrowAbility, ability.SavingThrowDC);
+                        if (save.Success)
+                        {
+                            applyEffect = false;
+                            OnNarratorQuip?.Invoke($"{currentTarget.Name} resists the effect!");
+                        }
+                    }
+
+                    if (applyEffect)
+                    {
+                        currentTarget.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns);
+                    }
                 }
 
                 if (targets.Count > 1)

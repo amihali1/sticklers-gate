@@ -478,11 +478,16 @@ write_meta(os.path.join(encounters_dir, "NecromancersStudy.asset.meta"), g)
 
 # Get existing skeleton GUID
 skeleton_guid = None
-with open(os.path.join(enemies_dir, "StickSkeleton.asset.meta"), 'r') as f:
+skeleton_meta_path = os.path.join(enemies_dir, "StickSkeleton.asset.meta")
+if not os.path.exists(skeleton_meta_path):
+    raise FileNotFoundError(f"StickSkeleton.asset.meta not found at {skeleton_meta_path}")
+with open(skeleton_meta_path, 'r') as f:
     for line in f:
         if line.startswith("guid:"):
             skeleton_guid = line.split(":")[1].strip()
             break
+if skeleton_guid is None:
+    raise ValueError(f"Could not parse GUID from {skeleton_meta_path}")
 
 write_asset(os.path.join(encounters_dir, "NecromancersStudy.asset"), f"""%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:

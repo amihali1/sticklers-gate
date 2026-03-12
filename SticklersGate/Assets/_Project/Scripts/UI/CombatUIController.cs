@@ -70,11 +70,6 @@ namespace SticklersGate.UI
                 _actionPanel.OnAbilitySelected += HandleAbilitySelected;
                 _actionPanel.OnDefendSelected += HandleDefendSelected;
                 _actionPanel.OnItemSelected += HandleItemSelected;
-
-                if (_combatStateMachine.Inventory != null)
-                {
-                    _actionPanel.SetInventory(_combatStateMachine.Inventory);
-                }
             }
 
             if (_targetPanel != null)
@@ -117,6 +112,12 @@ namespace SticklersGate.UI
         {
             SetupHPBars();
             AssignUnitPositions();
+
+            // Set inventory after StartCombat has run (Inventory is null at OnEnable time)
+            if (_actionPanel != null && _combatStateMachine.Inventory != null)
+            {
+                _actionPanel.SetInventory(_combatStateMachine.Inventory);
+            }
         }
 
         private void HandleInitiativeRolled(List<CombatUnit> turnOrder)
