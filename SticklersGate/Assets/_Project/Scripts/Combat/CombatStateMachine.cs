@@ -28,6 +28,7 @@ namespace SticklersGate.Combat
         public event Action<List<CombatUnit>> OnInitiativeRolled;
         public event Action<bool> OnCombatResult; // true = victory, false = defeat
         public event Action<CombatPhase> OnPhaseChanged;
+        public event Action<CombatUnit, ItemSO> OnItemUsed;
 
         // --- State ---
         private List<CombatUnit> _allUnits = new List<CombatUnit>();
@@ -38,6 +39,7 @@ namespace SticklersGate.Combat
         private CombatPhase _currentPhase;
         private EncounterSO _encounter;
         private int _turnCount;
+        private Inventory _inventory;
 
         // --- Public State ---
         public CombatPhase CurrentPhase => _currentPhase;
@@ -46,6 +48,15 @@ namespace SticklersGate.Combat
         public IReadOnlyList<CombatUnit> PlayerUnits => _playerUnits;
         public IReadOnlyList<CombatUnit> EnemyUnits => _enemyUnits;
         public int TurnCount => _turnCount;
+        public Inventory Inventory => _inventory;
+
+        /// <summary>
+        /// Set the party inventory for use during combat.
+        /// </summary>
+        public void SetInventory(Inventory inventory)
+        {
+            _inventory = inventory;
+        }
 
         /// <summary>
         /// Start a combat encounter with the given player party and encounter data.
@@ -203,6 +214,81 @@ namespace SticklersGate.Combat
 
             CurrentUnit.BonusAC = GameConstants.DEFEND_AC_BONUS;
             OnNarratorQuip?.Invoke($"{CurrentUnit.Name} takes a defensive stance. (+{GameConstants.DEFEND_AC_BONUS} AC)");
+            SetPhase(CombatPhase.TurnEnd);
+        }
+
+        /// <summary>
+        /// Called by UI when the player uses a consumable item on a target.
+        /// </summary>
+        public void SubmitUseItem(ItemSO item, CombatUnit target)
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseTarget)
+                return;
+
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer)
+                return;
+
+            if (_inventory == null || !_inventory.Has(item))
+                return;
+
+            StartCoroutine(ResolveItem(CurrentUnit, target, item));
+        }
+
+        private IEnumerator ResolveItem(CombatUnit user, CombatUnit target, ItemSO item)
+        {
+            SetPhase(CombatPhase.ResolveAction);
+
+            _inventory.Remove(item);
+            OnItemUsed?.Invoke(user, item);
+
+            if (item.Heals)
+            {
+                target.Heal(item.HealAmount);
+                OnHealResolved?.Invoke(user, target,
+                    new HealResult { TotalHealed = item.HealAmount });
+                OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName} on {target.Name}. +{item.HealAmount} HP!");
+            }
+
+            if (item.DealsDamage)
+            {
+                var targets = GatherTargets(user, target, item.TargetType);
+                foreach (var t in targets)
+                {
+                    if (!t.IsAlive || !t.IsConscious) continue;
+                    t.TakeDamage(item.DamageAmount);
+                    OnNarratorQuip?.Invoke($"{user.Name} throws {item.ItemName} at {t.Name}! {item.DamageAmount} damage!");
+
+                    if (!t.IsConscious)
+                    {
+                        OnUnitDowned?.Invoke(t);
+                        if (!t.IsPlayer)
+                        {
+                            t.Die();
+                            OnUnitDied?.Invoke(t);
+                        }
+                    }
+                }
+            }
+
+            if (item.RemovesStatus)
+            {
+                target.RemoveStatusEffect(item.RemovesEffect);
+                OnNarratorQuip?.Invoke($"{user.Name} uses {item.ItemName}. {item.RemovesEffect} removed from {target.Name}!");
+            }
+
+            if (item.AppliesEffect != StatusEffectType.None && item.EffectDuration > 0)
+            {
+                target.ApplyStatusEffect(item.AppliesEffect, item.EffectDuration);
+            }
+
+            // Quips
+            if (item.UseQuips != null && item.UseQuips.Length > 0)
+            {
+                OnNarratorQuip?.Invoke(item.UseQuips[UnityEngine.Random.Range(0, item.UseQuips.Length)]);
+            }
+
+            yield return new WaitForSeconds(0.3f);
             SetPhase(CombatPhase.TurnEnd);
         }
 

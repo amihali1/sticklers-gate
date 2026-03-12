@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d, type: 3}
+  m_Name: AlchemistFire
+  m_EditorClassIdentifier:
+  _itemName: Alchemist Fire
+  _itemType: 0
+  _rarity: 1
+  _description: A flask of volatile liquid. Throw it at someone you don't like.
+  _goldValue: 75
+  _healAmount: 0
+  _damageAmount: 8
+  _damageType: 3
+  _targetType: 0
+  _removesEffect: 0
+  _appliesEffect: 5
+  _effectDuration: 2
+  _acBonus: 0
+  _damageBonus: 0
+  _useQuips:
+  - The flask shatters in a burst of flame! Very dramatic. Very effective.
+  - Fire! FIRE! The target is now on fire. You're welcome.

@@ -22,10 +22,10 @@ All phases done: Project bootstrap, core data model, combat engine, combat UI, c
 - [ ] 6.4 Tests for multi-target + new enemies
 
 ### Phase 7: Item & Consumable System
-- [ ] 7.1 ItemSO data class (weapon, armor, consumable types)
-- [ ] 7.2 Inventory system (party carries items)
-- [ ] 7.3 Consumable resolution in combat (use item action)
-- [ ] 7.4 Item UI in combat action panel
+- [x] 7.1 ItemSO data class (weapon, armor, consumable types)
+- [x] 7.2 Inventory system (party carries items)
+- [x] 7.3 Consumable resolution in combat (use item action)
+- [x] 7.4 Item UI in combat action panel + target selection
 
 ### Phase 8: Polish & Difficulty
 - [ ] 8.1 Encounter difficulty scaling
@@ -33,7 +33,7 @@ All phases done: Project bootstrap, core data model, combat engine, combat UI, c
 - [ ] 8.3 Polish pass
 
 ## Next Action
-Commit Phase 6 work, then start Phase 7 (Items/Consumables).
+Phase 8: Encounter difficulty scaling, integration testing, polish.
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)

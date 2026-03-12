@@ -20,6 +20,10 @@ namespace SticklersGate.UI
         [SerializeField] private string[] _partyNames;
         [SerializeField] private int _partyLevel = 1;
 
+        [Header("Starting Items")]
+        [SerializeField] private ItemSO[] _starterItems;
+        [SerializeField] private int[] _starterItemQuantities;
+
         private CombatStateMachine _stateMachine;
         private CombatUIController _uiController;
         private Camera _mainCamera;
@@ -238,6 +242,20 @@ namespace SticklersGate.UI
                     : _partyClasses[i].ClassName;
                 playerUnits.Add(CombatUnit.FromPlayerCharacter(name, _partyClasses[i], _partyLevel));
             }
+
+            // Set up party inventory
+            var inventory = new Inventory();
+            if (_starterItems != null)
+            {
+                for (int i = 0; i < _starterItems.Length; i++)
+                {
+                    if (_starterItems[i] == null) continue;
+                    int qty = (_starterItemQuantities != null && i < _starterItemQuantities.Length)
+                        ? _starterItemQuantities[i] : 1;
+                    inventory.Add(_starterItems[i], qty);
+                }
+            }
+            _stateMachine.SetInventory(inventory);
 
             // Subscribe to stick figure events
             _stateMachine.OnCombatStarted += () => SpawnStickFigures(playerUnits);

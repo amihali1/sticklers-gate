@@ -31,6 +31,48 @@ namespace SticklersGate.UI
         private readonly List<GameObject> _spawnedButtons = new List<GameObject>();
 
         /// <summary>
+        /// Show valid targets for a given target type (used by items).
+        /// </summary>
+        public void ShowTargets(AbilityTargetType targetType, CombatUnit actor,
+            IReadOnlyList<CombatUnit> playerUnits, IReadOnlyList<CombatUnit> enemyUnits)
+        {
+            ClearButtons();
+            gameObject.SetActive(true);
+
+            var targets = GetValidTargets(targetType, actor, playerUnits, enemyUnits);
+
+            foreach (var target in targets)
+            {
+                if (_targetButtonPrefab == null || _buttonContainer == null) break;
+
+                var go = Instantiate(_targetButtonPrefab, _buttonContainer);
+                go.SetActive(true);
+                _spawnedButtons.Add(go);
+
+                var buttonText = go.GetComponentInChildren<Text>();
+                var button = go.GetComponent<Button>();
+
+                if (buttonText != null)
+                {
+                    buttonText.text = $"{target.Name} ({target.CurrentHP}/{target.MaxHP})";
+                }
+
+                if (button != null)
+                {
+                    var capturedTarget = target;
+                    button.onClick.AddListener(() => OnTargetSelected?.Invoke(capturedTarget));
+                }
+            }
+
+            if (_cancelButton != null)
+            {
+                _cancelButton.gameObject.SetActive(true);
+                _cancelButton.onClick.RemoveAllListeners();
+                _cancelButton.onClick.AddListener(() => OnCancelled?.Invoke());
+            }
+        }
+
+        /// <summary>
         /// Show valid targets for the selected ability.
         /// </summary>
         public void ShowTargets(RuntimeAbility ability, CombatUnit actor,
