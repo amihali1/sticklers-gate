@@ -244,86 +244,130 @@ namespace SticklersGate.Combat
         {
             var ability = runtimeAbility.Data;
 
-            if (ability.DealsDamage)
+            // Gather all targets for multi-target abilities
+            var targets = GatherTargets(actor, target, ability.TargetType);
+
+            foreach (var currentTarget in targets)
             {
-                // Determine advantage/disadvantage
-                bool advantage = target.HasStatusEffect(StatusEffectType.Invisible) ? false :
-                                 actor.HasStatusEffect(StatusEffectType.Invisible);
-                bool disadvantage = actor.HasStatusEffect(StatusEffectType.Frightened) ||
-                                    actor.HasStatusEffect(StatusEffectType.Poisoned);
+                if (!currentTarget.IsAlive || !currentTarget.IsConscious) continue;
 
-                var result = DamageCalculator.ResolveAttack(actor, target, ability, advantage, disadvantage);
-                OnAttackResolved?.Invoke(actor, target, result);
-
-                if (result.IsHit)
+                if (ability.DealsDamage)
                 {
-                    target.TakeDamage(result.TotalDamage);
+                    yield return ResolveDamage(actor, currentTarget, ability);
+                }
+                else if (ability.Heals)
+                {
+                    var result = DamageCalculator.ResolveHeal(actor, ability);
+                    currentTarget.Heal(result.TotalHealed);
+                    OnHealResolved?.Invoke(actor, currentTarget, result);
+                }
+                else if (ability.AppliesStatusEffect)
+                {
+                    currentTarget.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns);
+                }
 
-                    // Apply status effect if the ability has one
-                    if (result.AppliedEffect != StatusEffectType.None && result.EffectDuration > 0)
+                if (targets.Count > 1)
+                {
+                    yield return new WaitForSeconds(0.15f);
+                }
+            }
+
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        private List<CombatUnit> GatherTargets(CombatUnit actor, CombatUnit singleTarget, AbilityTargetType targetType)
+        {
+            var targets = new List<CombatUnit>();
+
+            switch (targetType)
+            {
+                case AbilityTargetType.AllEnemies:
+                    var enemies = actor.IsPlayer ? _enemyUnits : _playerUnits;
+                    foreach (var u in enemies)
                     {
-                        // Check saving throw if ability requires one
-                        if (ability.SavingThrowDC > 0)
-                        {
-                            var save = DamageCalculator.ResolveSavingThrow(target, ability.SavingThrowAbility, ability.SavingThrowDC);
-                            if (!save.Success)
-                            {
-                                target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration);
-                            }
-                        }
-                        else
+                        if (u.IsAlive && u.IsConscious) targets.Add(u);
+                    }
+                    break;
+
+                case AbilityTargetType.AllAllies:
+                    var allies = actor.IsPlayer ? _playerUnits : _enemyUnits;
+                    foreach (var u in allies)
+                    {
+                        if (u.IsAlive) targets.Add(u);
+                    }
+                    break;
+
+                default:
+                    targets.Add(singleTarget);
+                    break;
+            }
+
+            return targets;
+        }
+
+        private IEnumerator ResolveDamage(CombatUnit actor, CombatUnit target, AbilitySO ability)
+        {
+            bool advantage = target.HasStatusEffect(StatusEffectType.Invisible) ? false :
+                             actor.HasStatusEffect(StatusEffectType.Invisible);
+            bool disadvantage = actor.HasStatusEffect(StatusEffectType.Frightened) ||
+                                actor.HasStatusEffect(StatusEffectType.Poisoned);
+
+            var result = DamageCalculator.ResolveAttack(actor, target, ability, advantage, disadvantage);
+            OnAttackResolved?.Invoke(actor, target, result);
+
+            if (result.IsHit)
+            {
+                target.TakeDamage(result.TotalDamage);
+
+                if (result.AppliedEffect != StatusEffectType.None && result.EffectDuration > 0)
+                {
+                    if (ability.SavingThrowDC > 0)
+                    {
+                        var save = DamageCalculator.ResolveSavingThrow(target, ability.SavingThrowAbility, ability.SavingThrowDC);
+                        if (!save.Success)
                         {
                             target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration);
                         }
                     }
-
-                    if (!target.IsConscious)
+                    else
                     {
-                        OnUnitDowned?.Invoke(target);
-
-                        // Enemies die immediately when downed
-                        if (!target.IsPlayer)
-                        {
-                            target.Die();
-                            OnUnitDied?.Invoke(target);
-                        }
-                    }
-
-                    // Narrator quips
-                    if (result.IsCriticalHit && ability.CritQuips != null && ability.CritQuips.Length > 0)
-                    {
-                        OnNarratorQuip?.Invoke(ability.CritQuips[UnityEngine.Random.Range(0, ability.CritQuips.Length)]);
-                    }
-                    else if (ability.HitQuips != null && ability.HitQuips.Length > 0)
-                    {
-                        OnNarratorQuip?.Invoke(ability.HitQuips[UnityEngine.Random.Range(0, ability.HitQuips.Length)]);
+                        target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration);
                     }
                 }
-                else
+
+                if (!target.IsConscious)
                 {
-                    if (result.IsCriticalFail)
+                    OnUnitDowned?.Invoke(target);
+
+                    if (!target.IsPlayer)
                     {
-                        OnNarratorQuip?.Invoke($"{actor.Name} rolls a natural 1! Stick Break!");
-                    }
-                    else if (ability.MissQuips != null && ability.MissQuips.Length > 0)
-                    {
-                        OnNarratorQuip?.Invoke(ability.MissQuips[UnityEngine.Random.Range(0, ability.MissQuips.Length)]);
+                        target.Die();
+                        OnUnitDied?.Invoke(target);
                     }
                 }
+
+                if (result.IsCriticalHit && ability.CritQuips != null && ability.CritQuips.Length > 0)
+                {
+                    OnNarratorQuip?.Invoke(ability.CritQuips[UnityEngine.Random.Range(0, ability.CritQuips.Length)]);
+                }
+                else if (ability.HitQuips != null && ability.HitQuips.Length > 0)
+                {
+                    OnNarratorQuip?.Invoke(ability.HitQuips[UnityEngine.Random.Range(0, ability.HitQuips.Length)]);
+                }
             }
-            else if (ability.Heals)
+            else
             {
-                var result = DamageCalculator.ResolveHeal(actor, ability);
-                target.Heal(result.TotalHealed);
-                OnHealResolved?.Invoke(actor, target, result);
-            }
-            else if (ability.AppliesStatusEffect)
-            {
-                // Pure buff/debuff
-                target.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns);
+                if (result.IsCriticalFail)
+                {
+                    OnNarratorQuip?.Invoke($"{actor.Name} rolls a natural 1! Stick Break!");
+                }
+                else if (ability.MissQuips != null && ability.MissQuips.Length > 0)
+                {
+                    OnNarratorQuip?.Invoke(ability.MissQuips[UnityEngine.Random.Range(0, ability.MissQuips.Length)]);
+                }
             }
 
-            yield return new WaitForSeconds(0.3f);
+            yield return null;
         }
 
         private IEnumerator HandleDeathSaves(CombatUnit unit)

@@ -140,9 +140,16 @@ namespace SticklersGate.UI
             _selectedAbility = ability;
             if (_actionPanel != null) _actionPanel.Hide();
 
-            // Self-target abilities auto-submit
+            // Auto-submit abilities that don't need target selection
             if (ability.Data.TargetType == AbilityTargetType.Self)
             {
+                SubmitAction(ability, _combatStateMachine.CurrentUnit);
+                return;
+            }
+            if (ability.Data.TargetType == AbilityTargetType.AllEnemies ||
+                ability.Data.TargetType == AbilityTargetType.AllAllies)
+            {
+                // Multi-target: CombatStateMachine gathers all targets internally
                 SubmitAction(ability, _combatStateMachine.CurrentUnit);
                 return;
             }

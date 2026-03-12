@@ -86,6 +86,29 @@
 
 **Status:** Implemented as SO assets (PR #9)
 
+### Stick Bandit (Standard) — *Added Milestone 2*
+- **Stats:** HP 22, AC 13, STR 11, DEX 14, CON 12, INT 10, WIS 10, CHA 10
+- **Abilities:** Crossbow Shot (1d8+1 piercing, ranged), Dagger Slash (1d4+2 piercing, melee)
+- **AI:** LowestHP targeting, aggression 0.8, retreat at 15% HP, can flee
+- **Row:** Back
+- **Rewards:** 50 XP, 5-15 gold
+
+### Stick Spider (Standard) — *Added Milestone 2*
+- **Stats:** HP 26, AC 14, STR 12, DEX 16, CON 12, INT 2, WIS 10, CHA 4
+- **Abilities:** Venomous Bite (1d6 piercing + Poison 3t, CON DC 12), Web Spit (Stun 1t, DEX DC 11, 3t CD), Poison Spit (1d4 piercing AllEnemies + Poison 2t, CON DC 11, 4t CD)
+- **AI:** Healers targeting, aggression 0.85, can't flee
+- **Row:** Front
+- **Rewards:** 75 XP, 0-3 gold
+
+### Stick Necromancer (Elite) — *Added Milestone 2*
+- **Stats:** HP 45, AC 12, STR 8, DEX 10, CON 14, INT 16, WIS 12, CHA 12
+- **Abilities:** Dark Bolt (2d6+2 necrotic), Life Drain (1d8 necrotic, 2t CD)
+- **AI:** HighestThreat targeting, aggression 0.7, retreat at 30% HP, can flee
+- **Row:** Back
+- **Rewards:** 150 XP, 10-25 gold
+
+**Status:** Implemented as SO assets (Milestone 2)
+
 ---
 
 ## Test Encounter: "Ambush at the Inkwell"
@@ -102,6 +125,18 @@
   - "You lost to three goblins. I'm not angry, I'm just... no, I'm angry."
 
 **Status:** Implemented as SO asset (PR #9)
+
+## Encounter: "The Bandit Crossing" — *Added Milestone 2*
+- **Enemies:** 1x Stick Bandit (back row), 1x Stick Bandit (front row), 1x Stick Spider (front row)
+- **Difficulty:** Medium
+- **Victory:** Defeat all enemies
+
+## Encounter: "The Necromancer's Study" — *Added Milestone 2*
+- **Enemies:** 2x Stick Skeleton "Bone Guard" (front row), 1x Stick Necromancer (back row)
+- **Difficulty:** Hard
+- **Victory:** Defeat all enemies
+
+**Status:** Implemented as SO assets (Milestone 2)
 
 ---
 

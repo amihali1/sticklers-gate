@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8081346e19510ad4d8af056daa33d856, type: 3}
+  m_Name: StickNecromancer
+  m_EditorClassIdentifier:
+  _enemyName: Stick Necromancer
+  _tier: 2
+  _description: A stick figure in a dark robe. The robe is just scribbled shading, but the dark magic is real.
+  _stats:
+    strength: 8
+    dexterity: 10
+    constitution: 14
+    intelligence: 16
+    wisdom: 12
+    charisma: 12
+  _hitPoints: 45
+  _armorClass: 12
+  _abilities:
+  - {fileID: 11400000, guid: 05e2fa15880d446cae3b089e2c9f68df, type: 2}
+  - {fileID: 11400000, guid: 8415658ff7b94b1fa3c4e9c8b4abbee6, type: 2}
+  _preferredRow: 1
+  _aggression: 0.7
+  _targetPreference: 2
+  _retreatThreshold: 0.3
+  _canFlee: 1
+  _xpReward: 150
+  _goldMin: 10
+  _goldMax: 25
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}
+  _introQuips:
+  - A robed figure emerges from the shadows. Well, from slightly darker lines.
+  - The necromancer appears! They're carrying a book titled 'Evil for Beginners.'
+  _deathQuips:
+  - The necromancer collapses. Their dark robe turns out to just be pencil smudges.
+  - The necromancer's spirit departs. Ironic, given their profession.

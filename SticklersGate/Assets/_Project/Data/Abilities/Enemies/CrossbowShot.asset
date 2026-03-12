@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: CrossbowShot
+  m_EditorClassIdentifier:
+  _abilityName: Crossbow Shot
+  _category: 1
+  _targetType: 0
+  _description: A bolt from across the page. Bandits love ranged attacks - less chance of getting drawn on.
+  _damageDiceCount: 1
+  _damageDiceSides: 8
+  _damageType: 1
+  _abilityModifier: 1
+  _flatDamageBonus: 1
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 0
+  _unlockLevel: 1
+  _hitQuips:
+  - The bolt finds its mark. The bandit reloads with practiced indifference.
+  - A solid hit! The bandit nods approvingly at their own work.
+  _missQuips:
+  - The bolt embeds itself in the margin. Close, but no gold.
+  - A miss! The bandit curses and fumbles for another bolt.
+  _critQuips:
+  - Critical shot! The bolt pins your shadow to the page!

@@ -466,5 +466,195 @@ namespace SticklersGate.Tests
             Assert.AreEqual("Shiv", decision.ChosenAbility.Data.AbilityName,
                 "AI should pick the only ability off cooldown");
         }
+
+        // ================================================================
+        // Multi-Target Ability Tests
+        // ================================================================
+
+        [Test]
+        public void GatherTargets_AllEnemies_ReturnsAllAliveConsciousEnemies()
+        {
+            var fireball = CreateAbilitySO("Fireball", AbilityCategory.Spell,
+                AbilityTargetType.AllEnemies, 8, 6, DamageType.Fire, AbilityScore.Intelligence);
+
+            var shiv = CreateAbilitySO("Shiv", AbilityCategory.MeleeAttack,
+                AbilityTargetType.SingleEnemy, 1, 4);
+            var enemySO = CreateEnemySO("Goblin", EnemyTier.Minion,
+                new StatBlock { strength = 8, dexterity = 14, constitution = 10,
+                    intelligence = 8, wisdom = 8, charisma = 6 },
+                hp: 12, ac: 11, abilities: new[] { shiv });
+
+            var wizardClass = CreateClassSO("Stickwizard", CharacterClassType.Stickwizard,
+                new StatBlock { strength = 8, dexterity = 14, constitution = 12,
+                    intelligence = 18, wisdom = 13, charisma = 10 },
+                ac: 12, hitDie: 6, row: CombatRow.BackRow, abilities: new[] { fireball });
+
+            var wizard = CombatUnit.FromPlayerCharacter("Twiggy", wizardClass, 1);
+
+            var enemy1 = CombatUnit.FromEnemy(enemySO, "Goblin A");
+            var enemy2 = CombatUnit.FromEnemy(enemySO, "Goblin B");
+            var enemy3 = CombatUnit.FromEnemy(enemySO, "Goblin C");
+
+            // Kill one enemy to verify it's excluded
+            enemy3.TakeDamage(999);
+            enemy3.Die();
+
+            var playerUnits = new List<CombatUnit> { wizard };
+            var enemyUnits = new List<CombatUnit> { enemy1, enemy2, enemy3 };
+
+            // Use TargetPanel.GetValidTargets as a proxy for the same logic
+            var targets = SticklersGate.UI.TargetPanel.GetValidTargets(
+                AbilityTargetType.AllEnemies, wizard, playerUnits, enemyUnits);
+
+            Assert.AreEqual(2, targets.Count, "Should only include alive/conscious enemies");
+            Assert.IsTrue(targets.Contains(enemy1));
+            Assert.IsTrue(targets.Contains(enemy2));
+            Assert.IsFalse(targets.Contains(enemy3));
+        }
+
+        [Test]
+        public void GatherTargets_AllAllies_ReturnsAllAliveAllies()
+        {
+            var heal = CreateAbilitySO("Mass Heal", AbilityCategory.Heal,
+                AbilityTargetType.AllAllies, 0, 0, healDice: 2, healSides: 8, flatHeal: 2);
+
+            var shiv = CreateAbilitySO("Shiv", AbilityCategory.MeleeAttack,
+                AbilityTargetType.SingleEnemy, 1, 4);
+
+            var clericClass = CreateClassSO("Stickleric", CharacterClassType.Stickleric,
+                new StatBlock { strength = 14, dexterity = 10, constitution = 14,
+                    intelligence = 10, wisdom = 18, charisma = 13 },
+                ac: 18, hitDie: 8, row: CombatRow.BackRow, abilities: new[] { heal });
+
+            var knightClass = CreateClassSO("Sticknight", CharacterClassType.Sticknight,
+                new StatBlock { strength = 16, dexterity = 13, constitution = 14,
+                    intelligence = 10, wisdom = 12, charisma = 8 },
+                ac: 16, hitDie: 10, row: CombatRow.FrontRow, abilities: new[] { shiv });
+
+            var cleric = CombatUnit.FromPlayerCharacter("Cleric", clericClass, 1);
+            var knight = CombatUnit.FromPlayerCharacter("Knight", knightClass, 1);
+
+            var playerUnits = new List<CombatUnit> { cleric, knight };
+            var enemyUnits = new List<CombatUnit>();
+
+            var targets = SticklersGate.UI.TargetPanel.GetValidTargets(
+                AbilityTargetType.AllAllies, cleric, playerUnits, enemyUnits);
+
+            Assert.AreEqual(2, targets.Count, "AllAllies should include all alive party members");
+            Assert.IsTrue(targets.Contains(cleric));
+            Assert.IsTrue(targets.Contains(knight));
+        }
+
+        [Test]
+        public void EnemyAI_PrefersMultiTarget_WhenMultipleTargets()
+        {
+            var shiv = CreateAbilitySO("Shiv", AbilityCategory.MeleeAttack,
+                AbilityTargetType.SingleEnemy, 1, 4);
+            // Poison Spit: 1d4 to AllEnemies — lower single-target but hits 3
+            var poisonSpit = CreateAbilitySO("Poison Spit", AbilityCategory.Spell,
+                AbilityTargetType.AllEnemies, 1, 4, DamageType.Piercing);
+
+            var spiderSO = CreateEnemySO("Spider", EnemyTier.Standard,
+                new StatBlock { strength = 12, dexterity = 16, constitution = 12,
+                    intelligence = 2, wisdom = 10, charisma = 4 },
+                hp: 26, ac: 14, abilities: new[] { shiv, poisonSpit });
+
+            var spider = CombatUnit.FromEnemy(spiderSO);
+
+            var targetClass = CreateClassSO("Target", CharacterClassType.Sticknight,
+                new StatBlock { strength = 10, dexterity = 10, constitution = 10,
+                    intelligence = 10, wisdom = 10, charisma = 10 },
+                ac: 10, hitDie: 8, row: CombatRow.FrontRow, abilities: new[] { shiv });
+
+            var players = new List<CombatUnit>
+            {
+                CombatUnit.FromPlayerCharacter("A", targetClass, 1),
+                CombatUnit.FromPlayerCharacter("B", targetClass, 1),
+                CombatUnit.FromPlayerCharacter("C", targetClass, 1),
+            };
+            var enemies = new List<CombatUnit> { spider };
+
+            // Run many decisions — the AoE (1d4 * 3 targets = 12) should be preferred
+            // over single target (1d4 = 4) most of the time (80% non-random path)
+            int aoeCount = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                var decision = EnemyAI.Decide(spider, players, enemies);
+                if (decision.ChosenAbility.Data.TargetType == AbilityTargetType.AllEnemies)
+                    aoeCount++;
+                // Reset cooldowns
+                foreach (var a in spider.Abilities)
+                    a.TickCooldown();
+            }
+
+            Assert.Greater(aoeCount, 50,
+                "AI should prefer AoE ability when it deals more total damage across targets");
+        }
+
+        // ================================================================
+        // New Enemy Data Tests
+        // ================================================================
+
+        [Test]
+        public void StickBandit_HasCrossbowAndDagger()
+        {
+            var crossbow = CreateAbilitySO("Crossbow Shot", AbilityCategory.RangedAttack,
+                AbilityTargetType.SingleEnemy, 1, 8, DamageType.Piercing, AbilityScore.Dexterity);
+            var dagger = CreateAbilitySO("Dagger Slash", AbilityCategory.MeleeAttack,
+                AbilityTargetType.SingleEnemy, 1, 4, DamageType.Piercing, AbilityScore.Dexterity);
+
+            var banditSO = CreateEnemySO("Stick Bandit", EnemyTier.Standard,
+                new StatBlock { strength = 11, dexterity = 14, constitution = 12,
+                    intelligence = 10, wisdom = 10, charisma = 10 },
+                hp: 22, ac: 13, abilities: new[] { crossbow, dagger },
+                row: CombatRow.BackRow, pref: AITargetPreference.LowestHP);
+
+            var unit = CombatUnit.FromEnemy(banditSO);
+
+            Assert.AreEqual(22, unit.MaxHP);
+            Assert.AreEqual(13, unit.BaseAC);
+            Assert.AreEqual(2, unit.Abilities.Count);
+            Assert.AreEqual(CombatRow.BackRow, unit.Row);
+        }
+
+        [Test]
+        public void StickSpider_VenomousBiteAppliesPoison()
+        {
+            var bite = CreateAbilitySO("Venomous Bite", AbilityCategory.MeleeAttack,
+                AbilityTargetType.SingleEnemy, 1, 6, DamageType.Piercing, AbilityScore.Dexterity);
+            SetPrivateField(bite, "_appliesEffect", StatusEffectType.Poisoned);
+            SetPrivateField(bite, "_effectDurationTurns", 3);
+            SetPrivateField(bite, "_savingThrowAbility", AbilityScore.Constitution);
+            SetPrivateField(bite, "_savingThrowDC", 12);
+
+            Assert.IsTrue(bite.AppliesStatusEffect);
+            Assert.AreEqual(StatusEffectType.Poisoned, bite.AppliesEffect);
+            Assert.AreEqual(3, bite.EffectDurationTurns);
+            Assert.AreEqual(12, bite.SavingThrowDC);
+        }
+
+        [Test]
+        public void StickNecromancer_HasCorrectStats()
+        {
+            var darkBolt = CreateAbilitySO("Dark Bolt", AbilityCategory.Spell,
+                AbilityTargetType.SingleEnemy, 2, 6, DamageType.Necrotic, AbilityScore.Intelligence);
+            var lifeDrain = CreateAbilitySO("Life Drain", AbilityCategory.Spell,
+                AbilityTargetType.SingleEnemy, 1, 8, DamageType.Necrotic, AbilityScore.Intelligence,
+                cooldown: 2);
+
+            var necroSO = CreateEnemySO("Stick Necromancer", EnemyTier.Elite,
+                new StatBlock { strength = 8, dexterity = 10, constitution = 14,
+                    intelligence = 16, wisdom = 12, charisma = 12 },
+                hp: 45, ac: 12, abilities: new[] { darkBolt, lifeDrain },
+                row: CombatRow.BackRow, pref: AITargetPreference.HighestThreat);
+
+            var unit = CombatUnit.FromEnemy(necroSO);
+
+            Assert.AreEqual(45, unit.MaxHP);
+            Assert.AreEqual(12, unit.BaseAC);
+            Assert.AreEqual(CombatRow.BackRow, unit.Row);
+            Assert.AreEqual(2, unit.Abilities.Count);
+            Assert.AreEqual("Dark Bolt", unit.Abilities[0].Data.AbilityName);
+        }
     }
 }

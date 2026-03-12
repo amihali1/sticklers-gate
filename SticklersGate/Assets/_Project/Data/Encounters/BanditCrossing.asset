@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2162f34773fb5b84fa0651fd187cfe11, type: 3}
+  m_Name: BanditCrossing
+  m_EditorClassIdentifier:
+  _encounterName: The Bandit Crossing
+  _enemies:
+  - enemyData: {fileID: 11400000, guid: 755c6a683d4446139a718b3ee843e1b7, type: 2}
+    row: 1
+    nameOverride:
+  - enemyData: {fileID: 11400000, guid: 755c6a683d4446139a718b3ee843e1b7, type: 2}
+    row: 0
+    nameOverride:
+  - enemyData: {fileID: 11400000, guid: cf6c652e1a214783bac1b085bd806088, type: 2}
+    row: 0
+    nameOverride:
+  _victoryCondition: 0
+  _survivalTurns: 0
+  _background: {fileID: 0}
+  _introLines:
+  - The road narrows between two paragraphs. Classic ambush territory.
+  - Bandits emerge from the margins! And is that... a spider? Great. Just great.
+  - They want your gold. You don't have gold. This is going to be awkward.
+  _victoryLines:
+  - The bandits are dealt with! The spider too. Your therapist bill just went up.
+  - Victory! The road is clear. Your party smells like spider venom, but you'll live.
+  _defeatLines:
+  - Robbed and web-wrapped. The narrator would laugh if it weren't so sad.
+  - Defeated by bandits and a spider. The memoir writes itself.
