@@ -174,3 +174,32 @@
 **PRs:** #11 (bug fixes), Milestone 2 branch in progress
 
 **Next session:** Phase 8 (encounter difficulty, integration testing, polish), then PR + merge
+
+## Session 7 — March 12, 2026
+**Focus:** PR #12 review fixes + Grid combat planning
+**What happened:**
+- Addressed 4 Copilot review comments on PR #12:
+  1. Moved inventory setup from OnEnable to HandleCombatStarted (timing bug)
+  2. Item effects now apply across all gathered targets (not just single target)
+  3. Status-only abilities now check saving throws (Web Spit was 100% stun)
+  4. Python generator validates skeleton_guid before writing encounter
+- PR #12 merged to master
+- Planned grid-based combat system (Phase 9) as 5 incremental PRs:
+  - PR A: Grid Data Foundation (GridPosition, CombatGrid, Pathfinder, GridLayoutSO)
+  - PR B: Core Combat Integration (CombatUnit position, AbilitySO range, remove CombatRow)
+  - PR C: Movement Phase (new combat phase, SubmitPlayerMovement, AI movement)
+  - PR D: Grid UI (GridRenderer, tile input, movement highlights)
+  - PR E: Content & Cleanup (asset updates, integration tests)
+- Updated GDD: combat arena section rewritten for grid, Milestone 2 updated
+- Updated all memory files with grid system design
+- Deferred Phase 8 (polish/difficulty) until after grid system
+
+**Decisions made:**
+- Grid replaces front-row/back-row entirely (CombatRow enum removed)
+- Default grid: 8×6 tiles, up to 12×8 for larger encounters
+- Movement speed: melee classes 3 tiles, ranged classes 2 tiles
+- Ability range: melee 1, ranged 3-6, heals 4-5, AoE unlimited
+- 7 terrain types defined (Normal, Difficult, Elevated, Water, Lava, Abyss, Cover) but only Normal implemented initially
+- Phase 8 deferred since grid changes encounter design fundamentally
+
+**Next session:** Implement PR A (Grid Data Foundation)

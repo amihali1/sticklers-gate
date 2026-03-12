@@ -7,52 +7,52 @@
 - **Stats:** STR 16, DEX 13, CON 14, INT 10, WIS 12, CHA 8
 - **HP:** d10 hit die, base HP 44 (at level 1: 10 + CON mod)
 - **AC:** 16
-- **Row:** Front
+- **Movement:** 3 tiles
 - **Flavor:** "Hits things. Gets hit. Hits things harder."
 - **Abilities:**
-  - Greatsword Slash: 2d6 + STR slashing, no cooldown
-  - Shield Bash: 1d4 + STR bludgeoning, target makes STR save or Stunned 1 turn, 2 turn cooldown
-  - (Level 3) Action Surge: 3d6 + STR slashing, 3 turn cooldown
-  - (Level 5) Champion's Strike: 4d6 + STR slashing, auto-crit if target below 25% HP, 4 turn cooldown
+  - Greatsword Slash: 2d6 + STR slashing, range 1, no cooldown
+  - Shield Bash: 1d4 + STR bludgeoning, range 1, target makes STR save or Stunned 1 turn, 2 turn cooldown
+  - (Level 3) Action Surge: 3d6 + STR slashing, range 1, 3 turn cooldown
+  - (Level 5) Champion's Strike: 4d6 + STR slashing, range 1, auto-crit if target below 25% HP, 4 turn cooldown
 
 ### Stickwizard (Wizard)
 - **Role:** Ranged AoE DPS
 - **Stats:** STR 8, DEX 14, CON 12, INT 18, WIS 13, CHA 10
 - **HP:** d6 hit die, base HP 26
 - **AC:** 12
-- **Row:** Back
+- **Movement:** 2 tiles
 - **Flavor:** "Glass cannon. Emphasis on glass."
 - **Abilities:**
-  - Fire Bolt: 2d10 + INT fire, no cooldown
-  - Ray of Frost: 1d8 + INT cold, target speed reduced (flavor), no cooldown
-  - (Level 3) Fireball: 8d6 fire, hits AllEnemies, 4 turn cooldown
-  - (Level 5) Disintegrate: 10d6 + 40 force, single target, 5 turn cooldown
+  - Fire Bolt: 2d10 + INT fire, range 5, no cooldown
+  - Ray of Frost: 1d8 + INT cold, range 4, target speed reduced (flavor), no cooldown
+  - (Level 3) Fireball: 8d6 fire, hits AllEnemies, range 0 (AoE), 4 turn cooldown
+  - (Level 5) Disintegrate: 10d6 + 40 force, range 6, single target, 5 turn cooldown
 
 ### Stickrogue (Rogue)
 - **Role:** Burst DPS / Utility
 - **Stats:** STR 10, DEX 18, CON 12, INT 13, WIS 10, CHA 14
 - **HP:** d8 hit die, base HP 33
 - **AC:** 15
-- **Row:** Front
+- **Movement:** 3 tiles
 - **Flavor:** "Steals your gold. Then your heart. Then your gold again."
 - **Abilities:**
-  - Sneak Attack: 3d6 + DEX piercing, no cooldown
-  - Cunning Dodge: Self-buff, +4 AC for 1 turn, 2 turn cooldown
-  - (Level 3) Assassinate: 6d6 + DEX piercing, 4 turn cooldown
-  - (Level 5) Shadow Step: 4d6 + DEX piercing + applies Invisible for 1 turn, 4 turn cooldown
+  - Sneak Attack: 3d6 + DEX piercing, range 1, no cooldown
+  - Cunning Dodge: Self-buff, range 0, +4 AC for 1 turn, 2 turn cooldown
+  - (Level 3) Assassinate: 6d6 + DEX piercing, range 1, 4 turn cooldown
+  - (Level 5) Shadow Step: 4d6 + DEX piercing, range 1, + applies Invisible for 1 turn, 4 turn cooldown
 
 ### Stickleric (Cleric)
 - **Role:** Healer / Support
 - **Stats:** STR 14, DEX 10, CON 14, INT 10, WIS 18, CHA 13
 - **HP:** d8 hit die, base HP 38
 - **AC:** 18
-- **Row:** Back
+- **Movement:** 2 tiles
 - **Flavor:** "Prays for you. Judges you. Heals you anyway."
 - **Abilities:**
-  - Sacred Flame: 2d8 + WIS radiant, no cooldown
-  - Cure Wounds: heals 2d8 + 4, single ally, 2 turn cooldown
-  - (Level 3) Guiding Bolt: 4d6 + WIS radiant, 3 turn cooldown
-  - (Level 5) Mass Heal: heals 3d8 + WIS mod, AllAllies, 5 turn cooldown
+  - Sacred Flame: 2d8 + WIS radiant, range 4, no cooldown
+  - Cure Wounds: heals 2d8 + 4, range 4, single ally, 2 turn cooldown
+  - (Level 3) Guiding Bolt: 4d6 + WIS radiant, range 5, 3 turn cooldown
+  - (Level 5) Mass Heal: heals 3d8 + WIS mod, range 0 (AoE), AllAllies, 5 turn cooldown
 
 **Status:** Implemented as SO assets (PR #9)
 
@@ -62,7 +62,8 @@
 
 ### Stick Goblin (Minion)
 - **Stats:** HP 12, AC 11, STR 8, DEX 14, CON 10, INT 8, WIS 8, CHA 6
-- **Ability:** Rusty Shiv — 1d4 + DEX slashing
+- **Movement:** 3 tiles
+- **Ability:** Rusty Shiv — 1d4 + DEX slashing, range 1
 - **AI:** Random targeting, aggression 0.9, can't flee
 - **Rewards:** 25 XP, 1-5 gold
 - **Intro:** "Three goblins emerge from behind an inkblot. They look barely drawn."
@@ -70,7 +71,8 @@
 
 ### Stick Skeleton (Standard)
 - **Stats:** HP 26, AC 13, STR 12, DEX 14, CON 12, INT 6, WIS 8, CHA 4
-- **Abilities:** Bone Club (1d6 + STR bludgeoning), Bone Throw (1d4 + DEX piercing, ranged)
+- **Movement:** 2 tiles
+- **Abilities:** Bone Club (1d6 + STR bludgeoning, range 1), Bone Throw (1d4 + DEX piercing, range 3)
 - **AI:** LowestHP targeting, aggression 0.7, can't flee
 - **Rewards:** 50 XP, 3-8 gold
 - **Intro:** "A skeleton rattles into view. It's just a stick figure with extra lines, really."
@@ -78,7 +80,8 @@
 
 ### Stick Ogre (Elite)
 - **Stats:** HP 68, AC 11, STR 19, DEX 8, CON 16, INT 5, WIS 7, CHA 4
-- **Abilities:** Greatclub (2d8 + STR bludgeoning), Ground Slam (1d10 + STR bludgeoning, AllEnemies)
+- **Movement:** 2 tiles
+- **Abilities:** Greatclub (2d8 + STR bludgeoning, range 1), Ground Slam (1d10 + STR bludgeoning, AllEnemies, range 0)
 - **AI:** HighestThreat targeting, aggression 0.95, can't flee
 - **Rewards:** 200 XP, 15-30 gold
 - **Intro:** "An ogre lumbers forward. It's drawn with a thicker pen. You can tell it's important."
@@ -88,23 +91,23 @@
 
 ### Stick Bandit (Standard) — *Added Milestone 2*
 - **Stats:** HP 22, AC 13, STR 11, DEX 14, CON 12, INT 10, WIS 10, CHA 10
-- **Abilities:** Crossbow Shot (1d8+1 piercing, ranged), Dagger Slash (1d4+2 piercing, melee)
+- **Movement:** 2 tiles
+- **Abilities:** Crossbow Shot (1d8+1 piercing, range 4), Dagger Slash (1d4+2 piercing, range 1)
 - **AI:** LowestHP targeting, aggression 0.8, retreat at 15% HP, can flee
-- **Row:** Back
 - **Rewards:** 50 XP, 5-15 gold
 
 ### Stick Spider (Standard) — *Added Milestone 2*
 - **Stats:** HP 26, AC 14, STR 12, DEX 16, CON 12, INT 2, WIS 10, CHA 4
-- **Abilities:** Venomous Bite (1d6 piercing + Poison 3t, CON DC 12), Web Spit (Stun 1t, DEX DC 11, 3t CD), Poison Spit (1d4 piercing AllEnemies + Poison 2t, CON DC 11, 4t CD)
+- **Movement:** 3 tiles
+- **Abilities:** Venomous Bite (1d6 piercing, range 1, + Poison 3t, CON DC 12), Web Spit (Stun 1t, range 3, DEX DC 11, 3t CD), Poison Spit (1d4 piercing AllEnemies, range 0, + Poison 2t, CON DC 11, 4t CD)
 - **AI:** Healers targeting, aggression 0.85, can't flee
-- **Row:** Front
 - **Rewards:** 75 XP, 0-3 gold
 
 ### Stick Necromancer (Elite) — *Added Milestone 2*
 - **Stats:** HP 45, AC 12, STR 8, DEX 10, CON 14, INT 16, WIS 12, CHA 12
-- **Abilities:** Dark Bolt (2d6+2 necrotic), Life Drain (1d8 necrotic, 2t CD)
+- **Movement:** 2 tiles
+- **Abilities:** Dark Bolt (2d6+2 necrotic, range 5), Life Drain (1d8 necrotic, range 4, 2t CD)
 - **AI:** HighestThreat targeting, aggression 0.7, retreat at 30% HP, can flee
-- **Row:** Back
 - **Rewards:** 150 XP, 10-25 gold
 
 **Status:** Implemented as SO assets (Milestone 2)
@@ -112,7 +115,8 @@
 ---
 
 ## Test Encounter: "Ambush at the Inkwell"
-- **Enemies:** 3x Stick Goblin (all front row)
+- **Grid:** 8×6
+- **Enemies:** 3x Stick Goblin
 - **Difficulty:** Easy
 - **Victory:** Defeat all enemies
 - **Intro narration:**
@@ -127,12 +131,14 @@
 **Status:** Implemented as SO asset (PR #9)
 
 ## Encounter: "The Bandit Crossing" — *Added Milestone 2*
-- **Enemies:** 1x Stick Bandit (back row), 1x Stick Bandit (front row), 1x Stick Spider (front row)
+- **Grid:** 10×6
+- **Enemies:** 2x Stick Bandit, 1x Stick Spider
 - **Difficulty:** Medium
 - **Victory:** Defeat all enemies
 
 ## Encounter: "The Necromancer's Study" — *Added Milestone 2*
-- **Enemies:** 2x Stick Skeleton "Bone Guard" (front row), 1x Stick Necromancer (back row)
+- **Grid:** 8×8
+- **Enemies:** 2x Stick Skeleton "Bone Guard", 1x Stick Necromancer
 - **Difficulty:** Hard
 - **Victory:** Defeat all enemies
 
