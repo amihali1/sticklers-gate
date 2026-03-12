@@ -54,6 +54,7 @@ namespace SticklersGate.UI
                 if (_targetButtonPrefab == null || _buttonContainer == null) break;
 
                 var go = Instantiate(_targetButtonPrefab, _buttonContainer);
+                go.SetActive(true);
                 _spawnedButtons.Add(go);
 
                 var buttonText = go.GetComponentInChildren<Text>();

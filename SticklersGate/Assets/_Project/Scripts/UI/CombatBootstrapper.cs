@@ -22,7 +22,6 @@ namespace SticklersGate.UI
 
         private CombatStateMachine _stateMachine;
         private CombatUIController _uiController;
-        private CombatSceneSetup _sceneSetup;
         private Camera _mainCamera;
 
         private void Start()
@@ -167,7 +166,10 @@ namespace SticklersGate.UI
             SetField(resultPanel, "_backgroundImage", resultPanel.GetComponent<Image>());
 
             // Create and wire CombatUIController
+            // IMPORTANT: Disable the GameObject BEFORE adding the component so that
+            // OnEnable does not fire until all [SerializeField] references are set.
             var uiControllerGo = new GameObject("CombatUIController");
+            uiControllerGo.SetActive(false);
             _uiController = uiControllerGo.AddComponent<CombatUIController>();
 
             SetField(_uiController, "_combatStateMachine", _stateMachine);
@@ -182,6 +184,9 @@ namespace SticklersGate.UI
             SetField(_uiController, "_damagePopupPrefab", damagePopupPrefab);
             SetField(_uiController, "_popupCanvas", canvas);
             SetField(_uiController, "_mainCamera", _mainCamera);
+
+            // Now that all fields are wired, enable the GameObject so OnEnable subscribes to events
+            uiControllerGo.SetActive(true);
         }
 
         // ================================================================
@@ -207,29 +212,9 @@ namespace SticklersGate.UI
                 enemySpawns[i] = eGo.transform;
             }
 
-            // Create CombatSceneSetup and wire it
-            var setupGo = new GameObject("CombatSceneSetup");
-            _sceneSetup = setupGo.AddComponent<CombatSceneSetup>();
-
-            SetField(_sceneSetup, "_combatStateMachine", _stateMachine);
-            SetField(_sceneSetup, "_testEncounter", _encounter);
-            SetField(_sceneSetup, "_playerSpawnPoints", playerSpawns);
-            SetField(_sceneSetup, "_enemySpawnPoints", enemySpawns);
-
-            // Wire positions to UIController for damage popups
+            // Wire spawn positions to UIController for damage popups
             SetField(_uiController, "_playerPositions", playerSpawns);
             SetField(_uiController, "_enemyPositions", enemySpawns);
-
-            // Set up first party member on CombatSceneSetup
-            if (_partyClasses != null && _partyClasses.Length > 0)
-            {
-                SetField(_sceneSetup, "_playerClass", _partyClasses[0]);
-                if (_partyNames != null && _partyNames.Length > 0)
-                {
-                    SetField(_sceneSetup, "_playerName", _partyNames[0]);
-                }
-            }
-            SetField(_sceneSetup, "_playerLevel", _partyLevel);
         }
 
         // ================================================================
@@ -255,7 +240,6 @@ namespace SticklersGate.UI
             }
 
             // Subscribe to stick figure events
-            var sceneSetup = _sceneSetup;
             _stateMachine.OnCombatStarted += () => SpawnStickFigures(playerUnits);
             _stateMachine.OnAttackResolved += HandleAttackAnimation;
             _stateMachine.OnUnitDied += HandleDeathAnimation;

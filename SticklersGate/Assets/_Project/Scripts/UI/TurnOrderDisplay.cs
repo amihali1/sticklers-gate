@@ -35,6 +35,7 @@ namespace SticklersGate.UI
                 if (_entryPrefab == null || _entryContainer == null) break;
 
                 var go = Instantiate(_entryPrefab, _entryContainer);
+                go.SetActive(true);
                 var entry = new TurnOrderEntry
                 {
                     Unit = unit,
