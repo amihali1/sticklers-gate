@@ -4,7 +4,7 @@
 - **Engine:** Unity 6 LTS (6000.3.10f1), C#
 - **Platforms:** Android (API 24+) + iOS, Landscape
 - **Current Milestone:** 1 — "First Blood" (Combat Prototype)
-- **Current Phase:** 4 — Content (in progress)
+- **Current Phase:** 5 — Integration (in progress)
 - **Unity Installed:** Yes
 - **Repo:** github.com/amihali1/sticklers-gate (private)
 - **Unity Project Folder:** SticklersGate/
@@ -40,12 +40,12 @@
 - [x] 4.2 Define 3 enemies + test encounter — 5 enemy AbilitySO + 3 EnemySO + 1 EncounterSO assets (PR #9)
 
 ### Phase 5: Integration
-- [ ] 5.1 Combat scene wiring
-- [ ] 5.2 Integration testing
+- [x] 5.1 Combat scene wiring — CombatBootstrapper + Combat.unity scene (PR #10)
+- [x] 5.2 Integration testing — CombatIntegrationTests (PR #10)
 - [ ] 5.3 Polish pass
 
 ## Next Action
-Start Phase 5 (Integration: wire combat scene, integration testing, polish pass).
+Phase 5.3 Polish pass, then Milestone 1 complete. Open Combat.unity in Unity Editor to test.
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
