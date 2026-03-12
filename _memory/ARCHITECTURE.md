@@ -10,7 +10,7 @@
 
 Everything is data-driven via ScriptableObjects. Game logic reads from SO assets — adding new classes, enemies, or abilities means creating new assets, not modifying code.
 
-**Core SO types:** CharacterClassSO, AbilitySO, EnemySO, EncounterSO, ItemSO, DialogueTreeSO, QuestSO
+**Core SO types:** CharacterClassSO, AbilitySO, EnemySO, EncounterSO, ItemSO, GridLayoutSO, DialogueTreeSO, QuestSO
 
 **Runtime models:** CombatUnit is a plain C# class created at combat start from SO data. It holds mutable state (current HP, cooldowns, status effects). SOs are never mutated at runtime.
 

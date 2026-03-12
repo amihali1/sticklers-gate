@@ -14,9 +14,9 @@
 - Death saves: 3 successes = stabilize, 3 fails = death, nat 20 = revive with 1 HP, nat 1 = two failures
 
 **What we simplified:**
-- No movement grid — front row / back row only
+- Grid movement with per-unit speed (replaces D&D's feet-based movement)
 - No spell slots — cooldown system (recharge after X turns)
-- 1 Action + 1 Bonus Action per turn
+- 1 Move + 1 Action per turn (no bonus actions)
 - No concentration
 - Proficiency baked into class stats
 - No multiclassing
@@ -31,10 +31,27 @@
 
 ## Combat Flow
 ```
-Setup → Roll Initiative → [Turn Loop: TurnStart → Choose Action → Choose Target → Resolve → TurnEnd → Check End] → Victory/Defeat
+Setup → Roll Initiative → [Turn Loop: TurnStart → Movement → Choose Action → Choose Target → Resolve → TurnEnd → Check End] → Victory/Defeat
 ```
-Enemy turns use AI decision instead of player input.
-Player turns pause coroutine loop, resume via SubmitPlayerAction().
+Movement phase: player chooses a tile within movement range (or skips). Enemy AI moves automatically.
+Player action turns pause coroutine loop, resume via SubmitPlayerAction().
+
+## Grid System (Phase 9 — planned)
+
+**Grid:** CombatGrid holds width×height terrain map + occupancy. Default 8×6 for small encounters, up to 12×8.
+
+**Movement:** Each unit has a movement speed (tiles per turn). BFS pathfinding calculates reachable tiles. Movement happens before action each turn. Movement is optional (can skip).
+
+**Range:** Each ability has a range in tiles. Melee = 1, ranged = 3-6, heals = 4-5, self = 0. AoE abilities ignore range (hit all valid targets).
+
+**Terrain types:** Normal, Difficult (2× movement cost), Elevated (+1 AC, +1 ranged range), Water (2× cost, halve fire dmg), Lava (2d6 fire on enter/turn start), Abyss (impassable, fall = death), Cover (+2 AC vs ranged). Only Normal used in initial encounters.
+
+**Key classes:**
+- GridPosition — struct (int x, int y), with Manhattan distance + equality
+- CombatGrid — manages terrain, occupancy, bounds checking
+- Pathfinder — BFS for movement range, A*/BFS for shortest path
+- GridLayoutSO — per-encounter grid dimensions, terrain map, spawn points
+- GridRenderer — UI: draws tiles, highlights movement/ability range
 
 ## Data Models — All Implemented
 
@@ -69,7 +86,11 @@ Player turns pause coroutine loop, resume via SubmitPlayerAction().
 - **DiceRoller** — Static. Roll(), RollMultiple(), RollD20(), RollWithAdvantage/Disadvantage(), IsCriticalHit/Fail(), GetModifier(). History of last 20 rolls.
 
 ## Enums (Scripts/Data/GameEnums.cs) — Implemented
-AbilityScore, DamageType, AbilityTargetType, AbilityCategory, StatusEffectType (includes None), CombatPhase, CharacterClassType, CombatRow, EnemyTier, AITargetPreference, VictoryCondition
+AbilityScore, DamageType, AbilityTargetType, AbilityCategory, StatusEffectType (includes None), CombatPhase, CharacterClassType, CombatRow*, EnemyTier, AITargetPreference, VictoryCondition, ItemType, ItemRarity
+
+*CombatRow will be removed when grid system replaces row-based positioning. TerrainType enum will be added. CombatPhase will gain PlayerChooseMovement.
 
 ## Constants (Scripts/Data/GameConstants.cs) — Implemented
-BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS/FAIL_NEEDED=3, BACK_ROW_AC_BONUS=2, DEFEND_AC_BONUS=2, FLEE_DC=12, XP_THRESHOLDS[]
+BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS/FAIL_NEEDED=3, BACK_ROW_AC_BONUS=2*, DEFEND_AC_BONUS=2, FLEE_DC=12, XP_THRESHOLDS[]
+
+*BACK_ROW_AC_BONUS will be removed. Grid constants to add: DEFAULT_GRID_WIDTH=8, DEFAULT_GRID_HEIGHT=6, DEFAULT_MELEE_RANGE=1, DEFAULT_RANGED_RANGE=4, DEFAULT_MELEE_MOVEMENT=3, DEFAULT_RANGED_MOVEMENT=2

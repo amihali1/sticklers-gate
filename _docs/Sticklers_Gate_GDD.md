@@ -1,6 +1,6 @@
 # STICKLER'S GATE — Game Design Document
 
-**Version:** 0.1 | **Last Updated:** March 9, 2026 | **Status:** Pre-Production
+**Version:** 0.2 | **Last Updated:** March 12, 2026 | **Status:** Pre-Production
 
 ---
 
@@ -191,7 +191,34 @@ Encounters are defined as ScriptableObjects containing:
 - Optional pre-combat dialogue
 - Optional narrator commentary triggers
 
-**Combat Arena:** A simple 2D battlefield. Party on the left, enemies on the right. No grid movement in v1 — positioning is abstracted into "front row" and "back row." Front row characters can melee. Back row characters get +2 AC vs melee but must use ranged attacks.
+**Combat Arena:** A 2D grid battlefield. Each encounter defines a grid (typically 8x6 to 12x8 tiles). Characters occupy a single tile and can move a number of tiles per turn based on their movement speed.
+
+**Grid Movement:**
+
+- Each unit has a **movement speed** (in tiles). Default: melee classes 3, ranged classes 2.
+- At the start of each turn, the unit may **move** up to their speed before taking an action. Movement is optional.
+- **Pathfinding:** BFS-based. Units cannot move through occupied tiles or impassable terrain.
+- Movement range is highlighted on the grid when it's a player's turn.
+
+**Ability Range:**
+
+- Each ability has a **range** (in tiles). Melee attacks: 1. Ranged attacks/spells: 3-6. Heals: 4-5. Self/AoE: 0 (self) or unlimited.
+- An ability can only target units within its range from the caster's current position.
+- AoE abilities (AllEnemies/AllAllies) still hit all valid targets regardless of range.
+
+**Terrain Types (expandable):**
+
+| Terrain | Effect |
+|---------|--------|
+| Normal | No effect |
+| Difficult | Costs 2 movement to enter |
+| Elevated | +1 AC, +1 ranged attack range |
+| Water | Costs 2 movement, fire damage halved |
+| Lava | 2d6 fire damage on enter/turn start |
+| Abyss | Impassable. Fall = instant death |
+| Cover | +2 AC vs ranged attacks |
+
+Terrain types are defined per-encounter via a GridLayoutSO asset. Initial encounters use only Normal terrain; others added as content progresses.
 
 ### 3.5 Leveling & Progression
 
@@ -261,18 +288,20 @@ A world where everyone is a stick figure and nobody acknowledges it. The environ
 
 ### Milestone 2: Full Party Combat (Weeks 5–8)
 
-**Goal:** 4v4 combat with all four classes, front/back row, items, and status effects.
+**Goal:** 4v4 combat with all four classes, grid movement, items, and status effects.
 
 **Deliverables:**
 
 - Party management (4 characters, each with class abilities)
 - Multi-target abilities (Fireball hits all enemies)
 - Healing spells and support abilities
-- Front row / back row positioning with tactical tradeoffs
+- Grid-based movement system with per-unit movement speeds
+- Ability range system (melee vs ranged, grid distance)
+- Terrain type foundation (Normal + Difficult for v1, extensible to Elevated/Water/Lava/Abyss)
 - Status effects system (poisoned, burning, stunned, blessed, frightened, prone)
 - Consumable items (health potions, antidotes, thrown weapons)
 - Enemy variety (at least 6 enemy types with distinct behaviors)
-- Improved enemy AI (target selection based on class, threat, HP)
+- Improved enemy AI (target selection based on class, threat, HP, grid position)
 - Death saving throws system
 - Encounter difficulty scaling
 
