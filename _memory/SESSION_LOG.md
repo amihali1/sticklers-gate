@@ -109,3 +109,32 @@
 - Narrator quips written for all abilities (hit/miss/crit for attacks, hit for heals/buffs)
 
 **Next session:** Phase 5 (Integration: wire combat scene, integration testing, polish)
+
+## Session 5 — March 11, 2026
+**Focus:** Phase 5 — Combat scene integration
+**What happened:**
+- Created CombatBootstrapper — programmatic runtime scene builder that creates entire UI hierarchy
+  - Canvas, CanvasScaler, GraphicRaycaster, EventSystem
+  - NarratorDisplay with typewriter text and CanvasGroup fade
+  - TurnOrderDisplay with vertical layout for initiative entries
+  - ActionPanel with horizontal button container + Defend button
+  - TargetPanel with horizontal button container + Cancel button
+  - CombatResultPanel with title/subtitle/background
+  - HP bar containers for players and enemies
+  - Damage popup container
+  - All prefab templates created as inactive GameObjects (HP bar, damage popup, ability/target buttons, turn entry)
+  - Spawn points for 4 players + 4 enemies
+  - Stick figure spawning and animation handling
+  - Wires all [SerializeField] references via reflection at runtime
+- Created Combat.unity scene with single CombatBootstrapper GameObject
+  - Pre-configured with full 4-class party (Ser Sticksworth, Twiggy, Slick, Sister Splinter)
+  - References AmbushAtTheInkwell encounter (3x Stick Goblin)
+- Integration tests (CombatIntegrationTests.cs): party creation, enemy spawning, damage/heal, cooldowns, target selection, enemy AI
+
+**Decisions made:**
+- Runtime bootstrapper approach avoids needing hand-authored prefabs and complex scene YAML
+- All UI created programmatically — no prefab .asset files needed
+- Scene file is minimal: just one GameObject with CombatBootstrapper + SO references
+- Party uses GDD character names (Ser Sticksworth, Twiggy, Slick, Sister Splinter)
+
+**Next session:** Phase 5.3 polish pass, test in Unity Editor
