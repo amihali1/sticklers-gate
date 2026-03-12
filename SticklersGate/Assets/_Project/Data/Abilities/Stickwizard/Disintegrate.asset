@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: Disintegrate
+  m_EditorClassIdentifier:
+  _abilityName: Disintegrate
+  _category: 2
+  _targetType: 0
+  _description: A thin green ray erases the target from existence. 10d6 + 40 force damage.
+  _damageDiceCount: 10
+  _damageDiceSides: 6
+  _damageType: 9
+  _abilityModifier: 3
+  _flatDamageBonus: 40
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 5
+  _unlockLevel: 5
+  _hitQuips: 
+  - The ray hits and the target starts... un-drawing itself.
+  - Disintegrated. There's nothing left but a faint pencil smudge.
+  _missQuips: 
+  - The disintegration ray misses. That's a LOT of wasted magic.
+  - You missed with Disintegrate. The universe is laughing.
+  _critQuips: 
+  - CRITICAL DISINTEGRATE! The target doesn't just die, it's UNWRITTEN from reality!

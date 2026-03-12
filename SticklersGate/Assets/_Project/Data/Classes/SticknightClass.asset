@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8e126a3fe05f4ea44993189586e76, type: 3}
+  m_Name: SticknightClass
+  m_EditorClassIdentifier:
+  _className: Sticknight
+  _classType: 0
+  _flavorText: Hits things. Gets hit. Hits things harder.
+  _baseStats:
+    strength: 16
+    dexterity: 13
+    constitution: 14
+    intelligence: 10
+    wisdom: 12
+    charisma: 8
+  _baseAC: 16
+  _hitDiceSides: 10
+  _preferredRow: 0
+  _level1Abilities: 
+  - {fileID: 11400000, guid: ad59bce3c20149a7ae32b8e68ec08f6c, type: 2}
+  - {fileID: 11400000, guid: 65bf75c9f86a48408c34a3f769fbb35e, type: 2}
+  _level3Abilities: 
+  - {fileID: 11400000, guid: 3845c80c26954ba18f12a7657f5a6863, type: 2}
+  _level5Abilities: 
+  - {fileID: 11400000, guid: 9263fe35b8314745a90352089243c3bf, type: 2}
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}

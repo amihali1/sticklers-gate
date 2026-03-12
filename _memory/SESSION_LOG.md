@@ -87,3 +87,25 @@
 - Using Unity UI Text (not TextMeshPro yet — TMP install deferred)
 
 **Next session:** Open PR, address review, then Phase 4 (Content: define 4 classes + 3 enemies + test encounter)
+
+## Session 4 — March 11, 2026
+**Focus:** Class renames + Phase 4 content implementation
+**What happened:**
+- Renamed Stickromancer → Stickwizard across entire codebase (PR #7)
+- Renamed Stickeric → Stickleric across entire codebase (PR #8)
+- Implemented Phase 4: all content as ScriptableObject .asset files (PR #9)
+  - 16 player ability assets (4 per class: 2 basic + 1 level 3 + 1 level 5)
+  - 5 enemy ability assets (RustyShiv, BoneClub, BoneThrow, Greatclub, GroundSlam)
+  - 4 CharacterClassSO assets (Sticknight, Stickwizard, Stickrogue, Stickleric)
+  - 3 EnemySO assets (Stick Goblin, Stick Skeleton, Stick Ogre)
+  - 1 EncounterSO asset (Ambush at the Inkwell — 3x Stick Goblin)
+- Unit tests for content data validation (ContentDataTests.cs)
+- Generated assets via Python script with proper GUID cross-references
+
+**Decisions made:**
+- CunningDodge uses Shielded status effect for +AC buff
+- ShadowStep applies Invisible status effect after dealing damage
+- Champion's Strike auto-crit mechanic noted in description (needs code support in Phase 5)
+- Narrator quips written for all abilities (hit/miss/crit for attacks, hit for heals/buffs)
+
+**Next session:** Phase 5 (Integration: wire combat scene, integration testing, polish)

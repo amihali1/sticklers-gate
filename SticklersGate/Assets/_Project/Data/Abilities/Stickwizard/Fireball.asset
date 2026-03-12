@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: Fireball
+  m_EditorClassIdentifier:
+  _abilityName: Fireball
+  _category: 2
+  _targetType: 2
+  _description: A massive ball of fire explodes among all enemies. The wizard's favorite.
+  _damageDiceCount: 8
+  _damageDiceSides: 6
+  _damageType: 3
+  _abilityModifier: 3
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _cooldownTurns: 4
+  _unlockLevel: 3
+  _hitQuips: 
+  - FIREBALL! Everything is on fire! The wizard is grinning!
+  - The explosion is beautiful. The screaming less so.
+  _missQuips: 
+  - The fireball... fizzles? That shouldn't be possible.
+  - Eight dice of nothing. The wizard needs a moment.
+  _critQuips: 
+  - CRITICAL FIREBALL! The notebook page is singed! I can smell it from here!

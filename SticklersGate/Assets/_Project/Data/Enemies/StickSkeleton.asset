@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8081346e19510ad4d8af056daa33d856, type: 3}
+  m_Name: StickSkeleton
+  m_EditorClassIdentifier:
+  _enemyName: Stick Skeleton
+  _tier: 1
+  _description: A stick figure with extra lines for ribs. It rattles when it moves. Everything rattles.
+  _stats:
+    strength: 12
+    dexterity: 14
+    constitution: 12
+    intelligence: 6
+    wisdom: 8
+    charisma: 4
+  _hitPoints: 26
+  _armorClass: 13
+  _abilities: 
+  - {fileID: 11400000, guid: 592d4ebbd2574cacb1556f6dc925f241, type: 2}
+  - {fileID: 11400000, guid: 5a01b98f16e0481d80597489811ac596, type: 2}
+  _preferredRow: 0
+  _aggression: 0.7
+  _targetPreference: 1
+  _retreatThreshold: 0
+  _canFlee: 0
+  _xpReward: 50
+  _goldMin: 3
+  _goldMax: 8
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}
+  _introQuips: 
+  - A skeleton rattles into view. It's just a stick figure with extra lines, really.
+  - Bones clatter as a skeleton assembles itself. Self-assembly furniture wishes.
+  _deathQuips: 
+  - The skeleton collapses into a pile of straight lines.
+  - The skeleton falls apart. Some assembly required for the afterlife.
