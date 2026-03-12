@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: WebSpit
+  m_EditorClassIdentifier:
+  _abilityName: Web Spit
+  _category: 5
+  _targetType: 0
+  _description: Sticky, gross, and surprisingly accurate for something with no nose.
+  _damageDiceCount: 0
+  _damageDiceSides: 0
+  _damageType: 0
+  _abilityModifier: 1
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 2
+  _effectDurationTurns: 1
+  _savingThrowAbility: 1
+  _savingThrowDC: 11
+  _cooldownTurns: 3
+  _unlockLevel: 1
+  _hitQuips:
+  - You're wrapped in silk. It's not the luxury spa kind.
+  _missQuips:
+  - The web misses! It sticks to the scenery instead. Gross.
+  _critQuips: []

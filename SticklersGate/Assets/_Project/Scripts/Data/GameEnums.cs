@@ -139,4 +139,26 @@ namespace SticklersGate.Data
         DefeatBoss,
         SurviveTurns
     }
+
+    /// <summary>
+    /// Type of item for inventory and UI categorization.
+    /// </summary>
+    public enum ItemType
+    {
+        Consumable,
+        Weapon,
+        Armor,
+        Accessory
+    }
+
+    /// <summary>
+    /// Rarity tier for items.
+    /// </summary>
+    public enum ItemRarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Epic
+    }
 }

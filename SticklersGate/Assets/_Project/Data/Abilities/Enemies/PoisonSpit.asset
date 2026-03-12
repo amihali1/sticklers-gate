@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: PoisonSpit
+  m_EditorClassIdentifier:
+  _abilityName: Poison Spit
+  _category: 2
+  _targetType: 2
+  _description: The spider sprays venom at everyone. It's not picky about who it hits.
+  _damageDiceCount: 1
+  _damageDiceSides: 4
+  _damageType: 1
+  _abilityModifier: 1
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 1
+  _effectDurationTurns: 2
+  _savingThrowAbility: 2
+  _savingThrowDC: 11
+  _cooldownTurns: 4
+  _unlockLevel: 1
+  _hitQuips:
+  - Venom sprays everywhere! The spider has terrible aim but great coverage.
+  _missQuips:
+  - The poison spit goes wide. Even the spider looks surprised.
+  _critQuips:
+  - Critical spray! Everyone gets a generous helping of spider venom!

@@ -32,7 +32,21 @@ namespace SticklersGate.UI
         /// </summary>
         public event Action OnDefendSelected;
 
+        /// <summary>
+        /// Fired when the player selects an item. Passes the ItemSO.
+        /// </summary>
+        public event Action<ItemSO> OnItemSelected;
+
         private readonly List<GameObject> _spawnedButtons = new List<GameObject>();
+        private Inventory _inventory;
+
+        /// <summary>
+        /// Set the inventory to show item buttons.
+        /// </summary>
+        public void SetInventory(Inventory inventory)
+        {
+            _inventory = inventory;
+        }
 
         /// <summary>
         /// Show action buttons for the given unit's available abilities.
@@ -74,6 +88,37 @@ namespace SticklersGate.UI
 
                     var capturedAbility = ability;
                     button.onClick.AddListener(() => OnAbilitySelected?.Invoke(capturedAbility));
+                }
+            }
+
+            // Show consumable item buttons
+            if (_inventory != null && _abilityButtonPrefab != null && _buttonContainer != null)
+            {
+                foreach (var stack in _inventory.GetConsumables())
+                {
+                    var go = Instantiate(_abilityButtonPrefab, _buttonContainer);
+                    go.SetActive(true);
+                    _spawnedButtons.Add(go);
+
+                    var buttonText = go.GetComponentInChildren<Text>();
+                    var button = go.GetComponent<Button>();
+                    var img = go.GetComponent<Image>();
+
+                    if (buttonText != null)
+                    {
+                        buttonText.text = $"{stack.Item.ItemName} x{stack.Quantity}";
+                    }
+
+                    if (img != null)
+                    {
+                        img.color = new Color(0.2f, 0.4f, 0.2f); // Green tint for items
+                    }
+
+                    if (button != null)
+                    {
+                        var capturedItem = stack.Item;
+                        button.onClick.AddListener(() => OnItemSelected?.Invoke(capturedItem));
+                    }
                 }
             }
 

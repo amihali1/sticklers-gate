@@ -3,52 +3,41 @@
 ## Quick Reference
 - **Engine:** Unity 6 LTS (6000.3.10f1), C#
 - **Platforms:** Android (API 24+) + iOS, Landscape
-- **Current Milestone:** 1 — "First Blood" (Combat Prototype)
-- **Current Phase:** 5 — Integration (in progress)
+- **Current Milestone:** 2 — "Full Party Combat"
+- **Current Phase:** 6 — Combat Expansion (in progress)
 - **Unity Installed:** Yes
 - **Repo:** github.com/amihali1/sticklers-gate (private)
 - **Unity Project Folder:** SticklersGate/
 
-## Milestone 1 Progress
+## Milestone 1 — Complete (PRs #1–#11)
 
-### Phase 0: Project Bootstrap
-- [x] 0.1 Unity project created & configured (PR #1)
-- [x] 0.2 Coding conventions established (CLAUDE.md + ARCHITECTURE.md)
+All phases done: Project bootstrap, core data model, combat engine, combat UI, content (4 classes, 3 enemies, 1 encounter), integration + scene wiring, runtime bug fixes.
 
-### Phase 1: Core Data Model
-- [x] 1.1 Game enums & constants (PR #2)
-- [x] 1.2 AbilitySO (PR #3)
-- [x] 1.3 CharacterClassSO (PR #3)
-- [x] 1.4 EnemySO (PR #3)
-- [x] 1.5 EncounterSO (PR #3)
+## Milestone 2 Progress
 
-### Phase 2: Combat Engine
-- [x] 2.1 Dice roller utility (PR #4)
-- [x] 2.2 CombatUnit runtime model (PR #4)
-- [x] 2.3 Damage calculator (PR #4)
-- [x] 2.4 Combat state machine (PR #4)
-- [x] 2.5 Enemy AI (PR #4)
+### Phase 6: Combat Expansion
+- [x] 6.1 Multi-target ability resolution (AllEnemies/AllAllies loop in CombatStateMachine)
+- [x] 6.2 New enemies: Stick Bandit, Stick Spider, Stick Necromancer (7 new abilities, 3 enemies, 2 encounters)
+- [x] 6.3 Enemy AI improvements (multi-target scoring)
+- [ ] 6.4 Tests for multi-target + new enemies
 
-### Phase 3: Combat UI
-- [x] 3.1 Combat scene layout (CombatSceneSetup)
-- [x] 3.2 Combat UI controller + sub-components (CombatUIController, ActionPanel, TargetPanel, UnitHPBar, TurnOrderDisplay, DamagePopup, CombatResultPanel)
-- [x] 3.3 Stick figure rendering (programmatic StickFigureRenderer via LineRenderer)
-- [x] 3.4 Narrator system (NarratorDisplay with typewriter + queue)
+### Phase 7: Item & Consumable System
+- [x] 7.1 ItemSO data class (weapon, armor, consumable types)
+- [x] 7.2 Inventory system (party carries items)
+- [x] 7.3 Consumable resolution in combat (use item action)
+- [x] 7.4 Item UI in combat action panel + target selection
 
-### Phase 4: Content
-- [x] 4.1 Define 4 classes (stats & abilities) — 16 AbilitySO + 4 CharacterClassSO assets (PR #9)
-- [x] 4.2 Define 3 enemies + test encounter — 5 enemy AbilitySO + 3 EnemySO + 1 EncounterSO assets (PR #9)
-
-### Phase 5: Integration
-- [x] 5.1 Combat scene wiring — CombatBootstrapper + Combat.unity scene (PR #10)
-- [x] 5.2 Integration testing — CombatIntegrationTests (PR #10)
-- [ ] 5.3 Polish pass
+### Phase 8: Polish & Difficulty
+- [ ] 8.1 Encounter difficulty scaling
+- [ ] 8.2 Integration testing for Milestone 2 features
+- [ ] 8.3 Polish pass
 
 ## Next Action
-Phase 5.3 Polish pass, then Milestone 1 complete. Open Combat.unity in Unity Editor to test.
+Phase 8: Encounter difficulty scaling, integration testing, polish.
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
 - .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
+- Life Drain ability doesn't actually heal the necromancer yet (needs code support for "damage + heal self" pattern)
 
-## Session Count: 4
+## Session Count: 5

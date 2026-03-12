@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8081346e19510ad4d8af056daa33d856, type: 3}
+  m_Name: StickSpider
+  m_EditorClassIdentifier:
+  _enemyName: Stick Spider
+  _tier: 1
+  _description: Eight lines pretending to be legs. The artist clearly has arachnophobia.
+  _stats:
+    strength: 12
+    dexterity: 16
+    constitution: 12
+    intelligence: 2
+    wisdom: 10
+    charisma: 4
+  _hitPoints: 26
+  _armorClass: 14
+  _abilities:
+  - {fileID: 11400000, guid: 0c696ad6d33b417891497f366de4a41e, type: 2}
+  - {fileID: 11400000, guid: 28ca13d4290d4e98a948a47e7c017f8f, type: 2}
+  - {fileID: 11400000, guid: c3160a5758b84335b7e29189c3463bba, type: 2}
+  _preferredRow: 0
+  _aggression: 0.85
+  _targetPreference: 3
+  _retreatThreshold: 0
+  _canFlee: 0
+  _xpReward: 75
+  _goldMin: 0
+  _goldMax: 3
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}
+  _introQuips:
+  - A spider crawls out of the margin. It has eight legs. You counted. Twice.
+  - Something skitters across the page. You wish it hadn't.
+  _deathQuips:
+  - The spider curls into a ball and rolls off the page. Good riddance.
+  - Eight legs twitch one last time. The narrator shudders.

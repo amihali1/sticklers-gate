@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2162f34773fb5b84fa0651fd187cfe11, type: 3}
+  m_Name: NecromancersStudy
+  m_EditorClassIdentifier:
+  _encounterName: The Necromancer's Study
+  _enemies:
+  - enemyData: {fileID: 11400000, guid: 79c770894850480eb472575fc7ac7865, type: 2}
+    row: 0
+    nameOverride: Bone Guard
+  - enemyData: {fileID: 11400000, guid: 79c770894850480eb472575fc7ac7865, type: 2}
+    row: 0
+    nameOverride: Bone Guard
+  - enemyData: {fileID: 11400000, guid: 08449b3d71df46bd91bd4d72cd3779d8, type: 2}
+    row: 1
+    nameOverride:
+  _victoryCondition: 0
+  _survivalTurns: 0
+  _background: {fileID: 0}
+  _introLines:
+  - You enter a room full of scribbled arcane circles. Someone's been busy.
+  - A necromancer stands behind two skeletal guards. They're reading from 'Raising the Dead for Dummies.'
+  - The skeletons rattle menacingly. The necromancer sighs. 'Do I have to do everything myself?'
+  _victoryLines:
+  - The necromancer falls! The skeletons collapse into a pile of lines.
+  - Victory! You've defeated dark magic with the power of hitting things.
+  _defeatLines:
+  - The necromancer adds you to their collection. How embarrassing.
+  - Defeated. The necromancer was not, in fact, a beginner.

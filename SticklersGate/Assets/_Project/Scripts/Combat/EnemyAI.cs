@@ -72,18 +72,26 @@ namespace SticklersGate.Combat
                 return decision;
             }
 
-            // Pick best damaging ability
+            // Pick best damaging ability, weighing multi-target higher when multiple targets exist
             RuntimeAbility bestAbility = null;
-            int bestDamagePotential = 0;
+            int bestScore = 0;
 
             foreach (var ability in readyAbilities)
             {
                 if (ability.Data.DealsDamage)
                 {
-                    int potential = ability.Data.DamageDiceCount * ability.Data.DamageDiceSides + ability.Data.FlatDamageBonus;
-                    if (potential > bestDamagePotential)
+                    int baseDamage = ability.Data.DamageDiceCount * ability.Data.DamageDiceSides + ability.Data.FlatDamageBonus;
+                    int score = baseDamage;
+
+                    // Multi-target abilities score higher with more targets
+                    if (ability.Data.TargetType == AbilityTargetType.AllEnemies)
                     {
-                        bestDamagePotential = potential;
+                        score *= validTargets.Count;
+                    }
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
                         bestAbility = ability;
                     }
                 }
@@ -93,6 +101,7 @@ namespace SticklersGate.Combat
             decision.ChosenAbility = bestAbility ?? readyAbilities[0];
 
             // Select target based on AI preference
+            // For multi-target abilities, target is just a placeholder (CombatStateMachine gathers all)
             var preference = enemyData != null ? enemyData.TargetPreference : AITargetPreference.Random;
             decision.Target = SelectTarget(validTargets, preference);
 

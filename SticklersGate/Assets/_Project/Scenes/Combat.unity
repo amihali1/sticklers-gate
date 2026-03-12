@@ -179,3 +179,11 @@ MonoBehaviour:
   - Slick
   - Sister Splinter
   _partyLevel: 1
+  _starterItems:
+  - {fileID: 11400000, guid: c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8, type: 2}
+  - {fileID: 11400000, guid: d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9, type: 2}
+  - {fileID: 11400000, guid: e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0, type: 2}
+  _starterItemQuantities:
+  - 3
+  - 2
+  - 1

@@ -41,6 +41,7 @@ namespace SticklersGate.UI
         private readonly Dictionary<CombatUnit, Transform> _unitPositions = new Dictionary<CombatUnit, Transform>();
 
         private RuntimeAbility _selectedAbility;
+        private ItemSO _selectedItem;
 
         private void Awake()
         {
@@ -68,6 +69,7 @@ namespace SticklersGate.UI
             {
                 _actionPanel.OnAbilitySelected += HandleAbilitySelected;
                 _actionPanel.OnDefendSelected += HandleDefendSelected;
+                _actionPanel.OnItemSelected += HandleItemSelected;
             }
 
             if (_targetPanel != null)
@@ -96,6 +98,7 @@ namespace SticklersGate.UI
             {
                 _actionPanel.OnAbilitySelected -= HandleAbilitySelected;
                 _actionPanel.OnDefendSelected -= HandleDefendSelected;
+                _actionPanel.OnItemSelected -= HandleItemSelected;
             }
 
             if (_targetPanel != null)
@@ -109,6 +112,12 @@ namespace SticklersGate.UI
         {
             SetupHPBars();
             AssignUnitPositions();
+
+            // Set inventory after StartCombat has run (Inventory is null at OnEnable time)
+            if (_actionPanel != null && _combatStateMachine.Inventory != null)
+            {
+                _actionPanel.SetInventory(_combatStateMachine.Inventory);
+            }
         }
 
         private void HandleInitiativeRolled(List<CombatUnit> turnOrder)
@@ -140,9 +149,16 @@ namespace SticklersGate.UI
             _selectedAbility = ability;
             if (_actionPanel != null) _actionPanel.Hide();
 
-            // Self-target abilities auto-submit
+            // Auto-submit abilities that don't need target selection
             if (ability.Data.TargetType == AbilityTargetType.Self)
             {
+                SubmitAction(ability, _combatStateMachine.CurrentUnit);
+                return;
+            }
+            if (ability.Data.TargetType == AbilityTargetType.AllEnemies ||
+                ability.Data.TargetType == AbilityTargetType.AllAllies)
+            {
+                // Multi-target: CombatStateMachine gathers all targets internally
                 SubmitAction(ability, _combatStateMachine.CurrentUnit);
                 return;
             }
@@ -162,9 +178,41 @@ namespace SticklersGate.UI
             _combatStateMachine.SubmitDefend();
         }
 
+        private void HandleItemSelected(ItemSO item)
+        {
+            _selectedItem = item;
+            _selectedAbility = null;
+            if (_actionPanel != null) _actionPanel.Hide();
+
+            // Self-targeting items (heals on self) or AllAllies auto-submit
+            if (item.TargetType == AbilityTargetType.Self ||
+                item.TargetType == AbilityTargetType.AllAllies ||
+                item.TargetType == AbilityTargetType.AllEnemies)
+            {
+                _combatStateMachine.SubmitUseItem(item, _combatStateMachine.CurrentUnit);
+                _selectedItem = null;
+                return;
+            }
+
+            // Show target selection for single-target items
+            if (_targetPanel != null)
+            {
+                // Create a temporary AbilitySO-like target type for the panel
+                _targetPanel.ShowTargets(item.TargetType, _combatStateMachine.CurrentUnit,
+                    _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);
+            }
+        }
+
         private void HandleTargetSelected(CombatUnit target)
         {
             if (_targetPanel != null) _targetPanel.Hide();
+
+            if (_selectedItem != null)
+            {
+                _combatStateMachine.SubmitUseItem(_selectedItem, target);
+                _selectedItem = null;
+                return;
+            }
 
             if (_selectedAbility != null)
             {
@@ -176,6 +224,7 @@ namespace SticklersGate.UI
         {
             if (_targetPanel != null) _targetPanel.Hide();
             _selectedAbility = null;
+            _selectedItem = null;
 
             // Re-show action panel
             if (_combatStateMachine.CurrentUnit != null && _combatStateMachine.CurrentUnit.IsPlayer)
