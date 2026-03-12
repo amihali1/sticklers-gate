@@ -273,6 +273,7 @@ namespace SticklersGate.UI
             if (_hpBarPrefab == null || container == null) return;
 
             var go = Instantiate(_hpBarPrefab, container);
+            go.SetActive(true);
             var hpBar = go.GetComponent<UnitHPBar>();
             if (hpBar != null)
             {
@@ -330,6 +331,7 @@ namespace SticklersGate.UI
             if (_damagePopupPrefab == null || _popupCanvas == null) return;
 
             var go = Instantiate(_damagePopupPrefab, _popupCanvas.transform);
+            go.SetActive(true);
             var popup = go.GetComponent<DamagePopup>();
             if (popup != null)
             {
