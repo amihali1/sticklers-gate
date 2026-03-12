@@ -138,3 +138,39 @@
 - Party uses GDD character names (Ser Sticksworth, Twiggy, Slick, Sister Splinter)
 
 **Next session:** Phase 5.3 polish pass, test in Unity Editor
+
+## Session 6 — March 12, 2026
+**Focus:** Runtime bug fixes + Milestone 2 (Phases 6-7)
+**What happened:**
+- Fixed combat not progressing: CombatUIController.OnEnable timing bug (PR #11)
+- Fixed inactive prefab clones (SetActive(true) after Instantiate) (PR #11)
+- Removed CombatSceneSetup from bootstrapper (caused double StartCombat) (PR #11)
+- Milestone 1 declared complete, started Milestone 2
+- Phase 6: Multi-target ability resolution
+  - CombatStateMachine.ResolveAbility now gathers all targets for AllEnemies/AllAllies
+  - UI auto-submits multi-target abilities without target selection
+  - EnemyAI scores AoE abilities higher with more targets
+- Phase 6: 3 new enemies + 7 new abilities + 2 new encounters
+  - Stick Bandit (Standard): Crossbow Shot + Dagger Slash
+  - Stick Spider (Standard): Venomous Bite + Web Spit + Poison Spit (AoE)
+  - Stick Necromancer (Elite): Dark Bolt + Life Drain
+  - The Bandit Crossing encounter, The Necromancer's Study encounter
+- Phase 7: Full item/consumable system
+  - ItemSO ScriptableObject (consumable, weapon, armor, accessory)
+  - Inventory class with add/remove/stack/events
+  - CombatStateMachine.SubmitUseItem resolves heal/damage/status effects
+  - ActionPanel shows consumable buttons, TargetPanel supports item targeting
+  - 3 item assets: Health Potion, Antidote, Alchemist Fire
+  - Combat.unity scene updated with starter items
+- Tests: multi-target, AoE AI preference, new enemy data, 10 inventory tests
+
+**Decisions made:**
+- Multi-target abilities auto-submit from UI (no target picker needed)
+- GatherTargets method centralizes target collection for both abilities and items
+- Inventory is shared across party (not per-character)
+- Items appear as green-tinted buttons in ActionPanel alongside abilities
+- ItemSO GUID collision caught and fixed (was same as CombatBootstrapper)
+
+**PRs:** #11 (bug fixes), Milestone 2 branch in progress
+
+**Next session:** Phase 8 (encounter difficulty, integration testing, polish), then PR + merge
