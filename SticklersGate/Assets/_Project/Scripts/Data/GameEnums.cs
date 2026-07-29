@@ -101,11 +101,41 @@ namespace SticklersGate.Data
 
     /// <summary>
     /// Combat row positioning. Front row can melee; back row gets +2 AC vs melee.
+    /// Deprecated: superseded by the grid system (Phase 9). Removed in PR B.
     /// </summary>
     public enum CombatRow
     {
         FrontRow,
         BackRow
+    }
+
+    /// <summary>
+    /// Terrain of a single grid tile. Affects movement cost, line of fire, and
+    /// combat modifiers. Only Normal is used in the initial encounters; the rest
+    /// are wired up as content requires them.
+    /// </summary>
+    public enum TerrainType
+    {
+        /// <summary>Flat, walkable, movement cost 1.</summary>
+        Normal,
+
+        /// <summary>Walkable at 2× movement cost (rubble, mud, brush).</summary>
+        Difficult,
+
+        /// <summary>Walkable; grants +1 AC and +1 ranged range to occupants.</summary>
+        Elevated,
+
+        /// <summary>Walkable at 2× movement cost; halves fire damage taken.</summary>
+        Water,
+
+        /// <summary>Walkable but deals 2d6 fire on enter and at turn start.</summary>
+        Lava,
+
+        /// <summary>Impassable; entering (forced movement) is a lethal fall.</summary>
+        Abyss,
+
+        /// <summary>Walkable; grants +2 AC versus ranged attacks.</summary>
+        Cover
     }
 
     /// <summary>

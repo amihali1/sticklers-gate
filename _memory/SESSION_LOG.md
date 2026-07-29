@@ -203,3 +203,28 @@
 - Phase 8 deferred since grid changes encounter design fundamentally
 
 **Next session:** Implement PR A (Grid Data Foundation)
+
+## Session 8 — July 29, 2026
+**Focus:** Phase 9 PR A (Grid Data Foundation) + class-roster direction
+
+**What happened:**
+- Confirmed direction: FFT-style tactical grid combat (already the Phase 9 plan) + expanded concrete D&D role classes
+- Implemented PR A on `feature/grid-data`:
+  - `GridPosition` struct (Data) — Manhattan distance, orthogonal neighbors, operators, dictionary-key ready
+  - `TerrainType` enum added to GameEnums.cs (7 types; only Normal used initially)
+  - `CombatGrid` (Combat) — terrain map, occupancy w/ reverse lookup, walkability, movement cost, `FromLayout` factory
+  - `Pathfinder` (Combat) — Dijkstra (terrain-cost aware): reachable-range + shortest path, blocks on occupancy/impassable
+  - `GridLayoutSO` (Data) — dimensions, terrain overrides, player/enemy spawns
+  - Grid constants added to GameConstants.cs
+  - Tests: GridPositionTests, CombatGridTests, PathfinderTests (NUnit)
+  - Minimal .meta files generated for all 7 new files
+- Tests NOT yet executed in Unity (no CLI runner wired this session) — written, need EditMode run before merge
+
+**Decisions made:**
+- Sequencing: grid foundation FIRST, class expansion after PR-A/B (new abilities need range/movement fields grid adds)
+- Class roster: full 12-class D&D set — current 4 + Sorcerer, Druid, Barbarian, Ranger, Bard, Monk, Warlock, Paladin (keep "Stick" prefix)
+- Sorcerer vs Wizard: metamagic/burst (CHA, single-target nukes + twin/empower) vs INT versatility/AoE control
+- Layering: GridLayoutSO stays pure data; CombatGrid.FromLayout does construction (Combat→Data, no cycle)
+- Movement is 4-directional (orthogonal), Manhattan distance — matches FFT tactical feel
+
+**Next session:** Run EditMode tests, open PR for `feature/grid-data`, then PR B (Core Combat Integration).

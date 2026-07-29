@@ -38,14 +38,14 @@ All phases done: Project bootstrap, core data model, combat engine, combat UI, c
 
 Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs:
 
-#### PR A: Grid Data Foundation (`feature/grid-data`)
-- [ ] 9.1 GridPosition struct (x, y value type with distance helpers)
-- [ ] 9.2 TerrainType enum (Normal, Difficult, Elevated, Water, Lava, Abyss, Cover)
-- [ ] 9.3 CombatGrid class (width/height, terrain map, occupancy, walkability)
-- [ ] 9.4 Pathfinder class (BFS movement range + shortest path)
-- [ ] 9.5 GridLayoutSO (per-encounter grid config: dimensions, terrain, spawn points)
-- [ ] 9.6 Grid constants (DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT, DEFAULT_MELEE_RANGE, etc.)
-- [ ] 9.7 Unit tests for GridPosition, CombatGrid, Pathfinder
+#### PR A: Grid Data Foundation (`feature/grid-data`) — Complete
+- [x] 9.1 GridPosition struct (x, y value type, Manhattan distance + orthogonal neighbors + operators)
+- [x] 9.2 TerrainType enum (Normal, Difficult, Elevated, Water, Lava, Abyss, Cover) — added to GameEnums.cs
+- [x] 9.3 CombatGrid class (width/height, terrain map, occupancy w/ reverse lookup, walkability, movement cost, FromLayout factory)
+- [x] 9.4 Pathfinder class (Dijkstra — reachable range + shortest path, terrain-cost aware, blocks on occupancy)
+- [x] 9.5 GridLayoutSO (dimensions, terrain overrides, player/enemy spawn points)
+- [x] 9.6 Grid constants (DEFAULT/MAX grid size, melee/ranged range + movement, terrain costs, elevated/cover bonuses)
+- [x] 9.7 Unit tests: GridPositionTests, CombatGridTests, PathfinderTests
 
 #### PR B: Core Combat Integration (`feature/grid-combat-core`)
 - [ ] 9.8 CombatUnit: replace Row with GridPosition, add MovementSpeed
@@ -80,7 +80,10 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [ ] 9.31 Update Combat.unity scene
 
 ## Next Action
-Start PR A: Grid Data Foundation (`feature/grid-data`).
+PR A (Grid Data Foundation) code complete on `feature/grid-data` — needs Unity EditMode test run + PR. Then start PR B: Core Combat Integration (`feature/grid-combat-core`) — migrate CombatUnit Row→GridPosition, add MovementSpeed, AbilitySO _range, remove CombatRow.
+
+## Class Roster Expansion (queued after grid PR-A/B)
+Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickwizard(Wizard), Stickrogue(Rogue), Stickleric(Cleric). Add 8: Sorcerer(CHA burst/metamagic — distinct from Wizard's INT versatility), Druid, Barbarian, Ranger, Bard, Monk, Warlock, Paladin. Keep "Stick" pun prefix. Build after grid foundation so all class abilities get range/movement fields natively.
 
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
