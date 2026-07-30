@@ -40,9 +40,11 @@ namespace SticklersGate.Combat
         private EncounterSO _encounter;
         private int _turnCount;
         private Inventory _inventory;
+        private CombatGrid _grid;
 
         // --- Public State ---
         public CombatPhase CurrentPhase => _currentPhase;
+        public CombatGrid Grid => _grid;
         public CombatUnit CurrentUnit => _currentTurnIndex < _turnOrder.Count ? _turnOrder[_currentTurnIndex] : null;
         public IReadOnlyList<CombatUnit> TurnOrder => _turnOrder;
         public IReadOnlyList<CombatUnit> PlayerUnits => _playerUnits;
@@ -61,7 +63,7 @@ namespace SticklersGate.Combat
         /// <summary>
         /// Start a combat encounter with the given player party and encounter data.
         /// </summary>
-        public void StartCombat(List<CombatUnit> playerUnits, EncounterSO encounter)
+        public void StartCombat(List<CombatUnit> playerUnits, EncounterSO encounter, GridLayoutSO layout = null)
         {
             _encounter = encounter;
             _playerUnits = new List<CombatUnit>(playerUnits);
@@ -72,13 +74,15 @@ namespace SticklersGate.Combat
             foreach (var spawn in encounter.Enemies)
             {
                 var unit = CombatUnit.FromEnemy(spawn.enemyData, spawn.nameOverride);
-                unit.Row = spawn.row;
                 _enemyUnits.Add(unit);
             }
 
             _allUnits = new List<CombatUnit>();
             _allUnits.AddRange(_playerUnits);
             _allUnits.AddRange(_enemyUnits);
+
+            // Build the combat grid and place every unit on a tile.
+            SetupGrid(layout);
 
             DiceRoller.ClearHistory();
             SetPhase(CombatPhase.Setup);
@@ -613,6 +617,68 @@ namespace SticklersGate.Combat
         {
             _currentPhase = phase;
             OnPhaseChanged?.Invoke(phase);
+        }
+
+        /// <summary>
+        /// Builds the combat grid (from the layout, or a default one) and places
+        /// every unit on a starting tile. Players spawn on the left column, enemies
+        /// on the right, unless the layout supplies explicit spawn points.
+        /// </summary>
+        private void SetupGrid(GridLayoutSO layout)
+        {
+            _grid = layout != null
+                ? CombatGrid.FromLayout(layout)
+                : new CombatGrid(GameConstants.DEFAULT_GRID_WIDTH, GameConstants.DEFAULT_GRID_HEIGHT);
+
+            var playerSpawns = layout != null && layout.PlayerSpawns.Length > 0 ? layout.PlayerSpawns : null;
+            var enemySpawns = layout != null && layout.EnemySpawns.Length > 0 ? layout.EnemySpawns : null;
+
+            PlaceSide(_playerUnits, playerSpawns, defaultColumn: 1);
+            PlaceSide(_enemyUnits, enemySpawns, defaultColumn: _grid.Width - 2);
+        }
+
+        /// <summary>
+        /// Places one side's units on the grid. Uses explicit spawn points when
+        /// available, otherwise stacks units down a default column. Falls back to
+        /// the nearest free tile if a preferred tile is blocked or occupied.
+        /// </summary>
+        private void PlaceSide(List<CombatUnit> units, GridPosition[] spawns, int defaultColumn)
+        {
+            int column = Mathf.Clamp(defaultColumn, 0, _grid.Width - 1);
+
+            for (int i = 0; i < units.Count; i++)
+            {
+                GridPosition preferred = spawns != null && i < spawns.Length
+                    ? spawns[i]
+                    : new GridPosition(column, Mathf.Min(i, _grid.Height - 1));
+
+                GridPosition tile = FindFreeTile(preferred);
+                units[i].Position = tile;
+                _grid.PlaceOccupant(units[i], tile);
+            }
+        }
+
+        /// <summary>
+        /// Returns the preferred tile if walkable, otherwise the first walkable
+        /// tile found scanning the grid. Assumes the grid has capacity for all units.
+        /// </summary>
+        private GridPosition FindFreeTile(GridPosition preferred)
+        {
+            if (_grid.IsWalkable(preferred))
+                return preferred;
+
+            for (int x = 0; x < _grid.Width; x++)
+            {
+                for (int y = 0; y < _grid.Height; y++)
+                {
+                    var candidate = new GridPosition(x, y);
+                    if (_grid.IsWalkable(candidate))
+                        return candidate;
+                }
+            }
+
+            // Should never happen for correctly sized grids; surface loudly if it does.
+            throw new InvalidOperationException("No free tile available on the combat grid for unit placement.");
         }
     }
 }

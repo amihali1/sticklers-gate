@@ -36,7 +36,10 @@ Setup → Roll Initiative → [Turn Loop: TurnStart → Movement → Choose Acti
 Movement phase: player chooses a tile within movement range (or skips). Enemy AI moves automatically.
 Player action turns pause coroutine loop, resume via SubmitPlayerAction().
 
-## Grid System (Phase 9 — planned)
+## Grid System (Phase 9 — PR A + PR B implemented)
+
+**Implemented so far:** GridPosition, TerrainType, CombatGrid, Pathfinder, GridLayoutSO (PR A); CombatUnit.Position/MovementSpeed, AbilitySO.Range, CharacterClassSO/EnemySO.MovementSpeed, DamageCalculator.IsInRange, CombatStateMachine grid setup + unit placement, CombatRow fully removed (PR B). Movement phase (PR C), grid rendering/input (PR D), and content/spawn assets (PR E) still pending. **Range is validated by DamageCalculator.IsInRange but not yet hard-enforced** — enforcement waits for the movement phase so melee can close distance.
+
 
 **Grid:** CombatGrid holds width×height terrain map + occupancy. Default 8×6 for small encounters, up to 12×8.
 
@@ -86,11 +89,11 @@ Player action turns pause coroutine loop, resume via SubmitPlayerAction().
 - **DiceRoller** — Static. Roll(), RollMultiple(), RollD20(), RollWithAdvantage/Disadvantage(), IsCriticalHit/Fail(), GetModifier(). History of last 20 rolls.
 
 ## Enums (Scripts/Data/GameEnums.cs) — Implemented
-AbilityScore, DamageType, AbilityTargetType, AbilityCategory, StatusEffectType (includes None), CombatPhase, CharacterClassType, CombatRow*, EnemyTier, AITargetPreference, VictoryCondition, ItemType, ItemRarity
+AbilityScore, DamageType, AbilityTargetType, AbilityCategory, StatusEffectType (includes None), CombatPhase, CharacterClassType, TerrainType, EnemyTier, AITargetPreference, VictoryCondition, ItemType, ItemRarity
 
-*CombatRow will be removed when grid system replaces row-based positioning. TerrainType enum will be added. CombatPhase will gain PlayerChooseMovement.
+*CombatRow REMOVED (PR B). TerrainType ADDED (PR A). CombatPhase will still gain PlayerChooseMovement in PR C.
 
 ## Constants (Scripts/Data/GameConstants.cs) — Implemented
-BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS/FAIL_NEEDED=3, BACK_ROW_AC_BONUS=2*, DEFEND_AC_BONUS=2, FLEE_DC=12, XP_THRESHOLDS[]
+BASE_AC=10, CRIT_THRESHOLD=20, CRIT_FAIL_THRESHOLD=1, MAX_PARTY_SIZE=4, MAX_LEVEL=5, DEATH_SAVE_SUCCESS/FAIL_NEEDED=3, DEFEND_AC_BONUS=2, FLEE_DC=12, XP_THRESHOLDS[]
 
-*BACK_ROW_AC_BONUS will be removed. Grid constants to add: DEFAULT_GRID_WIDTH=8, DEFAULT_GRID_HEIGHT=6, DEFAULT_MELEE_RANGE=1, DEFAULT_RANGED_RANGE=4, DEFAULT_MELEE_MOVEMENT=3, DEFAULT_RANGED_MOVEMENT=2
+Grid constants (PR A): DEFAULT_GRID_WIDTH=8, DEFAULT_GRID_HEIGHT=6, MAX_GRID_WIDTH=12, MAX_GRID_HEIGHT=8, DEFAULT_MELEE_RANGE=1, DEFAULT_RANGED_RANGE=4, DEFAULT_MELEE_MOVEMENT=3, DEFAULT_RANGED_MOVEMENT=2, NORMAL/DIFFICULT_MOVEMENT_COST=1/2, ELEVATED/COVER_AC_BONUS, ELEVATED_RANGE_BONUS. BACK_ROW_AC_BONUS REMOVED (PR B).

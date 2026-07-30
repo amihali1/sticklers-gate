@@ -78,10 +78,15 @@ namespace SticklersGate.Combat
         public int MaxHP { get; }
         public int BaseAC { get; }
 
+        /// <summary>Tiles this unit can move per turn on the combat grid.</summary>
+        public int MovementSpeed { get; }
+
         // --- Mutable State ---
         public int CurrentHP { get; private set; }
         public int Initiative { get; set; }
-        public CombatRow Row { get; set; }
+
+        /// <summary>Current tile on the combat grid. Assigned at spawn, updated on movement.</summary>
+        public GridPosition Position { get; set; }
         public bool IsAlive { get; private set; } = true;
         public bool IsConscious { get; private set; } = true;
         public int DeathSaveSuccesses { get; private set; }
@@ -105,7 +110,7 @@ namespace SticklersGate.Combat
         public event Action<StatusEffectType> OnStatusEffectRemoved;
 
         private CombatUnit(string name, bool isPlayer, StatBlock stats, int maxHP, int baseAC,
-            CombatRow row, List<RuntimeAbility> abilities,
+            int movementSpeed, List<RuntimeAbility> abilities,
             CharacterClassSO classData, EnemySO enemyData)
         {
             Name = name;
@@ -113,8 +118,8 @@ namespace SticklersGate.Combat
             Stats = stats;
             MaxHP = maxHP;
             BaseAC = baseAC;
+            MovementSpeed = movementSpeed;
             CurrentHP = maxHP;
-            Row = row;
             Abilities = abilities;
             ClassData = classData;
             EnemyData = enemyData;
@@ -137,7 +142,7 @@ namespace SticklersGate.Combat
                 stats: classData.BaseStats,
                 maxHP: classData.GetMaxHPAtLevel(level),
                 baseAC: classData.BaseAC,
-                row: classData.PreferredRow,
+                movementSpeed: classData.MovementSpeed,
                 abilities: abilities,
                 classData: classData,
                 enemyData: null
@@ -162,7 +167,7 @@ namespace SticklersGate.Combat
                 stats: enemyData.Stats,
                 maxHP: enemyData.HitPoints,
                 baseAC: enemyData.ArmorClass,
-                row: enemyData.PreferredRow,
+                movementSpeed: enemyData.MovementSpeed,
                 abilities: abilities,
                 classData: null,
                 enemyData: enemyData
@@ -170,7 +175,7 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
-        /// Current effective AC including bonuses and row modifiers.
+        /// Current effective AC including temporary bonuses (defend, buffs, terrain).
         /// </summary>
         public int EffectiveAC => BaseAC + BonusAC;
 

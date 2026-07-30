@@ -100,16 +100,6 @@ namespace SticklersGate.Data
     }
 
     /// <summary>
-    /// Combat row positioning. Front row can melee; back row gets +2 AC vs melee.
-    /// Deprecated: superseded by the grid system (Phase 9). Removed in PR B.
-    /// </summary>
-    public enum CombatRow
-    {
-        FrontRow,
-        BackRow
-    }
-
-    /// <summary>
     /// Terrain of a single grid tile. Affects movement cost, line of fire, and
     /// combat modifiers. Only Normal is used in the initial encounters; the rest
     /// are wired up as content requires them.

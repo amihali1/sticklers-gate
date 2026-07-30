@@ -32,6 +32,10 @@ namespace SticklersGate.Data
         [SerializeField] private AbilityScore _savingThrowAbility;
         [SerializeField] private int _savingThrowDC;
 
+        [Header("Range")]
+        [Tooltip("Grid range in tiles (Manhattan). Melee = 1, ranged 3-6, self = 0. AoE abilities ignore range.")]
+        [SerializeField] private int _range = GameConstants.DEFAULT_MELEE_RANGE;
+
         [Header("Cooldown")]
         [SerializeField] private int _cooldownTurns;
         [SerializeField] private int _unlockLevel = 1;
@@ -62,6 +66,11 @@ namespace SticklersGate.Data
         public int EffectDurationTurns => _effectDurationTurns;
         public AbilityScore SavingThrowAbility => _savingThrowAbility;
         public int SavingThrowDC => _savingThrowDC;
+
+        /// <summary>
+        /// Range in grid tiles (Manhattan distance). AoE abilities ignore this.
+        /// </summary>
+        public int Range => _range;
 
         public int CooldownTurns => _cooldownTurns;
         public int UnlockLevel => _unlockLevel;

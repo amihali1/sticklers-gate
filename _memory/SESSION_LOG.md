@@ -228,3 +228,27 @@
 - Movement is 4-directional (orthogonal), Manhattan distance — matches FFT tactical feel
 
 **Next session:** Run EditMode tests, open PR for `feature/grid-data`, then PR B (Core Combat Integration).
+
+## Session 9 — July 30, 2026
+**Focus:** Phase 9 PR B (Core Combat Integration) — Row → grid migration
+
+**What happened:**
+- Verified the 2 suspect test failures are PRE-EXISTING (bisected on parent f9bc0e8: both fail without any grid code)
+- Implemented PR B on `feature/grid-combat-core`:
+  - CombatUnit: removed Row, added `Position` (GridPosition) + `MovementSpeed`
+  - AbilitySO: added `_range` (grid tiles, default 1); AoE/self ignore range
+  - CharacterClassSO / EnemySO: `_preferredRow` → `_movementSpeed` (default 3)
+  - DamageCalculator: added `IsInRange()` + `AttackResult.WasInRange`; removed back-row AC bonus
+  - CombatStateMachine: builds CombatGrid (optional GridLayoutSO param, else default 8×6), places units at spawns/default columns, exposes `Grid`
+  - EnemyAI: HighestThreat now = peak ability damage; Healers = has-heal-ability (was row-based)
+  - Removed CombatRow enum, BACK_ROW_AC_BONUS, EnemySpawn.row
+  - Migrated 4 test files (Python script for the 2 big ones); replaced back-row tests with 4 range tests
+- EditMode: 145/147 pass (2 failures = the pre-existing unrelated ones)
+
+**Decisions made:**
+- Range NOT hard-enforced in PR B — only validated via IsInRange. Enforcement deferred to PR C (movement) + PR D (UI) so melee stays viable before a movement phase exists. Keeps every intermediate build playable.
+- Default spawn formation: players left column (x=1), enemies right column (x=width-2), stacked by row; FindFreeTile fallback scan.
+- Layering kept clean: GridLayoutSO pure data, CombatGrid.FromLayout does construction.
+- 2 pre-existing test bugs (LethalDamage expects Die from TakeDamage; StandardArray expects equal stat totals) left for a separate cleanup PR — out of grid scope.
+
+**Next session:** Commit + push PR B, open PRs A & B, then PR C (Movement Phase) — and begin hard-enforcing ability range.
