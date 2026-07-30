@@ -38,7 +38,9 @@ Player action turns pause coroutine loop, resume via SubmitPlayerAction().
 
 ## Grid System (Phase 9 — PR A + PR B implemented)
 
-**Implemented so far:** GridPosition, TerrainType, CombatGrid, Pathfinder, GridLayoutSO (PR A); CombatUnit.Position/MovementSpeed, AbilitySO.Range, CharacterClassSO/EnemySO.MovementSpeed, DamageCalculator.IsInRange, CombatStateMachine grid setup + unit placement, CombatRow fully removed (PR B). Movement phase (PR C), grid rendering/input (PR D), and content/spawn assets (PR E) still pending. **Range is validated by DamageCalculator.IsInRange but not yet hard-enforced** — enforcement waits for the movement phase so melee can close distance.
+**Implemented so far:** GridPosition, TerrainType, CombatGrid, Pathfinder, GridLayoutSO (PR A); CombatUnit.Position/MovementSpeed, AbilitySO.Range, CharacterClassSO/EnemySO.MovementSpeed, DamageCalculator.IsInRange, CombatStateMachine grid setup + unit placement, CombatRow fully removed (PR B); PlayerChooseMovement phase + SubmitPlayerMovement/SkipMovement, EnemyAI.DecideMovement (melee closes / ranged kites), OnMovementPhaseStarted + OnUnitMoved events, **hard range enforcement now ON** (PR C). Grid rendering/input (PR D) and content/spawn assets (PR E) still pending.
+
+**Turn flow now:** TurnStart → PlayerChooseMovement (or AI DecideMovement) → PlayerChooseAction → PlayerChooseTarget → ResolveAction → TurnEnd. Player movement: pick a reachable tile (Pathfinder within MovementSpeed) or skip. Out-of-range single-target actions are rejected (player keeps turn); enemies forfeit the attack if still unreachable after moving. AoE/self ignore range.
 
 
 **Grid:** CombatGrid holds width×height terrain map + occupancy. Default 8×6 for small encounters, up to 12×8.

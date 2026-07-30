@@ -152,8 +152,6 @@ namespace SticklersGate.Combat
         /// </summary>
         public static bool IsInRange(CombatUnit attacker, CombatUnit target, AbilitySO ability)
         {
-            if (attacker == null || target == null) return false;
-
             switch (ability.TargetType)
             {
                 case AbilityTargetType.Self:
@@ -161,6 +159,7 @@ namespace SticklersGate.Combat
                 case AbilityTargetType.AllAllies:
                     return true;
                 default:
+                    if (attacker == null || target == null) return false;
                     return attacker.Position.ManhattanDistanceTo(target.Position) <= ability.Range;
             }
         }

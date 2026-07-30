@@ -29,6 +29,8 @@ namespace SticklersGate.Combat
         public event Action<bool> OnCombatResult; // true = victory, false = defeat
         public event Action<CombatPhase> OnPhaseChanged;
         public event Action<CombatUnit, ItemSO> OnItemUsed;
+        public event Action<CombatUnit> OnMovementPhaseStarted;
+        public event Action<CombatUnit, GridPosition, GridPosition> OnUnitMoved; // unit, from, to
 
         // --- State ---
         private List<CombatUnit> _allUnits = new List<CombatUnit>();
@@ -158,11 +160,16 @@ namespace SticklersGate.Combat
 
                     if (unit.IsPlayer)
                     {
-                        // Wait for player input
-                        SetPhase(CombatPhase.PlayerChooseAction);
-                        OnPlayerActionNeeded?.Invoke(unit);
+                        // Movement phase: player picks a reachable tile or skips.
+                        SetPhase(CombatPhase.PlayerChooseMovement);
+                        OnMovementPhaseStarted?.Invoke(unit);
+                        while (_currentPhase == CombatPhase.PlayerChooseMovement)
+                        {
+                            yield return null;
+                        }
 
-                        // Wait until phase advances past PlayerChooseTarget
+                        // SubmitPlayerMovement/SkipMovement advances into the action
+                        // phase and fires OnPlayerActionNeeded. Wait for the action.
                         while (_currentPhase == CombatPhase.PlayerChooseAction ||
                                _currentPhase == CombatPhase.PlayerChooseTarget)
                         {
@@ -171,7 +178,7 @@ namespace SticklersGate.Combat
                     }
                     else
                     {
-                        // AI decision
+                        // AI decision (movement, then action)
                         yield return HandleEnemyTurn(unit);
                     }
 
@@ -190,6 +197,70 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
+        /// Called by UI when the player moves the active unit to a tile. Ignored
+        /// if the tile is not reachable within the unit's movement this turn.
+        /// Advances to the action phase on success.
+        /// </summary>
+        public void SubmitPlayerMovement(GridPosition destination)
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseMovement) return;
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer) return;
+
+            if (destination != CurrentUnit.Position)
+            {
+                if (!IsReachable(CurrentUnit, destination)) return;
+                MoveUnitTo(CurrentUnit, destination);
+            }
+
+            BeginPlayerActionPhase();
+        }
+
+        /// <summary>
+        /// Called by UI when the player declines to move. Advances to the action
+        /// phase without moving.
+        /// </summary>
+        public void SkipMovement()
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseMovement) return;
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer) return;
+
+            BeginPlayerActionPhase();
+        }
+
+        private void BeginPlayerActionPhase()
+        {
+            SetPhase(CombatPhase.PlayerChooseAction);
+            OnPlayerActionNeeded?.Invoke(CurrentUnit);
+        }
+
+        /// <summary>True if the tile is reachable by the unit within its movement this turn.</summary>
+        private bool IsReachable(CombatUnit unit, GridPosition destination)
+        {
+            if (_grid == null) return false;
+            var reachable = Pathfinder.GetReachablePositions(_grid, unit.Position, unit.MovementSpeed);
+            return reachable.Contains(destination);
+        }
+
+        /// <summary>Moves a unit on the grid, updates its position, and fires OnUnitMoved.</summary>
+        private void MoveUnitTo(CombatUnit unit, GridPosition destination)
+        {
+            GridPosition from = unit.Position;
+            _grid.MoveOccupant(unit, destination);
+            unit.Position = destination;
+            OnUnitMoved?.Invoke(unit, from, destination);
+        }
+
+        /// <summary>
+        /// Whether the actor can currently reach the target with the ability. AoE
+        /// and self abilities always qualify.
+        /// </summary>
+        private static bool InRange(CombatUnit actor, RuntimeAbility ability, CombatUnit target)
+        {
+            // IsInRange short-circuits true for AoE/self (target may be null there).
+            return DamageCalculator.IsInRange(actor, target, ability.Data);
+        }
+
+        /// <summary>
         /// Called by UI when the player selects an action and target.
         /// </summary>
         public void SubmitPlayerAction(RuntimeAbility ability, CombatUnit target)
@@ -200,6 +271,15 @@ namespace SticklersGate.Combat
 
             if (CurrentUnit == null || !CurrentUnit.IsPlayer)
                 return;
+
+            // Enforce ability range for single-target actions; keep the player's
+            // turn so they can pick a reachable target (or move next time).
+            if (!InRange(CurrentUnit, ability, target))
+            {
+                if (target != null)
+                    OnNarratorQuip?.Invoke($"{target.Name} is out of range for {ability.Data.AbilityName}.");
+                return;
+            }
 
             StartCoroutine(ResolvePlayerAction(ability, target));
         }
@@ -317,6 +397,14 @@ namespace SticklersGate.Combat
 
         private IEnumerator HandleEnemyTurn(CombatUnit enemy)
         {
+            // Movement phase: reposition toward the player party.
+            GridPosition destination = EnemyAI.DecideMovement(enemy, _grid, _playerUnits);
+            if (destination != enemy.Position && _grid.IsWalkable(destination))
+            {
+                MoveUnitTo(enemy, destination);
+                yield return new WaitForSeconds(0.3f);
+            }
+
             SetPhase(CombatPhase.ResolveAction);
 
             var decision = EnemyAI.Decide(enemy, _playerUnits, _enemyUnits);
@@ -324,6 +412,16 @@ namespace SticklersGate.Combat
             if (decision.ChosenAbility == null || decision.Target == null)
             {
                 OnNarratorQuip?.Invoke($"{enemy.Name} hesitates and does nothing. Pathetic.");
+                yield return new WaitForSeconds(0.5f);
+                SetPhase(CombatPhase.TurnEnd);
+                yield break;
+            }
+
+            // Range guard: if the chosen single-target ability can't reach even
+            // after moving, forfeit the attack this turn.
+            if (!InRange(enemy, decision.ChosenAbility, decision.Target))
+            {
+                OnNarratorQuip?.Invoke($"{enemy.Name} can't reach {decision.Target.Name} and holds position.");
                 yield return new WaitForSeconds(0.5f);
                 SetPhase(CombatPhase.TurnEnd);
                 yield break;
