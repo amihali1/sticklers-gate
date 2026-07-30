@@ -64,7 +64,7 @@ namespace SticklersGate.Tests
         }
 
         private CharacterClassSO CreateClassSO(string name, CharacterClassType type,
-            StatBlock stats, int ac, int hitDie, CombatRow row, AbilitySO[] abilities)
+            StatBlock stats, int ac, int hitDie, AbilitySO[] abilities)
         {
             var so = ScriptableObject.CreateInstance<CharacterClassSO>();
             SetPrivateField(so, "_className", name);
@@ -73,7 +73,6 @@ namespace SticklersGate.Tests
             SetPrivateField(so, "_baseStats", stats);
             SetPrivateField(so, "_baseAC", ac);
             SetPrivateField(so, "_hitDiceSides", hitDie);
-            SetPrivateField(so, "_preferredRow", row);
             SetPrivateField(so, "_level1Abilities", abilities);
             SetPrivateField(so, "_level3Abilities", new AbilitySO[0]);
             SetPrivateField(so, "_level5Abilities", new AbilitySO[0]);
@@ -81,7 +80,7 @@ namespace SticklersGate.Tests
         }
 
         private EnemySO CreateEnemySO(string name, EnemyTier tier, StatBlock stats,
-            int hp, int ac, AbilitySO[] abilities, CombatRow row = CombatRow.FrontRow,
+            int hp, int ac, AbilitySO[] abilities,
             AITargetPreference pref = AITargetPreference.Random)
         {
             var so = ScriptableObject.CreateInstance<EnemySO>();
@@ -92,7 +91,6 @@ namespace SticklersGate.Tests
             SetPrivateField(so, "_hitPoints", hp);
             SetPrivateField(so, "_armorClass", ac);
             SetPrivateField(so, "_abilities", abilities);
-            SetPrivateField(so, "_preferredRow", row);
             SetPrivateField(so, "_aggression", 0.9f);
             SetPrivateField(so, "_targetPreference", pref);
             SetPrivateField(so, "_retreatThreshold", 0f);
@@ -115,7 +113,6 @@ namespace SticklersGate.Tests
                 spawns[i] = new EnemySpawn
                 {
                     enemyData = enemies[i],
-                    row = CombatRow.FrontRow,
                     nameOverride = ""
                 };
             }
@@ -143,7 +140,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                ac: 16, hitDie: 10, row: CombatRow.FrontRow,
+                ac: 16, hitDie: 10, 
                 abilities: new[] { slash, bash });
 
             var unit = CombatUnit.FromPlayerCharacter("Hero", classSO, 1);
@@ -190,19 +187,19 @@ namespace SticklersGate.Tests
             var knightClass = CreateClassSO("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                ac: 16, hitDie: 10, row: CombatRow.FrontRow, abilities: new[] { slash });
+                ac: 16, hitDie: 10, abilities: new[] { slash });
             var wizardClass = CreateClassSO("Stickwizard", CharacterClassType.Stickwizard,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 12,
                     intelligence = 18, wisdom = 13, charisma = 10 },
-                ac: 12, hitDie: 6, row: CombatRow.BackRow, abilities: new[] { slash });
+                ac: 12, hitDie: 6, abilities: new[] { slash });
             var rogueClass = CreateClassSO("Stickrogue", CharacterClassType.Stickrogue,
                 new StatBlock { strength = 10, dexterity = 18, constitution = 12,
                     intelligence = 13, wisdom = 10, charisma = 14 },
-                ac: 15, hitDie: 8, row: CombatRow.FrontRow, abilities: new[] { slash });
+                ac: 15, hitDie: 8, abilities: new[] { slash });
             var clericClass = CreateClassSO("Stickleric", CharacterClassType.Stickleric,
                 new StatBlock { strength = 14, dexterity = 10, constitution = 14,
                     intelligence = 10, wisdom = 18, charisma = 13 },
-                ac: 18, hitDie: 8, row: CombatRow.BackRow, abilities: new[] { slash });
+                ac: 18, hitDie: 8, abilities: new[] { slash });
 
             var party = new List<CombatUnit>
             {
@@ -331,7 +328,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Wizard", CharacterClassType.Stickwizard,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 12,
                     intelligence = 18, wisdom = 13, charisma = 10 },
-                ac: 12, hitDie: 6, row: CombatRow.BackRow, abilities: new[] { fireball });
+                ac: 12, hitDie: 6, abilities: new[] { fireball });
 
             var unit = CombatUnit.FromPlayerCharacter("Twiggy", classSO, 1);
             var ability = unit.Abilities[0];
@@ -361,7 +358,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Knight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                ac: 16, hitDie: 10, row: CombatRow.FrontRow, abilities: new[] { slash });
+                ac: 16, hitDie: 10, abilities: new[] { slash });
 
             var unit = CombatUnit.FromPlayerCharacter("Knight", classSO, 1);
             Assert.AreEqual(0, unit.BonusAC);
@@ -382,7 +379,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Knight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                ac: 16, hitDie: 10, row: CombatRow.FrontRow, abilities: new[] { slash });
+                ac: 16, hitDie: 10, abilities: new[] { slash });
 
             var enemySO = CreateEnemySO("Goblin", EnemyTier.Minion,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 10,
@@ -415,7 +412,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Cleric", CharacterClassType.Stickleric,
                 new StatBlock { strength = 14, dexterity = 10, constitution = 14,
                     intelligence = 10, wisdom = 18, charisma = 13 },
-                ac: 18, hitDie: 8, row: CombatRow.BackRow, abilities: new[] { heal });
+                ac: 18, hitDie: 8, abilities: new[] { heal });
 
             var cleric = CombatUnit.FromPlayerCharacter("Cleric", classSO, 1);
             var knight = CombatUnit.FromPlayerCharacter("Knight", classSO, 1);
@@ -454,7 +451,7 @@ namespace SticklersGate.Tests
             var classSO = CreateClassSO("Target", CharacterClassType.Sticknight,
                 new StatBlock { strength = 10, dexterity = 10, constitution = 10,
                     intelligence = 10, wisdom = 10, charisma = 10 },
-                ac: 10, hitDie: 8, row: CombatRow.FrontRow, abilities: new[] { shiv });
+                ac: 10, hitDie: 8, abilities: new[] { shiv });
             var target = CombatUnit.FromPlayerCharacter("Target", classSO, 1);
 
             var players = new List<CombatUnit> { target };
@@ -487,7 +484,7 @@ namespace SticklersGate.Tests
             var wizardClass = CreateClassSO("Stickwizard", CharacterClassType.Stickwizard,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 12,
                     intelligence = 18, wisdom = 13, charisma = 10 },
-                ac: 12, hitDie: 6, row: CombatRow.BackRow, abilities: new[] { fireball });
+                ac: 12, hitDie: 6, abilities: new[] { fireball });
 
             var wizard = CombatUnit.FromPlayerCharacter("Twiggy", wizardClass, 1);
 
@@ -524,12 +521,12 @@ namespace SticklersGate.Tests
             var clericClass = CreateClassSO("Stickleric", CharacterClassType.Stickleric,
                 new StatBlock { strength = 14, dexterity = 10, constitution = 14,
                     intelligence = 10, wisdom = 18, charisma = 13 },
-                ac: 18, hitDie: 8, row: CombatRow.BackRow, abilities: new[] { heal });
+                ac: 18, hitDie: 8, abilities: new[] { heal });
 
             var knightClass = CreateClassSO("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                ac: 16, hitDie: 10, row: CombatRow.FrontRow, abilities: new[] { shiv });
+                ac: 16, hitDie: 10, abilities: new[] { shiv });
 
             var cleric = CombatUnit.FromPlayerCharacter("Cleric", clericClass, 1);
             var knight = CombatUnit.FromPlayerCharacter("Knight", knightClass, 1);
@@ -564,7 +561,7 @@ namespace SticklersGate.Tests
             var targetClass = CreateClassSO("Target", CharacterClassType.Sticknight,
                 new StatBlock { strength = 10, dexterity = 10, constitution = 10,
                     intelligence = 10, wisdom = 10, charisma = 10 },
-                ac: 10, hitDie: 8, row: CombatRow.FrontRow, abilities: new[] { shiv });
+                ac: 10, hitDie: 8, abilities: new[] { shiv });
 
             var players = new List<CombatUnit>
             {
@@ -607,14 +604,13 @@ namespace SticklersGate.Tests
                 new StatBlock { strength = 11, dexterity = 14, constitution = 12,
                     intelligence = 10, wisdom = 10, charisma = 10 },
                 hp: 22, ac: 13, abilities: new[] { crossbow, dagger },
-                row: CombatRow.BackRow, pref: AITargetPreference.LowestHP);
+                pref: AITargetPreference.LowestHP);
 
             var unit = CombatUnit.FromEnemy(banditSO);
 
             Assert.AreEqual(22, unit.MaxHP);
             Assert.AreEqual(13, unit.BaseAC);
             Assert.AreEqual(2, unit.Abilities.Count);
-            Assert.AreEqual(CombatRow.BackRow, unit.Row);
         }
 
         [Test]
@@ -646,13 +642,12 @@ namespace SticklersGate.Tests
                 new StatBlock { strength = 8, dexterity = 10, constitution = 14,
                     intelligence = 16, wisdom = 12, charisma = 12 },
                 hp: 45, ac: 12, abilities: new[] { darkBolt, lifeDrain },
-                row: CombatRow.BackRow, pref: AITargetPreference.HighestThreat);
+                pref: AITargetPreference.HighestThreat);
 
             var unit = CombatUnit.FromEnemy(necroSO);
 
             Assert.AreEqual(45, unit.MaxHP);
             Assert.AreEqual(12, unit.BaseAC);
-            Assert.AreEqual(CombatRow.BackRow, unit.Row);
             Assert.AreEqual(2, unit.Abilities.Count);
             Assert.AreEqual("Dark Bolt", unit.Abilities[0].Data.AbilityName);
         }

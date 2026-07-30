@@ -26,7 +26,6 @@ namespace SticklersGate.Tests
                 strength = 10, dexterity = 14, constitution = 10,
                 intelligence = 8, wisdom = 8, charisma = 6
             });
-            SetPrivateField(enemySO, "_preferredRow", CombatRow.FrontRow);
             SetPrivateField(enemySO, "_abilities", new AbilitySO[0]);
 
             _unit = CombatUnit.FromEnemy(enemySO);
@@ -39,7 +38,8 @@ namespace SticklersGate.Tests
             Assert.AreEqual(20, _unit.MaxHP);
             Assert.AreEqual(20, _unit.CurrentHP);
             Assert.AreEqual(12, _unit.BaseAC);
-            Assert.AreEqual(CombatRow.FrontRow, _unit.Row);
+            Assert.AreEqual(GameConstants.DEFAULT_MELEE_MOVEMENT, _unit.MovementSpeed);
+            Assert.AreEqual(new GridPosition(0, 0), _unit.Position);
             Assert.IsFalse(_unit.IsPlayer);
             Assert.IsTrue(_unit.IsAlive);
             Assert.IsTrue(_unit.IsConscious);

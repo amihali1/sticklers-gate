@@ -123,20 +123,25 @@ namespace SticklersGate.Combat
                     return lowest;
 
                 case AITargetPreference.HighestThreat:
-                    // Threat approximated by damage output (back row = casters = high threat)
+                    // Threat approximated by peak ability damage output (casters/DPS).
                     CombatUnit highest = targets[0];
+                    int highestThreat = MaxAbilityDamage(highest);
                     foreach (var t in targets)
                     {
-                        if (t.Row == CombatRow.BackRow && highest.Row != CombatRow.BackRow)
+                        int threat = MaxAbilityDamage(t);
+                        if (threat > highestThreat)
+                        {
+                            highestThreat = threat;
                             highest = t;
+                        }
                     }
                     return highest;
 
                 case AITargetPreference.Healers:
-                    // Target anyone in back row first (healers tend to be there)
+                    // Prefer units that can heal (support), else fall back to first.
                     foreach (var t in targets)
                     {
-                        if (t.Row == CombatRow.BackRow) return t;
+                        if (HasHealAbility(t)) return t;
                     }
                     return targets[0];
 
@@ -163,6 +168,33 @@ namespace SticklersGate.Combat
                 if (ability.Data.Heals) return ability;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Peak single-hit damage a unit's abilities can roll (dice max + flat).
+        /// Used to approximate how threatening a target is.
+        /// </summary>
+        private static int MaxAbilityDamage(CombatUnit unit)
+        {
+            int max = 0;
+            foreach (var ability in unit.Abilities)
+            {
+                var data = ability.Data;
+                if (!data.DealsDamage) continue;
+                int potential = data.DamageDiceCount * data.DamageDiceSides + data.FlatDamageBonus;
+                if (potential > max) max = potential;
+            }
+            return max;
+        }
+
+        /// <summary>True if any of the unit's abilities can heal.</summary>
+        private static bool HasHealAbility(CombatUnit unit)
+        {
+            foreach (var ability in unit.Abilities)
+            {
+                if (ability.Data.Heals) return true;
+            }
+            return false;
         }
     }
 }

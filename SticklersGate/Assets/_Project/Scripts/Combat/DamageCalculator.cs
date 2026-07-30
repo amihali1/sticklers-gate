@@ -19,6 +19,8 @@ namespace SticklersGate.Combat
         public int TotalDamage;
         public StatusEffectType AppliedEffect;
         public int EffectDuration;
+        /// <summary>Whether the target was within the ability's grid range when resolved (informational; enforcement lives in movement/UI).</summary>
+        public bool WasInRange;
     }
 
     /// <summary>
@@ -71,13 +73,7 @@ namespace SticklersGate.Combat
             result.Modifier = attacker.Stats.GetModifier(ability.AbilityModifier);
             result.TotalAttackRoll = result.D20Roll + result.Modifier;
             result.TargetAC = target.EffectiveAC;
-
-            // Back row gets AC bonus vs melee attacks
-            if (target.Row == CombatRow.BackRow &&
-                (ability.Category == AbilityCategory.MeleeAttack))
-            {
-                result.TargetAC += GameConstants.BACK_ROW_AC_BONUS;
-            }
+            result.WasInRange = IsInRange(attacker, target, ability);
 
             // Determine hit (nat 20 always hits, nat 1 always misses)
             if (result.IsCriticalHit)
@@ -147,6 +143,26 @@ namespace SticklersGate.Combat
                 result.Success = result.TotalRoll >= dc;
 
             return result;
+        }
+
+        /// <summary>
+        /// Whether the target is within the ability's grid range (Manhattan
+        /// distance). Self and AoE (AllEnemies/AllAllies) abilities ignore range
+        /// and always return true.
+        /// </summary>
+        public static bool IsInRange(CombatUnit attacker, CombatUnit target, AbilitySO ability)
+        {
+            if (attacker == null || target == null) return false;
+
+            switch (ability.TargetType)
+            {
+                case AbilityTargetType.Self:
+                case AbilityTargetType.AllEnemies:
+                case AbilityTargetType.AllAllies:
+                    return true;
+                default:
+                    return attacker.Position.ManhattanDistanceTo(target.Position) <= ability.Range;
+            }
         }
     }
 }

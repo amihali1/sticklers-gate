@@ -47,14 +47,16 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.6 Grid constants (DEFAULT/MAX grid size, melee/ranged range + movement, terrain costs, elevated/cover bonuses)
 - [x] 9.7 Unit tests: GridPositionTests, CombatGridTests, PathfinderTests
 
-#### PR B: Core Combat Integration (`feature/grid-combat-core`)
-- [ ] 9.8 CombatUnit: replace Row with GridPosition, add MovementSpeed
-- [ ] 9.9 AbilitySO: add _range field (grid distance)
-- [ ] 9.10 CharacterClassSO / EnemySO: add _movementSpeed field
-- [ ] 9.11 DamageCalculator: range validation (is target in range?)
-- [ ] 9.12 CombatStateMachine: integrate CombatGrid, place units at spawn points
-- [ ] 9.13 Remove CombatRow enum and BACK_ROW_AC_BONUS constant
-- [ ] 9.14 Update existing tests for Row→GridPosition migration
+#### PR B: Core Combat Integration (`feature/grid-combat-core`) — Complete
+- [x] 9.8 CombatUnit: Row → GridPosition Position, added MovementSpeed (from SO)
+- [x] 9.9 AbilitySO: added _range field (default DEFAULT_MELEE_RANGE=1); AoE ignores range
+- [x] 9.10 CharacterClassSO / EnemySO: _preferredRow → _movementSpeed (default 3)
+- [x] 9.11 DamageCalculator: IsInRange(attacker,target,ability) helper + AttackResult.WasInRange flag (informational; NOT hard-enforced yet — see note)
+- [x] 9.12 CombatStateMachine: builds CombatGrid (optional GridLayoutSO param, else default 8×6), places all units at spawns/default columns; exposes Grid
+- [x] 9.13 Removed CombatRow enum, BACK_ROW_AC_BONUS, EnemySpawn.row, back-row AC logic; EnemyAI threat/healer heuristics now ability-based not row-based
+- [x] 9.14 Migrated all tests (Row→Position); replaced back-row AC tests with range tests; 145/147 pass (2 failures pre-existing & unrelated)
+
+**Range enforcement deferred:** IsInRange is a validation helper only in PR B. Hard enforcement (rejecting out-of-range actions) lands in PR C (AI stays at range / closes distance) + PR D (UI filters targets). Enforcing now would break melee since no movement phase exists yet to close distance. Keeps every intermediate build playable.
 
 #### PR C: Movement Phase (`feature/grid-movement`)
 - [ ] 9.15 New CombatPhase: PlayerChooseMovement (between TurnStart and PlayerChooseAction)
@@ -80,7 +82,12 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [ ] 9.31 Update Combat.unity scene
 
 ## Next Action
-PR A (Grid Data Foundation) code complete on `feature/grid-data` — needs Unity EditMode test run + PR. Then start PR B: Core Combat Integration (`feature/grid-combat-core`) — migrate CombatUnit Row→GridPosition, add MovementSpeed, AbilitySO _range, remove CombatRow.
+PR A pushed to origin (`feature/grid-data`, 33/33 grid tests green). PR B code-complete on `feature/grid-combat-core` (145/147, 2 pre-existing failures) — commit + push, open PRs. Then PR C: Movement Phase (`feature/grid-movement`) — add PlayerChooseMovement phase, SubmitPlayerMovement(), grid-aware EnemyAI, then start hard-enforcing ability range.
+
+## Pre-existing test failures (NOT grid-related, verified on parent f9bc0e8)
+- `CombatIntegrationTests.CombatUnit_LethalDamage_KillsEnemy` — asserts OnDeath fires from TakeDamage alone, but enemies only Die() via state machine (downed≠dead by design). Test expectation bug.
+- `ContentDataTests.AllClasses_UseStandardArray` — asserts equal stat totals but classes use 73/75/77/79 (unequal by design). Test bug.
+Both predate Phase 9. Fix or delete in a separate cleanup PR — out of grid scope.
 
 ## Class Roster Expansion (queued after grid PR-A/B)
 Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickwizard(Wizard), Stickrogue(Rogue), Stickleric(Cleric). Add 8: Sorcerer(CHA burst/metamagic — distinct from Wizard's INT versatility), Druid, Barbarian, Ranger, Bard, Monk, Warlock, Paladin. Keep "Stick" pun prefix. Build after grid foundation so all class abilities get range/movement fields natively.

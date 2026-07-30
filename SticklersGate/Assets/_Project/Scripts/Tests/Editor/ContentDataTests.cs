@@ -33,7 +33,7 @@ namespace SticklersGate.Tests
         // ====================================================================
 
         private CharacterClassSO CreateClass(string name, CharacterClassType type,
-            StatBlock stats, int baseAC, int hitDie, CombatRow row,
+            StatBlock stats, int baseAC, int hitDie,
             AbilitySO[] l1 = null, AbilitySO[] l3 = null, AbilitySO[] l5 = null)
         {
             var so = ScriptableObject.CreateInstance<CharacterClassSO>();
@@ -42,7 +42,6 @@ namespace SticklersGate.Tests
             SetPrivateField(so, "_baseStats", stats);
             SetPrivateField(so, "_baseAC", baseAC);
             SetPrivateField(so, "_hitDiceSides", hitDie);
-            SetPrivateField(so, "_preferredRow", row);
             SetPrivateField(so, "_level1Abilities", l1 ?? new AbilitySO[0]);
             SetPrivateField(so, "_level3Abilities", l3 ?? new AbilitySO[0]);
             SetPrivateField(so, "_level5Abilities", l5 ?? new AbilitySO[0]);
@@ -55,7 +54,7 @@ namespace SticklersGate.Tests
             var knight = CreateClass("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                baseAC: 16, hitDie: 10, row: CombatRow.FrontRow);
+                baseAC: 16, hitDie: 10);
 
             Assert.AreEqual("Sticknight", knight.ClassName);
             Assert.AreEqual(CharacterClassType.Sticknight, knight.ClassType);
@@ -63,7 +62,6 @@ namespace SticklersGate.Tests
             Assert.AreEqual(14, knight.BaseStats.constitution);
             Assert.AreEqual(16, knight.BaseAC);
             Assert.AreEqual(10, knight.HitDiceSides);
-            Assert.AreEqual(CombatRow.FrontRow, knight.PreferredRow);
         }
 
         [Test]
@@ -73,7 +71,7 @@ namespace SticklersGate.Tests
             var knight = CreateClass("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                baseAC: 16, hitDie: 10, row: CombatRow.FrontRow);
+                baseAC: 16, hitDie: 10);
 
             Assert.AreEqual(12, knight.GetMaxHPAtLevel(1));
         }
@@ -84,13 +82,12 @@ namespace SticklersGate.Tests
             var wizard = CreateClass("Stickwizard", CharacterClassType.Stickwizard,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 12,
                     intelligence = 18, wisdom = 13, charisma = 10 },
-                baseAC: 12, hitDie: 6, row: CombatRow.BackRow);
+                baseAC: 12, hitDie: 6);
 
             Assert.AreEqual(CharacterClassType.Stickwizard, wizard.ClassType);
             Assert.AreEqual(18, wizard.BaseStats.intelligence);
             Assert.AreEqual(12, wizard.BaseAC);
             Assert.AreEqual(6, wizard.HitDiceSides);
-            Assert.AreEqual(CombatRow.BackRow, wizard.PreferredRow);
         }
 
         [Test]
@@ -100,7 +97,7 @@ namespace SticklersGate.Tests
             var wizard = CreateClass("Stickwizard", CharacterClassType.Stickwizard,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 12,
                     intelligence = 18, wisdom = 13, charisma = 10 },
-                baseAC: 12, hitDie: 6, row: CombatRow.BackRow);
+                baseAC: 12, hitDie: 6);
 
             Assert.AreEqual(7, wizard.GetMaxHPAtLevel(1));
         }
@@ -111,13 +108,12 @@ namespace SticklersGate.Tests
             var rogue = CreateClass("Stickrogue", CharacterClassType.Stickrogue,
                 new StatBlock { strength = 10, dexterity = 18, constitution = 12,
                     intelligence = 13, wisdom = 10, charisma = 14 },
-                baseAC: 15, hitDie: 8, row: CombatRow.FrontRow);
+                baseAC: 15, hitDie: 8);
 
             Assert.AreEqual(CharacterClassType.Stickrogue, rogue.ClassType);
             Assert.AreEqual(18, rogue.BaseStats.dexterity);
             Assert.AreEqual(15, rogue.BaseAC);
             Assert.AreEqual(8, rogue.HitDiceSides);
-            Assert.AreEqual(CombatRow.FrontRow, rogue.PreferredRow);
         }
 
         [Test]
@@ -126,13 +122,12 @@ namespace SticklersGate.Tests
             var cleric = CreateClass("Stickleric", CharacterClassType.Stickleric,
                 new StatBlock { strength = 14, dexterity = 10, constitution = 14,
                     intelligence = 10, wisdom = 18, charisma = 13 },
-                baseAC: 18, hitDie: 8, row: CombatRow.BackRow);
+                baseAC: 18, hitDie: 8);
 
             Assert.AreEqual(CharacterClassType.Stickleric, cleric.ClassType);
             Assert.AreEqual(18, cleric.BaseStats.wisdom);
             Assert.AreEqual(18, cleric.BaseAC);
             Assert.AreEqual(8, cleric.HitDiceSides);
-            Assert.AreEqual(CombatRow.BackRow, cleric.PreferredRow);
         }
 
         [Test]
@@ -146,7 +141,7 @@ namespace SticklersGate.Tests
             var knight = CreateClass("Sticknight", CharacterClassType.Sticknight,
                 new StatBlock { strength = 16, dexterity = 13, constitution = 14,
                     intelligence = 10, wisdom = 12, charisma = 8 },
-                baseAC: 16, hitDie: 10, row: CombatRow.FrontRow,
+                baseAC: 16, hitDie: 10, 
                 l1: new[] { a1, a2 }, l3: new[] { a3 }, l5: new[] { a5 });
 
             Assert.AreEqual(2, knight.GetAbilitiesAtLevel(1).Length);
@@ -306,7 +301,7 @@ namespace SticklersGate.Tests
         // ====================================================================
 
         private EnemySO CreateEnemy(string name, EnemyTier tier, StatBlock stats,
-            int hp, int ac, CombatRow row, float aggression,
+            int hp, int ac, float aggression,
             AITargetPreference targetPref, int xp, int goldMin, int goldMax)
         {
             var so = ScriptableObject.CreateInstance<EnemySO>();
@@ -315,7 +310,6 @@ namespace SticklersGate.Tests
             SetPrivateField(so, "_stats", stats);
             SetPrivateField(so, "_hitPoints", hp);
             SetPrivateField(so, "_armorClass", ac);
-            SetPrivateField(so, "_preferredRow", row);
             SetPrivateField(so, "_aggression", aggression);
             SetPrivateField(so, "_targetPreference", targetPref);
             SetPrivateField(so, "_canFlee", false);
@@ -332,7 +326,7 @@ namespace SticklersGate.Tests
             var goblin = CreateEnemy("Stick Goblin", EnemyTier.Minion,
                 new StatBlock { strength = 8, dexterity = 14, constitution = 10,
                     intelligence = 8, wisdom = 8, charisma = 6 },
-                hp: 12, ac: 11, row: CombatRow.FrontRow,
+                hp: 12, ac: 11, 
                 aggression: 0.9f, targetPref: AITargetPreference.Random,
                 xp: 25, goldMin: 1, goldMax: 5);
 
@@ -349,7 +343,7 @@ namespace SticklersGate.Tests
             var skeleton = CreateEnemy("Stick Skeleton", EnemyTier.Standard,
                 new StatBlock { strength = 12, dexterity = 14, constitution = 12,
                     intelligence = 6, wisdom = 8, charisma = 4 },
-                hp: 26, ac: 13, row: CombatRow.FrontRow,
+                hp: 26, ac: 13, 
                 aggression: 0.7f, targetPref: AITargetPreference.LowestHP,
                 xp: 50, goldMin: 3, goldMax: 8);
 
@@ -364,7 +358,7 @@ namespace SticklersGate.Tests
             var ogre = CreateEnemy("Stick Ogre", EnemyTier.Elite,
                 new StatBlock { strength = 19, dexterity = 8, constitution = 16,
                     intelligence = 5, wisdom = 7, charisma = 4 },
-                hp: 68, ac: 11, row: CombatRow.FrontRow,
+                hp: 68, ac: 11, 
                 aggression: 0.95f, targetPref: AITargetPreference.HighestThreat,
                 xp: 200, goldMin: 15, goldMax: 30);
 
@@ -381,7 +375,7 @@ namespace SticklersGate.Tests
             var ogre = CreateEnemy("Stick Ogre", EnemyTier.Elite,
                 new StatBlock { strength = 19, dexterity = 8, constitution = 16,
                     intelligence = 5, wisdom = 7, charisma = 4 },
-                hp: 68, ac: 11, row: CombatRow.FrontRow,
+                hp: 68, ac: 11, 
                 aggression: 0.95f, targetPref: AITargetPreference.HighestThreat,
                 xp: 200, goldMin: 15, goldMax: 30);
 

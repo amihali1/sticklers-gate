@@ -10,7 +10,6 @@ namespace SticklersGate.Data
     public struct EnemySpawn
     {
         public EnemySO enemyData;
-        public CombatRow row;
         public string nameOverride;
     }
 

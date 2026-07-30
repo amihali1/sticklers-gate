@@ -116,30 +116,57 @@ namespace SticklersGate.Tests
         }
 
         [Test]
-        public void ResolveAttack_BackRowBonusApplied()
+        public void IsInRange_MeleeAdjacentTrue_FarFalse()
         {
-            _target.Row = CombatRow.BackRow;
+            // _meleeAbility has default range 1. Same tile (distance 0) is in range.
+            _attacker.Position = new GridPosition(0, 0);
+            _target.Position = new GridPosition(0, 0);
+            Assert.IsTrue(DamageCalculator.IsInRange(_attacker, _target, _meleeAbility));
 
-            var result = DamageCalculator.ResolveAttack(_attacker, _target, _meleeAbility);
-
-            // Target AC should include back row bonus for melee
-            Assert.AreEqual(12 + GameConstants.BACK_ROW_AC_BONUS, result.TargetAC);
+            // Distance 3 is out of a range-1 melee reach.
+            _target.Position = new GridPosition(3, 0);
+            Assert.IsFalse(DamageCalculator.IsInRange(_attacker, _target, _meleeAbility));
         }
 
         [Test]
-        public void ResolveAttack_BackRowBonusNotAppliedForRanged()
+        public void IsInRange_RangedReachesFartherThanMelee()
         {
-            _target.Row = CombatRow.BackRow;
-
             var rangedAbility = ScriptableObject.CreateInstance<AbilitySO>();
             SetField(rangedAbility, "_category", AbilityCategory.RangedAttack);
-            SetField(rangedAbility, "_damageDiceCount", 1);
-            SetField(rangedAbility, "_damageDiceSides", 8);
-            SetField(rangedAbility, "_abilityModifier", AbilityScore.Dexterity);
+            SetField(rangedAbility, "_targetType", AbilityTargetType.SingleEnemy);
+            SetField(rangedAbility, "_range", 4);
 
-            var result = DamageCalculator.ResolveAttack(_attacker, _target, rangedAbility);
+            _attacker.Position = new GridPosition(0, 0);
+            _target.Position = new GridPosition(4, 0); // exactly at range
+            Assert.IsTrue(DamageCalculator.IsInRange(_attacker, _target, rangedAbility));
 
-            Assert.AreEqual(12, result.TargetAC); // No back row bonus for ranged
+            _target.Position = new GridPosition(5, 0); // one past
+            Assert.IsFalse(DamageCalculator.IsInRange(_attacker, _target, rangedAbility));
+        }
+
+        [Test]
+        public void IsInRange_AoEAndSelfIgnoreRange()
+        {
+            var aoe = ScriptableObject.CreateInstance<AbilitySO>();
+            SetField(aoe, "_targetType", AbilityTargetType.AllEnemies);
+            SetField(aoe, "_range", 1);
+
+            _attacker.Position = new GridPosition(0, 0);
+            _target.Position = new GridPosition(7, 5); // far away
+            Assert.IsTrue(DamageCalculator.IsInRange(_attacker, _target, aoe));
+        }
+
+        [Test]
+        public void ResolveAttack_PopulatesWasInRange()
+        {
+            _attacker.Position = new GridPosition(0, 0);
+            _target.Position = new GridPosition(0, 0); // adjacent (range 1 melee)
+            var inRange = DamageCalculator.ResolveAttack(_attacker, _target, _meleeAbility);
+            Assert.IsTrue(inRange.WasInRange);
+
+            _target.Position = new GridPosition(4, 4); // out of melee range
+            var outOfRange = DamageCalculator.ResolveAttack(_attacker, _target, _meleeAbility);
+            Assert.IsFalse(outOfRange.WasInRange);
         }
 
         [Test]
