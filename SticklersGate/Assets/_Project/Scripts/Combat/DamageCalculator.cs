@@ -54,6 +54,12 @@ namespace SticklersGate.Combat
         /// <summary>
         /// Resolve an attack: d20 + modifier vs AC, then roll damage on hit.
         /// </summary>
+        /// <param name="attacker">The unit making the attack.</param>
+        /// <param name="target">The unit being attacked.</param>
+        /// <param name="ability">The ability being used for the attack.</param>
+        /// <param name="hasAdvantage">Whether the attacker has advantage on the attack roll.</param>
+        /// <param name="hasDisadvantage">Whether the attacker has disadvantage on the attack roll.</param>
+        /// <returns>The result of the attack resolution.</returns>
         public static AttackResult ResolveAttack(CombatUnit attacker, CombatUnit target, AbilitySO ability, bool hasAdvantage = false, bool hasDisadvantage = false)
         {
             var result = new AttackResult();
@@ -108,6 +114,9 @@ namespace SticklersGate.Combat
         /// <summary>
         /// Resolve a healing action: roll heal dice + flat bonus.
         /// </summary>
+        /// <param name="healer">The unit performing the heal.</param>
+        /// <param name="ability">The ability being used to heal.</param>
+        /// <returns>The result of the healing action.</returns>
         public static HealResult ResolveHeal(CombatUnit healer, AbilitySO ability)
         {
             // healer param reserved for future stat-scaled healing
@@ -125,6 +134,10 @@ namespace SticklersGate.Combat
         /// <summary>
         /// Resolve a saving throw: d20 + modifier vs DC.
         /// </summary>
+        /// <param name="target">The unit making the saving throw.</param>
+        /// <param name="savingAbility">The ability score used for the saving throw.</param>
+        /// <param name="dc">The difficulty class required to succeed.</param>
+        /// <returns>The result of the saving throw.</returns>
         public static SaveResult ResolveSavingThrow(CombatUnit target, AbilityScore savingAbility, int dc)
         {
             var result = new SaveResult();
@@ -150,6 +163,10 @@ namespace SticklersGate.Combat
         /// distance). Self and AoE (AllEnemies/AllAllies) abilities ignore range
         /// and always return true.
         /// </summary>
+        /// <param name="attacker">The unit making the ability.</param>
+        /// <param name="target">The unit being targeted.</param>
+        /// <param name="ability">The ability determining range and target type.</param>
+        /// <returns>True if the target is valid and in range, false otherwise.</returns>
         public static bool IsInRange(CombatUnit attacker, CombatUnit target, AbilitySO ability)
         {
             switch (ability.TargetType)
