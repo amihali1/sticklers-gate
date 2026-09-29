@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Venomous Bite
   _category: 0
   _targetType: 0
+  _range: 1
   _description: Eight legs of nope deliver a package of regret.
   _damageDiceCount: 1
   _damageDiceSides: 6

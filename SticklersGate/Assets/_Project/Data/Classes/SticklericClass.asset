@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SticklericClass
   m_EditorClassIdentifier:
   _className: Stickleric
+  _movementSpeed: 3
   _classType: 3
   _flavorText: Prays for you. Judges you. Heals you anyway.
   _baseStats:

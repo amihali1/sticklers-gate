@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickOgre
   m_EditorClassIdentifier:
   _enemyName: Stick Ogre
+  _movementSpeed: 2
   _tier: 2
   _description: A massive stick figure drawn with a thicker pen. The artist clearly meant business.
   _stats:

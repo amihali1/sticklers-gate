@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickSkeleton
   m_EditorClassIdentifier:
   _enemyName: Stick Skeleton
+  _movementSpeed: 3
   _tier: 1
   _description: A stick figure with extra lines for ribs. It rattles when it moves. Everything rattles.
   _stats:

@@ -20,7 +20,6 @@ namespace SticklersGate.UI
         [SerializeField] private CharacterClassSO[] _partyClasses;
         [SerializeField] private string[] _partyNames;
         [SerializeField] private int _partyLevel = 1;
-        [SerializeField] private GridLayoutSO _gridLayout;
 
         [Header("Starting Items")]
         [SerializeField] private ItemSO[] _starterItems;
@@ -268,7 +267,7 @@ namespace SticklersGate.UI
             _stateMachine.OnTurnStarted += HandleTurnAnimation;
 
             // Start combat (this triggers OnCombatStarted, which triggers UI setup)
-            _stateMachine.StartCombat(playerUnits, _encounter, _gridLayout);
+            _stateMachine.StartCombat(playerUnits, _encounter);
         }
 
         // ================================================================

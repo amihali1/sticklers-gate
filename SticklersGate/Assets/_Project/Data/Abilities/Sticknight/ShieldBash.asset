@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Shield Bash
   _category: 0
   _targetType: 0
+  _range: 1
   _description: Slam your shield into a foe. May stun on hit.
   _damageDiceCount: 1
   _damageDiceSides: 4

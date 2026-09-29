@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickBandit
   m_EditorClassIdentifier:
   _enemyName: Stick Bandit
+  _movementSpeed: 3
   _tier: 1
   _description: A stick figure in a hood. The hood is just a triangle, but the menace is real.
   _stats:

@@ -146,6 +146,23 @@
 
 ---
 
+## Grid Values (Phase 9)
+
+**Movement speed (tiles/turn):** Sticknight 3, Stickwizard 2, Stickrogue 4, Stickleric 3 · Goblin 4, Bandit 3, Spider 4, Skeleton 3, Ogre 2, Necromancer 2.
+
+**Ability range (Manhattan tiles; AoE/self ignore range):**
+| Range | Abilities |
+|---|---|
+| 1 (melee/touch) | Greatsword Slash, Champion's Strike, Shield Bash, Action Surge, Sneak Attack, Assassinate, Cure Wounds, Bone Club, Dagger Slash, Greatclub, Rusty Shiv, Venomous Bite |
+| 3 | Shadow Step, Life Drain, Web Spit |
+| 4 | Ray of Frost, Disintegrate, Guiding Bolt, Sacred Flame, Bone Throw |
+| 5 | Fire Bolt, Crossbow Shot, Dark Bolt |
+
+**Layouts** (`Data/Encounters/Layouts/`, all 8×6, row 0 = top). Party spawns: Sticknight (2,2), Stickwizard (0,3), Stickrogue (2,3), Stickleric (1,2).
+- **Ambush at the Inkwell:** ink puddle (Difficult) at (4,2) (4,3) (5,2); goblins fan out at (6,0) (7,3) (5,5).
+- **The Bandit Crossing:** river (Water) down column 4 with a bridge at rows 2–3, reeds (Difficult) at (3,0) (5,5); bandits hold the bridge at (6,2) (6,3), spider at (5,0).
+- **The Necromancer's Study:** bookshelves (Abyss, impassable) down column 4 leaving a gap at rows 2–3, bone piles (Difficult) at (6,1) (6,4); Bone Guards at the gap (5,2) (5,3), necromancer at (7,2).
+
 ## Narrator Quip Pool
 
 *To be written in full during Phase 3 Task 3.4. Core categories:*

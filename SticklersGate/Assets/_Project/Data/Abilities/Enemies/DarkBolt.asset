@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Dark Bolt
   _category: 2
   _targetType: 0
+  _range: 5
   _description: A bolt of concentrated darkness. The necromancer insists it's 'artisanal evil.'
   _damageDiceCount: 2
   _damageDiceSides: 6

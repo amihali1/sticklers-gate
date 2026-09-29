@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Action Surge
   _category: 0
   _targetType: 0
+  _range: 1
   _description: Channel your fighting spirit into a devastating flurry of strikes.
   _damageDiceCount: 3
   _damageDiceSides: 6

@@ -14,7 +14,7 @@ namespace SticklersGate.Data
     }
 
     /// <summary>
-    /// Defines a combat encounter: enemy lineup, difficulty, victory condition, and narration.
+    /// Defines a combat encounter: enemy lineup, grid layout, difficulty, victory condition, and narration.
     /// </summary>
     [CreateAssetMenu(fileName = "NewEncounter", menuName = "SticklersGate/EncounterData")]
     public class EncounterSO : ScriptableObject
@@ -27,6 +27,8 @@ namespace SticklersGate.Data
 
         [Header("Environment")]
         [SerializeField] private Sprite _background;
+        [Tooltip("Battlefield grid (size, terrain, spawn tiles). Null uses the default grid and formation.")]
+        [SerializeField] private GridLayoutSO _gridLayout;
 
         [Header("Narrator")]
         [SerializeField][TextArea] private string[] _introLines;
@@ -41,6 +43,7 @@ namespace SticklersGate.Data
         public int SurvivalTurns => _survivalTurns;
 
         public Sprite Background => _background;
+        public GridLayoutSO GridLayout => _gridLayout;
 
         public string[] IntroLines => _introLines;
         public string[] VictoryLines => _victoryLines;

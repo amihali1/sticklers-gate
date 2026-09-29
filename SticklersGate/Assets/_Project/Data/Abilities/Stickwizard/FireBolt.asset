@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Fire Bolt
   _category: 2
   _targetType: 0
+  _range: 5
   _description: A bolt of fire streaks toward the target.
   _damageDiceCount: 2
   _damageDiceSides: 10

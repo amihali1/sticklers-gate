@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SticknightClass
   m_EditorClassIdentifier:
   _className: Sticknight
+  _movementSpeed: 3
   _classType: 0
   _flavorText: Hits things. Gets hit. Hits things harder.
   _baseStats:

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickNecromancer
   m_EditorClassIdentifier:
   _enemyName: Stick Necromancer
+  _movementSpeed: 2
   _tier: 2
   _description: A stick figure in a dark robe. The robe is just scribbled shading, but the dark magic is real.
   _stats:

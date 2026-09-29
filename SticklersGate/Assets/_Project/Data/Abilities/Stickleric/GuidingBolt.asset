@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Guiding Bolt
   _category: 2
   _targetType: 0
+  _range: 4
   _description: A bolt of radiant energy that marks the target for the next attacker.
   _damageDiceCount: 4
   _damageDiceSides: 6

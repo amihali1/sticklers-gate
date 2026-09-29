@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Greatclub
   _category: 0
   _targetType: 0
+  _range: 1
   _description: A massive club that's really just a tree trunk. Subtlety is not the ogre's strength.
   _damageDiceCount: 2
   _damageDiceSides: 8

@@ -64,6 +64,8 @@ namespace SticklersGate.Combat
 
         /// <summary>
         /// Start a combat encounter with the given player party and encounter data.
+        /// The grid comes from <paramref name="layout"/> if given, otherwise from
+        /// the encounter's own layout, otherwise the default grid.
         /// </summary>
         public void StartCombat(List<CombatUnit> playerUnits, EncounterSO encounter, GridLayoutSO layout = null)
         {
@@ -84,7 +86,7 @@ namespace SticklersGate.Combat
             _allUnits.AddRange(_enemyUnits);
 
             // Build the combat grid and place every unit on a tile.
-            SetupGrid(layout);
+            SetupGrid(layout != null ? layout : encounter.GridLayout);
 
             DiceRoller.ClearHistory();
             SetPhase(CombatPhase.Setup);
