@@ -179,6 +179,77 @@ namespace SticklersGate.Tests.Editor
             Assert.AreEqual(0, targets.Count);
         }
 
+        [Test]
+        public void GetTargetsInRange_ExcludesEnemiesBeyondRange()
+        {
+            SetPrivateField(_testAbility, "_targetType", AbilityTargetType.SingleEnemy);
+            SetPrivateField(_testAbility, "_range", 1);
+
+            var player = CombatUnit.FromPlayerCharacter("Hero", _testClass, 1);
+            var near = CombatUnit.FromEnemy(_testEnemy, "Near");
+            var far = CombatUnit.FromEnemy(_testEnemy, "Far");
+            player.Position = new GridPosition(1, 1);
+            near.Position = new GridPosition(2, 1);
+            far.Position = new GridPosition(5, 1);
+
+            var targets = TargetPanel.GetTargetsInRange(_testAbility, player,
+                new List<CombatUnit> { player }, new List<CombatUnit> { near, far });
+
+            Assert.AreEqual(1, targets.Count);
+            Assert.Contains(near, targets);
+        }
+
+        [Test]
+        public void GetTargetsInRange_AppliesToAllyAbilities()
+        {
+            SetPrivateField(_testAbility, "_targetType", AbilityTargetType.SingleAlly);
+            SetPrivateField(_testAbility, "_range", 2);
+
+            var healer = CombatUnit.FromPlayerCharacter("Healer", _testClass, 1);
+            var nearAlly = CombatUnit.FromPlayerCharacter("Near", _testClass, 1);
+            var farAlly = CombatUnit.FromPlayerCharacter("Far", _testClass, 1);
+            healer.Position = new GridPosition(0, 0);
+            nearAlly.Position = new GridPosition(1, 1);
+            farAlly.Position = new GridPosition(0, 4);
+
+            var targets = TargetPanel.GetTargetsInRange(_testAbility, healer,
+                new List<CombatUnit> { healer, nearAlly, farAlly }, new List<CombatUnit>());
+
+            Assert.Contains(healer, targets);
+            Assert.Contains(nearAlly, targets);
+            Assert.IsFalse(targets.Contains(farAlly));
+        }
+
+        [Test]
+        public void HasTargetInRange_FalseWhenAllEnemiesTooFar()
+        {
+            SetPrivateField(_testAbility, "_targetType", AbilityTargetType.SingleEnemy);
+            SetPrivateField(_testAbility, "_range", 1);
+
+            var player = CombatUnit.FromPlayerCharacter("Hero", _testClass, 1);
+            var enemy = CombatUnit.FromEnemy(_testEnemy, "Goblin");
+            player.Position = new GridPosition(0, 0);
+            enemy.Position = new GridPosition(4, 4);
+
+            Assert.IsFalse(TargetPanel.HasTargetInRange(_testAbility, player,
+                new List<CombatUnit> { player }, new List<CombatUnit> { enemy }));
+        }
+
+        [Test]
+        public void HasTargetInRange_TrueForAoERegardlessOfDistance()
+        {
+            SetPrivateField(_testAbility, "_targetType", AbilityTargetType.AllEnemies);
+            SetPrivateField(_testAbility, "_range", 1);
+
+            var player = CombatUnit.FromPlayerCharacter("Hero", _testClass, 1);
+            var enemy = CombatUnit.FromEnemy(_testEnemy, "Goblin");
+            player.Position = new GridPosition(0, 0);
+            enemy.Position = new GridPosition(7, 5);
+
+            Assert.IsTrue(TargetPanel.HasTargetInRange(_testAbility, player,
+                new List<CombatUnit> { player }, new List<CombatUnit> { enemy }));
+        }
+
         private static void SetPrivateField(object obj, string fieldName, object value)
         {
             var type = obj.GetType();

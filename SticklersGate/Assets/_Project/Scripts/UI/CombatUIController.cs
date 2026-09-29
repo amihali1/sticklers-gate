@@ -7,8 +7,8 @@ namespace SticklersGate.UI
 {
     /// <summary>
     /// Main combat UI controller. Subscribes to CombatStateMachine events and
-    /// coordinates sub-components: HP bars, action panel, target panel,
-    /// turn order display, narrator, damage popups, and result panel.
+    /// coordinates sub-components: grid, movement panel, HP bars, action panel,
+    /// target panel, turn order display, narrator, damage popups, and result panel.
     /// </summary>
     public class CombatUIController : MonoBehaviour
     {
@@ -21,6 +21,8 @@ namespace SticklersGate.UI
         [SerializeField] private ActionPanel _actionPanel;
         [SerializeField] private TargetPanel _targetPanel;
         [SerializeField] private CombatResultPanel _resultPanel;
+        [SerializeField] private MovementPanel _movementPanel;
+        [SerializeField] private GridRenderer _gridRenderer;
 
         [Header("HP Bars")]
         [SerializeField] private Transform _playerHPBarContainer;
@@ -32,13 +34,12 @@ namespace SticklersGate.UI
         [SerializeField] private Canvas _popupCanvas;
         [SerializeField] private Camera _mainCamera;
 
-        [Header("Unit Positions")]
-        [SerializeField] private Transform[] _playerPositions;
-        [SerializeField] private Transform[] _enemyPositions;
+        private const float POPUP_HEIGHT_OFFSET = 0.9f;
 
         private readonly List<UnitHPBar> _playerHPBars = new List<UnitHPBar>();
         private readonly List<UnitHPBar> _enemyHPBars = new List<UnitHPBar>();
-        private readonly Dictionary<CombatUnit, Transform> _unitPositions = new Dictionary<CombatUnit, Transform>();
+        private readonly HashSet<GridPosition> _reachableTiles = new HashSet<GridPosition>();
+        private readonly List<CombatUnit> _selectableTargets = new List<CombatUnit>();
 
         private RuntimeAbility _selectedAbility;
         private ItemSO _selectedItem;
@@ -48,6 +49,7 @@ namespace SticklersGate.UI
             if (_actionPanel != null) _actionPanel.Hide();
             if (_targetPanel != null) _targetPanel.Hide();
             if (_resultPanel != null) _resultPanel.Hide();
+            if (_movementPanel != null) _movementPanel.Hide();
         }
 
         private void OnEnable()
@@ -57,6 +59,7 @@ namespace SticklersGate.UI
             _combatStateMachine.OnCombatStarted += HandleCombatStarted;
             _combatStateMachine.OnInitiativeRolled += HandleInitiativeRolled;
             _combatStateMachine.OnTurnStarted += HandleTurnStarted;
+            _combatStateMachine.OnMovementPhaseStarted += HandleMovementPhaseStarted;
             _combatStateMachine.OnPlayerActionNeeded += HandlePlayerActionNeeded;
             _combatStateMachine.OnAttackResolved += HandleAttackResolved;
             _combatStateMachine.OnHealResolved += HandleHealResolved;
@@ -77,6 +80,9 @@ namespace SticklersGate.UI
                 _targetPanel.OnTargetSelected += HandleTargetSelected;
                 _targetPanel.OnCancelled += HandleTargetCancelled;
             }
+
+            if (_movementPanel != null) _movementPanel.OnSkipSelected += HandleSkipMovement;
+            if (_gridRenderer != null) _gridRenderer.OnTileClicked += HandleTileClicked;
         }
 
         private void OnDisable()
@@ -86,6 +92,7 @@ namespace SticklersGate.UI
             _combatStateMachine.OnCombatStarted -= HandleCombatStarted;
             _combatStateMachine.OnInitiativeRolled -= HandleInitiativeRolled;
             _combatStateMachine.OnTurnStarted -= HandleTurnStarted;
+            _combatStateMachine.OnMovementPhaseStarted -= HandleMovementPhaseStarted;
             _combatStateMachine.OnPlayerActionNeeded -= HandlePlayerActionNeeded;
             _combatStateMachine.OnAttackResolved -= HandleAttackResolved;
             _combatStateMachine.OnHealResolved -= HandleHealResolved;
@@ -106,12 +113,14 @@ namespace SticklersGate.UI
                 _targetPanel.OnTargetSelected -= HandleTargetSelected;
                 _targetPanel.OnCancelled -= HandleTargetCancelled;
             }
+
+            if (_movementPanel != null) _movementPanel.OnSkipSelected -= HandleSkipMovement;
+            if (_gridRenderer != null) _gridRenderer.OnTileClicked -= HandleTileClicked;
         }
 
         private void HandleCombatStarted()
         {
             SetupHPBars();
-            AssignUnitPositions();
 
             // Set inventory after StartCombat has run (Inventory is null at OnEnable time)
             if (_actionPanel != null && _combatStateMachine.Inventory != null)
@@ -134,13 +143,66 @@ namespace SticklersGate.UI
             {
                 _turnOrderDisplay.SetActiveUnit(unit);
             }
+
+            ShowActiveUnitHighlight(unit);
+        }
+
+        private void HandleMovementPhaseStarted(CombatUnit unit)
+        {
+            _reachableTiles.Clear();
+            var grid = _combatStateMachine.Grid;
+            if (grid != null)
+            {
+                _reachableTiles.UnionWith(Pathfinder.GetReachablePositions(grid, unit.Position, unit.MovementSpeed));
+            }
+
+            if (_gridRenderer != null)
+            {
+                _gridRenderer.ShowHighlights(_reachableTiles, GridRenderer.HighlightKind.Movement);
+                _gridRenderer.AddHighlights(new[] { unit.Position }, GridRenderer.HighlightKind.ActiveUnit);
+            }
+
+            if (_movementPanel != null) _movementPanel.Show(unit);
+        }
+
+        private void HandleSkipMovement()
+        {
+            _combatStateMachine.SkipMovement();
+        }
+
+        private void HandleTileClicked(GridPosition tile)
+        {
+            var current = _combatStateMachine.CurrentUnit;
+            if (current == null || !current.IsPlayer) return;
+
+            if (_combatStateMachine.CurrentPhase == CombatPhase.PlayerChooseMovement)
+            {
+                // Tapping your own tile means "stay here"
+                if (tile == current.Position || _reachableTiles.Contains(tile))
+                {
+                    _combatStateMachine.SubmitPlayerMovement(tile);
+                }
+                return;
+            }
+
+            // Tap a unit on the grid as an alternative to the target buttons
+            if (_selectableTargets.Count > 0 &&
+                _combatStateMachine.Grid?.GetOccupant(tile) is CombatUnit occupant &&
+                _selectableTargets.Contains(occupant))
+            {
+                HandleTargetSelected(occupant);
+            }
         }
 
         private void HandlePlayerActionNeeded(CombatUnit unit)
         {
+            _reachableTiles.Clear();
+            if (_movementPanel != null) _movementPanel.Hide();
+            ShowActiveUnitHighlight(unit);
+
             if (_actionPanel != null)
             {
-                _actionPanel.ShowActions(unit);
+                _actionPanel.ShowActions(unit, _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);
             }
         }
 
@@ -163,9 +225,22 @@ namespace SticklersGate.UI
                 return;
             }
 
+            var actor = _combatStateMachine.CurrentUnit;
+            _selectableTargets.Clear();
+            _selectableTargets.AddRange(TargetPanel.GetTargetsInRange(ability.Data, actor,
+                _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits));
+
+            if (_gridRenderer != null && _combatStateMachine.Grid != null)
+            {
+                _gridRenderer.ShowHighlights(
+                    _combatStateMachine.Grid.GetPositionsWithinDistance(actor.Position, ability.Data.Range),
+                    GridRenderer.HighlightKind.AbilityRange);
+                _gridRenderer.AddHighlights(new[] { actor.Position }, GridRenderer.HighlightKind.ActiveUnit);
+            }
+
             if (_targetPanel != null)
             {
-                _targetPanel.ShowTargets(ability, _combatStateMachine.CurrentUnit,
+                _targetPanel.ShowTargets(ability, actor,
                     _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);
             }
         }
@@ -195,6 +270,10 @@ namespace SticklersGate.UI
             }
 
             // Show target selection for single-target items
+            _selectableTargets.Clear();
+            _selectableTargets.AddRange(TargetPanel.GetValidTargets(item.TargetType,
+                _combatStateMachine.CurrentUnit, _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits));
+
             if (_targetPanel != null)
             {
                 // Create a temporary AbilitySO-like target type for the panel
@@ -206,6 +285,8 @@ namespace SticklersGate.UI
         private void HandleTargetSelected(CombatUnit target)
         {
             if (_targetPanel != null) _targetPanel.Hide();
+            _selectableTargets.Clear();
+            if (_gridRenderer != null) _gridRenderer.ClearHighlights();
 
             if (_selectedItem != null)
             {
@@ -225,13 +306,16 @@ namespace SticklersGate.UI
             if (_targetPanel != null) _targetPanel.Hide();
             _selectedAbility = null;
             _selectedItem = null;
+            _selectableTargets.Clear();
 
             // Re-show action panel
-            if (_combatStateMachine.CurrentUnit != null && _combatStateMachine.CurrentUnit.IsPlayer)
+            var current = _combatStateMachine.CurrentUnit;
+            if (current != null && current.IsPlayer)
             {
+                ShowActiveUnitHighlight(current);
                 if (_actionPanel != null)
                 {
-                    _actionPanel.ShowActions(_combatStateMachine.CurrentUnit);
+                    _actionPanel.ShowActions(current, _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);
                 }
             }
         }
@@ -293,7 +377,15 @@ namespace SticklersGate.UI
         {
             if (_actionPanel != null) _actionPanel.Hide();
             if (_targetPanel != null) _targetPanel.Hide();
+            if (_movementPanel != null) _movementPanel.Hide();
+            if (_gridRenderer != null) _gridRenderer.ClearHighlights();
             if (_resultPanel != null) _resultPanel.Show(victory);
+        }
+
+        private void ShowActiveUnitHighlight(CombatUnit unit)
+        {
+            if (_gridRenderer == null) return;
+            _gridRenderer.ShowHighlights(new[] { unit.Position }, GridRenderer.HighlightKind.ActiveUnit);
         }
 
         private void SubmitAction(RuntimeAbility ability, CombatUnit target)
@@ -346,35 +438,6 @@ namespace SticklersGate.UI
             _enemyHPBars.Clear();
         }
 
-        private void AssignUnitPositions()
-        {
-            _unitPositions.Clear();
-
-            if (_playerPositions == null)
-            {
-                Debug.LogWarning("CombatUIController: _playerPositions array is not assigned.", this);
-            }
-            else
-            {
-                for (int i = 0; i < _combatStateMachine.PlayerUnits.Count && i < _playerPositions.Length; i++)
-                {
-                    _unitPositions[_combatStateMachine.PlayerUnits[i]] = _playerPositions[i];
-                }
-            }
-
-            if (_enemyPositions == null)
-            {
-                Debug.LogWarning("CombatUIController: _enemyPositions array is not assigned.", this);
-            }
-            else
-            {
-                for (int i = 0; i < _combatStateMachine.EnemyUnits.Count && i < _enemyPositions.Length; i++)
-                {
-                    _unitPositions[_combatStateMachine.EnemyUnits[i]] = _enemyPositions[i];
-                }
-            }
-        }
-
         private void SpawnDamagePopup(string message, Color color, CombatUnit unit)
         {
             if (_damagePopupPrefab == null || _popupCanvas == null) return;
@@ -385,9 +448,9 @@ namespace SticklersGate.UI
             if (popup != null)
             {
                 Vector3 worldPos = Vector3.zero;
-                if (_unitPositions.TryGetValue(unit, out var transform))
+                if (_gridRenderer != null)
                 {
-                    worldPos = transform.position + Vector3.up * 1.5f;
+                    worldPos = _gridRenderer.GetWorldPosition(unit.Position) + Vector3.up * POPUP_HEIGHT_OFFSET;
                 }
 
                 popup.Setup(message, color, worldPos, _mainCamera);

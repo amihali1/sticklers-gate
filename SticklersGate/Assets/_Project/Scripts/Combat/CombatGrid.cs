@@ -164,6 +164,27 @@ namespace SticklersGate.Combat
             _positionByOccupant[occupant] = to;
         }
 
+        /// <summary>
+        /// All in-bounds tiles within <paramref name="distance"/> (Manhattan) of
+        /// <paramref name="origin"/>, excluding the origin. Ignores terrain and
+        /// occupancy — this is ability reach, not movement.
+        /// </summary>
+        public List<GridPosition> GetPositionsWithinDistance(GridPosition origin, int distance)
+        {
+            var result = new List<GridPosition>();
+            for (int dx = -distance; dx <= distance; dx++)
+            {
+                int remaining = distance - Math.Abs(dx);
+                for (int dy = -remaining; dy <= remaining; dy++)
+                {
+                    var pos = new GridPosition(origin.x + dx, origin.y + dy);
+                    if (pos != origin && IsInBounds(pos))
+                        result.Add(pos);
+                }
+            }
+            return result;
+        }
+
         /// <summary>Removes an occupant from the grid. No-op if not present.</summary>
         public void RemoveOccupant(object occupant)
         {

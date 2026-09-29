@@ -38,7 +38,7 @@ All phases done: Project bootstrap, core data model, combat engine, combat UI, c
 
 Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs:
 
-#### PR A: Grid Data Foundation (`feature/grid-data`) — Complete
+#### PR A: Grid Data Foundation (`feature/grid-data`) — Merged (#14)
 - [x] 9.1 GridPosition struct (x, y value type, Manhattan distance + orthogonal neighbors + operators)
 - [x] 9.2 TerrainType enum (Normal, Difficult, Elevated, Water, Lava, Abyss, Cover) — added to GameEnums.cs
 - [x] 9.3 CombatGrid class (width/height, terrain map, occupancy w/ reverse lookup, walkability, movement cost, FromLayout factory)
@@ -47,7 +47,7 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.6 Grid constants (DEFAULT/MAX grid size, melee/ranged range + movement, terrain costs, elevated/cover bonuses)
 - [x] 9.7 Unit tests: GridPositionTests, CombatGridTests, PathfinderTests
 
-#### PR B: Core Combat Integration (`feature/grid-combat-core`) — Complete
+#### PR B: Core Combat Integration (`feature/grid-combat-core`) — Merged (#15)
 - [x] 9.8 CombatUnit: Row → GridPosition Position, added MovementSpeed (from SO)
 - [x] 9.9 AbilitySO: added _range field (default DEFAULT_MELEE_RANGE=1); AoE ignores range
 - [x] 9.10 CharacterClassSO / EnemySO: _preferredRow → _movementSpeed (default 3)
@@ -58,7 +58,7 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 
 **Range enforcement deferred:** IsInRange is a validation helper only in PR B. Hard enforcement (rejecting out-of-range actions) lands in PR C (AI stays at range / closes distance) + PR D (UI filters targets). Enforcing now would break melee since no movement phase exists yet to close distance. Keeps every intermediate build playable.
 
-#### PR C: Movement Phase (`feature/grid-movement`) — Complete
+#### PR C: Movement Phase (`feature/grid-movement`) — Merged (#16)
 - [x] 9.15 CombatPhase.PlayerChooseMovement added (before PlayerChooseAction)
 - [x] 9.16 CombatStateMachine: movement in turn loop, SubmitPlayerMovement(dest) + SkipMovement(); IsReachable/MoveUnitTo helpers
 - [x] 9.17 EnemyAI.DecideMovement: melee closes to adjacency, ranged holds at max weapon range (abs(dist-desiredRange)); helpers NearestLivingTarget, MaxAbilityRange
@@ -66,13 +66,14 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.19 EnemyAIMovementTests (5 tests, all pass)
 - [x] BONUS: hard range enforcement now ON — SubmitPlayerAction rejects out-of-range single-target (keeps turn); enemy forfeits attack if unreachable after moving. Fixed IsInRange AoE/self short-circuit (was rejecting AoE w/ null target).
 
-#### PR D: Grid UI (`feature/grid-ui`)
-- [ ] 9.20 GridRenderer: draw tile grid, highlight movement range, highlight ability range
-- [ ] 9.21 Movement input: tile click/tap → move unit
-- [ ] 9.22 Update CombatBootstrapper: create grid, position units on tiles
-- [ ] 9.23 Update CombatUIController: handle movement phase, skip-movement button
-- [ ] 9.24 Update ActionPanel: disable out-of-range abilities
-- [ ] 9.25 Update TargetPanel: filter targets by ability range
+#### PR D: Grid UI (`feature/grid-ui`) — Complete
+- [x] 9.20 GridRenderer: world-space tile grid (terrain-colored, runtime-generated square sprite), Movement / AbilityRange / ActiveUnit highlight overlays. Coordinate math in plain-C# GridCoordinateMapper (row 0 = top, grid centered, FitTileSize).
+- [x] 9.21 Movement input: tile click/tap → SubmitPlayerMovement (own tile = stay). Legacy Input (activeInputHandler=0); clicks over UI ignored via EventSystem.IsPointerOverGameObject.
+- [x] 9.22 CombatBootstrapper: builds grid on OnCombatStarted sized to free screen band; stick figures placed on tiles (height = 0.65 × tile); OnUnitMoved lerps figure; optional `_gridLayout` field passed to StartCombat. Old spawn-point transforms removed.
+- [x] 9.23 CombatUIController: movement phase shows reachable tiles + MovementPanel ("Don't Move" skip button); ability selection highlights range diamond; tap a unit on the grid to target it; damage popups positioned from grid.
+- [x] 9.24 ActionPanel: abilities with no target in range disabled + "(out of range)" label (TargetPanel.HasTargetInRange)
+- [x] 9.25 TargetPanel: GetTargetsInRange filters by DamageCalculator.IsInRange (items unaffected — no range)
+- [x] CombatGrid.GetPositionsWithinDistance (ability reach; ignores terrain/occupancy) + tests; GridCoordinateMapperTests; TargetPanel range tests
 
 #### PR E: Content & Cleanup (`feature/grid-content`)
 - [ ] 9.26 GridLayoutSO assets for all 3 encounters (with spawn points)
@@ -83,12 +84,10 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [ ] 9.31 Update Combat.unity scene
 
 ## Next Action
-PRs open on GitHub: #14 (grid-data→master), #15 (grid-combat-core→grid-data). PR C code-complete on `feature/grid-movement` (150/152, 2 pre-existing failures) — commit + push + open PR (base feature/grid-combat-core). Then PR D: Grid UI (`feature/grid-ui`) — GridRenderer (draw tiles, highlight movement + ability range), tile click→move, movement-phase UI + skip button, out-of-range ability greying. PR D is the piece that makes the grid visible/playable. Merge order: #14 → #15 → PR-C → PR-D → PR-E.
+PR D (Grid UI) open on `feature/grid-ui`. Needs a play-test in the editor (visuals/input aren't covered by EditMode tests). Then PR E: Content & Cleanup (`feature/grid-content`) — GridLayoutSO assets w/ spawn points + terrain for the 3 encounters, range values on AbilitySOs, movement speeds on class/enemy SOs, integration tests, scene update. After PR E: class roster expansion.
 
-## Pre-existing test failures (NOT grid-related, verified on parent f9bc0e8)
-- `CombatIntegrationTests.CombatUnit_LethalDamage_KillsEnemy` — asserts OnDeath fires from TakeDamage alone, but enemies only Die() via state machine (downed≠dead by design). Test expectation bug.
-- `ContentDataTests.AllClasses_UseStandardArray` — asserts equal stat totals but classes use 73/75/77/79 (unequal by design). Test bug.
-Both predate Phase 9. Fix or delete in a separate cleanup PR — out of grid scope.
+## CI
+GitHub Actions `unity-tests.yml` (game-ci/unity-test-runner@v4) green since PR #18 (2026-09-29). Needs UNITY_EMAIL + UNITY_PASSWORD + UNITY_LICENSE secrets, a free-disk-space step (Unity 6 image is huge), and `checks: write`. Runs on PRs to any branch. The 2 old test bugs (LethalDamage, StandardArray) were fixed/removed in #18.
 
 ## Class Roster Expansion (queued after grid PR-A/B)
 Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickwizard(Wizard), Stickrogue(Rogue), Stickleric(Cleric). Add 8: Sorcerer(CHA burst/metamagic — distinct from Wizard's INT versatility), Druid, Barbarian, Ranger, Bard, Monk, Warlock, Paladin. Keep "Stick" pun prefix. Build after grid foundation so all class abilities get range/movement fields natively.
@@ -99,5 +98,6 @@ Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickw
 - Life Drain ability doesn't actually heal the necromancer yet (needs code support for "damage + heal self" pattern)
 - Phase 8 (polish/difficulty) deferred until grid system is complete
 - Terrain effects beyond Normal are planned but not implemented until content needs them
+- Grid UI (PR D) visuals/input verified only by EditMode logic tests — needs an in-editor play-test
 
 ## Session Count: 7

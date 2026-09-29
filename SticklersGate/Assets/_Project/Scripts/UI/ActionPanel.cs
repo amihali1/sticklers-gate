@@ -9,7 +9,8 @@ namespace SticklersGate.UI
 {
     /// <summary>
     /// Displays available actions for the current player's turn.
-    /// Shows ability buttons and a Defend button.
+    /// Shows ability buttons and a Defend button. Abilities on cooldown or
+    /// with no target in grid range are shown disabled.
     /// </summary>
     public class ActionPanel : MonoBehaviour
     {
@@ -21,6 +22,7 @@ namespace SticklersGate.UI
         [Header("Colors")]
         [SerializeField] private Color _readyColor = Color.white;
         [SerializeField] private Color _cooldownColor = new Color(0.5f, 0.5f, 0.5f);
+        [SerializeField] private Color _outOfRangeColor = new Color(0.45f, 0.3f, 0.3f);
 
         /// <summary>
         /// Fired when the player selects an ability. Passes the RuntimeAbility.
@@ -49,9 +51,11 @@ namespace SticklersGate.UI
         }
 
         /// <summary>
-        /// Show action buttons for the given unit's available abilities.
+        /// Show action buttons for the given unit's available abilities. The unit
+        /// lists are used to disable abilities with no target in range.
         /// </summary>
-        public void ShowActions(CombatUnit unit)
+        public void ShowActions(CombatUnit unit,
+            IReadOnlyList<CombatUnit> playerUnits, IReadOnlyList<CombatUnit> enemyUnits)
         {
             ClearButtons();
             gameObject.SetActive(true);
@@ -67,23 +71,30 @@ namespace SticklersGate.UI
                 var buttonText = go.GetComponentInChildren<Text>();
                 var button = go.GetComponent<Button>();
 
+                bool isReady = ability.IsReady;
+                bool inRange = TargetPanel.HasTargetInRange(ability.Data, unit, playerUnits, enemyUnits);
+
                 if (buttonText != null)
                 {
                     string label = ability.Data.AbilityName;
-                    if (!ability.IsReady)
+                    if (!isReady)
                     {
                         label += $" ({ability.CurrentCooldown})";
+                    }
+                    else if (!inRange)
+                    {
+                        label += " (out of range)";
                     }
                     buttonText.text = label;
                 }
 
                 if (button != null)
                 {
-                    bool isReady = ability.IsReady;
-                    button.interactable = isReady;
+                    button.interactable = isReady && inRange;
 
                     var colors = button.colors;
-                    colors.normalColor = isReady ? _readyColor : _cooldownColor;
+                    colors.normalColor = !isReady ? _cooldownColor : inRange ? _readyColor : _outOfRangeColor;
+                    colors.disabledColor = colors.normalColor;
                     button.colors = colors;
 
                     var capturedAbility = ability;
