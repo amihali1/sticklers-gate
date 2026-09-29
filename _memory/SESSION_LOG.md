@@ -252,3 +252,24 @@
 - 2 pre-existing test bugs (LethalDamage expects Die from TakeDamage; StandardArray expects equal stat totals) left for a separate cleanup PR — out of grid scope.
 
 **Next session:** Commit + push PR B, open PRs A & B, then PR C (Movement Phase) — and begin hard-enforcing ability range.
+
+## Session 10 — July 30, 2026
+**Focus:** Phase 9 PR C (Movement Phase) + hard range enforcement
+
+**What happened:**
+- Opened PRs #14 (grid-data→master) and #15 (grid-combat-core→grid-data)
+- Implemented PR C on `feature/grid-movement`:
+  - CombatPhase.PlayerChooseMovement (before PlayerChooseAction)
+  - CombatStateMachine: movement step in turn loop; SubmitPlayerMovement(dest) + SkipMovement(); IsReachable / MoveUnitTo helpers; OnMovementPhaseStarted + OnUnitMoved events
+  - EnemyAI.DecideMovement: melee closes to adjacency, ranged holds at weapon range via min |dist - desiredRange|; NearestLivingTarget + MaxAbilityRange helpers
+  - Enemy turn: move first, then act
+  - Turned ON hard range enforcement: SubmitPlayerAction rejects out-of-range single-target (keeps turn), enemy forfeits if unreachable after moving
+  - EnemyAIMovementTests (5 tests)
+- EditMode: 150/152 (2 pre-existing failures only)
+
+**Decisions / gotchas:**
+- Bug caught pre-run: IsInRange null-guarded before the AoE/self check → AoE (null single-target) was wrongly rejected. Reordered so AoE/self short-circuit true first.
+- Movement tests assert resulting DISTANCE not exact tile (multiple adjacent tiles tie; Pathfinder list order is non-deterministic).
+- CombatStateMachine movement flow (coroutine/MonoBehaviour) not unit-tested in EditMode — covered by DecideMovement unit tests + deferred to PR E integration.
+
+**Next session:** Commit + push PR C, open its PR (base feature/grid-combat-core). Then PR D (Grid UI) — makes the grid visible/playable.

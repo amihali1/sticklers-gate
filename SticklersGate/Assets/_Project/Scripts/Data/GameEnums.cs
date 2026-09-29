@@ -79,6 +79,7 @@ namespace SticklersGate.Data
         Setup,
         RollInitiative,
         TurnStart,
+        PlayerChooseMovement,
         PlayerChooseAction,
         PlayerChooseTarget,
         ResolveAction,

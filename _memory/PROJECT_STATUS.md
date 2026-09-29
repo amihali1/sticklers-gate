@@ -58,12 +58,13 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 
 **Range enforcement deferred:** IsInRange is a validation helper only in PR B. Hard enforcement (rejecting out-of-range actions) lands in PR C (AI stays at range / closes distance) + PR D (UI filters targets). Enforcing now would break melee since no movement phase exists yet to close distance. Keeps every intermediate build playable.
 
-#### PR C: Movement Phase (`feature/grid-movement`)
-- [ ] 9.15 New CombatPhase: PlayerChooseMovement (between TurnStart and PlayerChooseAction)
-- [ ] 9.16 CombatStateMachine: movement phase in turn loop, SubmitPlayerMovement()
-- [ ] 9.17 EnemyAI: grid-aware movement (approach targets, stay at range for ranged)
-- [ ] 9.18 Movement events: OnMovementPhaseStarted, OnUnitMoved
-- [ ] 9.19 Unit tests for movement phase flow
+#### PR C: Movement Phase (`feature/grid-movement`) — Complete
+- [x] 9.15 CombatPhase.PlayerChooseMovement added (before PlayerChooseAction)
+- [x] 9.16 CombatStateMachine: movement in turn loop, SubmitPlayerMovement(dest) + SkipMovement(); IsReachable/MoveUnitTo helpers
+- [x] 9.17 EnemyAI.DecideMovement: melee closes to adjacency, ranged holds at max weapon range (abs(dist-desiredRange)); helpers NearestLivingTarget, MaxAbilityRange
+- [x] 9.18 Events OnMovementPhaseStarted(unit), OnUnitMoved(unit, from, to)
+- [x] 9.19 EnemyAIMovementTests (5 tests, all pass)
+- [x] BONUS: hard range enforcement now ON — SubmitPlayerAction rejects out-of-range single-target (keeps turn); enemy forfeits attack if unreachable after moving. Fixed IsInRange AoE/self short-circuit (was rejecting AoE w/ null target).
 
 #### PR D: Grid UI (`feature/grid-ui`)
 - [ ] 9.20 GridRenderer: draw tile grid, highlight movement range, highlight ability range
@@ -82,7 +83,7 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [ ] 9.31 Update Combat.unity scene
 
 ## Next Action
-PR A pushed to origin (`feature/grid-data`, 33/33 grid tests green). PR B code-complete on `feature/grid-combat-core` (145/147, 2 pre-existing failures) — commit + push, open PRs. Then PR C: Movement Phase (`feature/grid-movement`) — add PlayerChooseMovement phase, SubmitPlayerMovement(), grid-aware EnemyAI, then start hard-enforcing ability range.
+PRs open on GitHub: #14 (grid-data→master), #15 (grid-combat-core→grid-data). PR C code-complete on `feature/grid-movement` (150/152, 2 pre-existing failures) — commit + push + open PR (base feature/grid-combat-core). Then PR D: Grid UI (`feature/grid-ui`) — GridRenderer (draw tiles, highlight movement + ability range), tile click→move, movement-phase UI + skip button, out-of-range ability greying. PR D is the piece that makes the grid visible/playable. Merge order: #14 → #15 → PR-C → PR-D → PR-E.
 
 ## Pre-existing test failures (NOT grid-related, verified on parent f9bc0e8)
 - `CombatIntegrationTests.CombatUnit_LethalDamage_KillsEnemy` — asserts OnDeath fires from TakeDamage alone, but enemies only Die() via state machine (downed≠dead by design). Test expectation bug.
