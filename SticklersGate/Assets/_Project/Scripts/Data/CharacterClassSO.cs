@@ -17,7 +17,8 @@ namespace SticklersGate.Data
         [SerializeField] private StatBlock _baseStats;
         [SerializeField] private int _baseAC;
         [SerializeField] private int _hitDiceSides;
-        [SerializeField] private CombatRow _preferredRow;
+        [Tooltip("Tiles this class can move per turn.")]
+        [SerializeField] private int _movementSpeed = GameConstants.DEFAULT_MELEE_MOVEMENT;
 
         [Header("Abilities")]
         [SerializeField] private AbilitySO[] _level1Abilities;
@@ -39,7 +40,9 @@ namespace SticklersGate.Data
         public StatBlock BaseStats => _baseStats;
         public int BaseAC => _baseAC;
         public int HitDiceSides => _hitDiceSides;
-        public CombatRow PreferredRow => _preferredRow;
+
+        /// <summary>Tiles this class can move per turn on the combat grid.</summary>
+        public int MovementSpeed => _movementSpeed;
 
         public Sprite IdleSprite => _idleSprite;
         public Sprite AttackSprite => _attackSprite;

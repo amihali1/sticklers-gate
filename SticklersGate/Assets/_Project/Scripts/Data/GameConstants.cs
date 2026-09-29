@@ -12,7 +12,6 @@ namespace SticklersGate.Data
         public const int MAX_LEVEL = 5;
         public const int DEATH_SAVE_SUCCESS_NEEDED = 3;
         public const int DEATH_SAVE_FAIL_NEEDED = 3;
-        public const int BACK_ROW_AC_BONUS = 2;
         public const int DEFEND_AC_BONUS = 2;
         public const int FLEE_DC = 12;
 

@@ -20,7 +20,8 @@ namespace SticklersGate.Data
 
         [Header("Combat")]
         [SerializeField] private AbilitySO[] _abilities;
-        [SerializeField] private CombatRow _preferredRow;
+        [Tooltip("Tiles this enemy can move per turn.")]
+        [SerializeField] private int _movementSpeed = GameConstants.DEFAULT_MELEE_MOVEMENT;
 
         [Header("AI Behavior")]
         [SerializeField][Range(0f, 1f)] private float _aggression = 0.8f;
@@ -54,7 +55,9 @@ namespace SticklersGate.Data
         public int ArmorClass => _armorClass;
 
         public AbilitySO[] Abilities => _abilities;
-        public CombatRow PreferredRow => _preferredRow;
+
+        /// <summary>Tiles this enemy can move per turn on the combat grid.</summary>
+        public int MovementSpeed => _movementSpeed;
 
         public float Aggression => _aggression;
         public AITargetPreference TargetPreference => _targetPreference;
