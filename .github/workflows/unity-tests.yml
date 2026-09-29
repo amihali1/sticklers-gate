@@ -5,6 +5,10 @@ on:
     branches: [master]
   pull_request:
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   test-editmode:
     name: EditMode Tests
