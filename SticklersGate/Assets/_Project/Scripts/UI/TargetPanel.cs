@@ -81,7 +81,7 @@ namespace SticklersGate.UI
             ClearButtons();
             gameObject.SetActive(true);
 
-            var targets = GetValidTargets(ability.Data.TargetType, actor, playerUnits, enemyUnits);
+            var targets = GetTargetsInRange(ability.Data, actor, playerUnits, enemyUnits);
 
             // Self-target auto-selects
             if (ability.Data.TargetType == AbilityTargetType.Self)
@@ -178,6 +178,36 @@ namespace SticklersGate.UI
             }
 
             return targets;
+        }
+
+        /// <summary>
+        /// Valid targets for an ability that are also within its grid range.
+        /// AoE and self abilities ignore range.
+        /// </summary>
+        public static List<CombatUnit> GetTargetsInRange(AbilitySO ability, CombatUnit actor,
+            IReadOnlyList<CombatUnit> playerUnits, IReadOnlyList<CombatUnit> enemyUnits)
+        {
+            var targets = GetValidTargets(ability.TargetType, actor, playerUnits, enemyUnits);
+            targets.RemoveAll(t => !DamageCalculator.IsInRange(actor, t, ability));
+            return targets;
+        }
+
+        /// <summary>
+        /// True if the actor could use the ability on at least one target right
+        /// now (AoE and self abilities always qualify).
+        /// </summary>
+        public static bool HasTargetInRange(AbilitySO ability, CombatUnit actor,
+            IReadOnlyList<CombatUnit> playerUnits, IReadOnlyList<CombatUnit> enemyUnits)
+        {
+            switch (ability.TargetType)
+            {
+                case AbilityTargetType.Self:
+                case AbilityTargetType.AllEnemies:
+                case AbilityTargetType.AllAllies:
+                    return true;
+                default:
+                    return GetTargetsInRange(ability, actor, playerUnits, enemyUnits).Count > 0;
+            }
         }
 
         private void ClearButtons()

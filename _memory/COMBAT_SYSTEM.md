@@ -36,9 +36,9 @@ Setup → Roll Initiative → [Turn Loop: TurnStart → Movement → Choose Acti
 Movement phase: player chooses a tile within movement range (or skips). Enemy AI moves automatically.
 Player action turns pause coroutine loop, resume via SubmitPlayerAction().
 
-## Grid System (Phase 9 — PR A + PR B implemented)
+## Grid System (Phase 9 — PR A–D implemented)
 
-**Implemented so far:** GridPosition, TerrainType, CombatGrid, Pathfinder, GridLayoutSO (PR A); CombatUnit.Position/MovementSpeed, AbilitySO.Range, CharacterClassSO/EnemySO.MovementSpeed, DamageCalculator.IsInRange, CombatStateMachine grid setup + unit placement, CombatRow fully removed (PR B); PlayerChooseMovement phase + SubmitPlayerMovement/SkipMovement, EnemyAI.DecideMovement (melee closes / ranged kites), OnMovementPhaseStarted + OnUnitMoved events, **hard range enforcement now ON** (PR C). Grid rendering/input (PR D) and content/spawn assets (PR E) still pending.
+**Implemented so far:** GridPosition, TerrainType, CombatGrid, Pathfinder, GridLayoutSO (PR A); CombatUnit.Position/MovementSpeed, AbilitySO.Range, CharacterClassSO/EnemySO.MovementSpeed, DamageCalculator.IsInRange, CombatStateMachine grid setup + unit placement, CombatRow fully removed (PR B); PlayerChooseMovement phase + SubmitPlayerMovement/SkipMovement, EnemyAI.DecideMovement (melee closes / ranged kites), OnMovementPhaseStarted + OnUnitMoved events, **hard range enforcement now ON** (PR C). GridRenderer + GridCoordinateMapper, tile-tap movement, MovementPanel skip, range-filtered targeting and out-of-range ability greying (PR D). Content/spawn assets (PR E) still pending.
 
 **Turn flow now:** TurnStart → PlayerChooseMovement (or AI DecideMovement) → PlayerChooseAction → PlayerChooseTarget → ResolveAction → TurnEnd. Player movement: pick a reachable tile (Pathfinder within MovementSpeed) or skip. Out-of-range single-target actions are rejected (player keeps turn); enemies forfeit the attack if still unreachable after moving. AoE/self ignore range.
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace SticklersGate.UI
 {
     /// <summary>
     /// Programmatically builds the entire combat scene at runtime: Canvas, UI hierarchy,
-    /// spawn points, stick figures, and wires all component references. Attach to an
+    /// combat grid, stick figures, and wires all component references. Attach to an
     /// empty GameObject in a minimal scene — everything else is created here.
     /// </summary>
     public class CombatBootstrapper : MonoBehaviour
@@ -19,13 +20,28 @@ namespace SticklersGate.UI
         [SerializeField] private CharacterClassSO[] _partyClasses;
         [SerializeField] private string[] _partyNames;
         [SerializeField] private int _partyLevel = 1;
+        [SerializeField] private GridLayoutSO _gridLayout;
 
         [Header("Starting Items")]
         [SerializeField] private ItemSO[] _starterItems;
         [SerializeField] private int[] _starterItemQuantities;
 
+        // Screen-space band (fractions of the view) the grid may occupy, clear of
+        // the narrator (top), action panel (bottom), and HP bars (sides).
+        private const float GRID_AREA_BOTTOM = 0.19f;
+        private const float GRID_AREA_TOP = 0.78f;
+        private const float GRID_AREA_WIDTH = 0.72f;
+        private const float MAX_TILE_SIZE = 1.2f;
+
+        // Stick figure height as a fraction of tile size, and hip offset so the
+        // figure (legs below hip, head above shoulder) looks centered on its tile.
+        private const float FIGURE_TILE_RATIO = 0.65f;
+        private const float FIGURE_HIP_OFFSET_RATIO = 0.1f;
+        private const float MOVE_ANIMATION_SECONDS = 0.25f;
+
         private CombatStateMachine _stateMachine;
         private CombatUIController _uiController;
+        private GridRenderer _gridRenderer;
         private Camera _mainCamera;
 
         private void Start()
@@ -39,7 +55,6 @@ namespace SticklersGate.UI
             CreateCombatStateMachine();
             var canvas = CreateCanvas();
             CreateUIHierarchy(canvas);
-            CreateSpawnPoints();
             StartCombat();
         }
 
@@ -120,8 +135,14 @@ namespace SticklersGate.UI
             // Target Panel — bottom-center (overlaps action panel, only one visible at a time)
             var targetPanel = CreateTargetPanel(canvasTransform);
 
+            // Movement Panel — bottom-center (shown only during the movement phase)
+            var movementPanel = CreateMovementPanel(canvasTransform);
+
             // Result Panel — center overlay
             var resultPanel = CreateResultPanel(canvasTransform);
+
+            // Grid — world-space tiles behind the stick figures
+            _gridRenderer = new GameObject("CombatGrid").AddComponent<GridRenderer>();
 
             // HP Bar containers — left side (players) and right side (enemies)
             var playerHPContainer = CreatePanel(canvasTransform, "PlayerHPBars",
@@ -164,6 +185,10 @@ namespace SticklersGate.UI
             SetField(narratorDisplay, "_narratorText", narratorDisplay.GetComponentInChildren<Text>());
             SetField(narratorDisplay, "_canvasGroup", narratorDisplay.GetComponent<CanvasGroup>());
 
+            // Wire MovementPanel
+            SetField(movementPanel, "_promptText", movementPanel.transform.Find("Prompt").GetComponent<Text>());
+            SetField(movementPanel, "_skipButton", movementPanel.transform.Find("SkipButton").GetComponent<Button>());
+
             // Wire CombatResultPanel
             SetField(resultPanel, "_titleText", resultPanel.transform.Find("Title").GetComponent<Text>());
             SetField(resultPanel, "_subtitleText", resultPanel.transform.Find("Subtitle").GetComponent<Text>());
@@ -182,6 +207,8 @@ namespace SticklersGate.UI
             SetField(_uiController, "_actionPanel", actionPanel);
             SetField(_uiController, "_targetPanel", targetPanel);
             SetField(_uiController, "_resultPanel", resultPanel);
+            SetField(_uiController, "_movementPanel", movementPanel);
+            SetField(_uiController, "_gridRenderer", _gridRenderer);
             SetField(_uiController, "_playerHPBarContainer", playerHPContainer);
             SetField(_uiController, "_enemyHPBarContainer", enemyHPContainer);
             SetField(_uiController, "_hpBarPrefab", hpBarPrefab);
@@ -191,34 +218,6 @@ namespace SticklersGate.UI
 
             // Now that all fields are wired, enable the GameObject so OnEnable subscribes to events
             uiControllerGo.SetActive(true);
-        }
-
-        // ================================================================
-        // Spawn Points
-        // ================================================================
-
-        private void CreateSpawnPoints()
-        {
-            var playerSpawns = new Transform[4];
-            var enemySpawns = new Transform[4];
-
-            // Players on left side, enemies on right
-            for (int i = 0; i < 4; i++)
-            {
-                float yOffset = 1.5f - (i * 1.0f);
-
-                var pGo = new GameObject($"PlayerSpawn_{i}");
-                pGo.transform.position = new Vector3(-3.5f, yOffset, 0);
-                playerSpawns[i] = pGo.transform;
-
-                var eGo = new GameObject($"EnemySpawn_{i}");
-                eGo.transform.position = new Vector3(3.5f, yOffset, 0);
-                enemySpawns[i] = eGo.transform;
-            }
-
-            // Wire spawn positions to UIController for damage popups
-            SetField(_uiController, "_playerPositions", playerSpawns);
-            SetField(_uiController, "_enemyPositions", enemySpawns);
         }
 
         // ================================================================
@@ -258,13 +257,18 @@ namespace SticklersGate.UI
             _stateMachine.SetInventory(inventory);
 
             // Subscribe to stick figure events
-            _stateMachine.OnCombatStarted += () => SpawnStickFigures(playerUnits);
+            _stateMachine.OnCombatStarted += () =>
+            {
+                BuildGrid();
+                SpawnStickFigures();
+            };
+            _stateMachine.OnUnitMoved += HandleUnitMoved;
             _stateMachine.OnAttackResolved += HandleAttackAnimation;
             _stateMachine.OnUnitDied += HandleDeathAnimation;
             _stateMachine.OnTurnStarted += HandleTurnAnimation;
 
             // Start combat (this triggers OnCombatStarted, which triggers UI setup)
-            _stateMachine.StartCombat(playerUnits, _encounter);
+            _stateMachine.StartCombat(playerUnits, _encounter, _gridLayout);
         }
 
         // ================================================================
@@ -274,26 +278,72 @@ namespace SticklersGate.UI
         private readonly Dictionary<CombatUnit, StickFigureRenderer> _unitFigureMap
             = new Dictionary<CombatUnit, StickFigureRenderer>();
 
-        private void SpawnStickFigures(List<CombatUnit> playerUnits)
+        /// <summary>
+        /// Size the grid to fit the free screen area and draw its tiles. Runs on
+        /// OnCombatStarted, after the state machine has built the grid and placed units.
+        /// </summary>
+        private void BuildGrid()
         {
-            float figureHeight = 2f;
+            var grid = _stateMachine.Grid;
+            float viewHeight = _mainCamera.orthographicSize * 2f;
+            float viewWidth = viewHeight * _mainCamera.aspect;
+            float viewBottom = _mainCamera.transform.position.y - _mainCamera.orthographicSize;
 
-            // Players on left, facing right
-            for (int i = 0; i < playerUnits.Count; i++)
-            {
-                float yOffset = 1.5f - (i * 1.0f);
-                var pos = new Vector3(-3.5f, yOffset, 0);
-                SpawnFigure(playerUnits[i], pos, true, figureHeight);
-            }
+            float areaHeight = (GRID_AREA_TOP - GRID_AREA_BOTTOM) * viewHeight;
+            float areaWidth = GRID_AREA_WIDTH * viewWidth;
+            float centerY = viewBottom + (GRID_AREA_BOTTOM + GRID_AREA_TOP) / 2f * viewHeight;
 
-            // Enemies on right, facing left
-            var enemyUnits = _stateMachine.EnemyUnits;
-            for (int i = 0; i < enemyUnits.Count; i++)
+            float tileSize = GridCoordinateMapper.FitTileSize(grid.Width, grid.Height,
+                areaWidth, areaHeight, MAX_TILE_SIZE);
+            var mapper = new GridCoordinateMapper(grid.Width, grid.Height, tileSize,
+                new Vector3(_mainCamera.transform.position.x, centerY, 0f));
+
+            _gridRenderer.Build(grid, mapper, _mainCamera);
+        }
+
+        private void SpawnStickFigures()
+        {
+            // Players face right, enemies face left
+            foreach (var unit in _stateMachine.PlayerUnits)
             {
-                float yOffset = 1.5f - (i * 1.0f);
-                var pos = new Vector3(3.5f, yOffset, 0);
-                SpawnFigure(enemyUnits[i], pos, false, figureHeight);
+                SpawnFigure(unit, GetFigurePosition(unit.Position), true, GetFigureHeight());
             }
+            foreach (var unit in _stateMachine.EnemyUnits)
+            {
+                SpawnFigure(unit, GetFigurePosition(unit.Position), false, GetFigureHeight());
+            }
+        }
+
+        private float GetFigureHeight()
+        {
+            return _gridRenderer.Mapper.TileSize * FIGURE_TILE_RATIO;
+        }
+
+        private Vector3 GetFigurePosition(GridPosition tile)
+        {
+            return _gridRenderer.GetWorldPosition(tile)
+                + Vector3.down * (GetFigureHeight() * FIGURE_HIP_OFFSET_RATIO);
+        }
+
+        private void HandleUnitMoved(CombatUnit unit, GridPosition from, GridPosition to)
+        {
+            if (_unitFigureMap.TryGetValue(unit, out var figure))
+            {
+                StartCoroutine(AnimateMove(figure.transform, GetFigurePosition(to)));
+            }
+        }
+
+        private static IEnumerator AnimateMove(Transform figure, Vector3 destination)
+        {
+            Vector3 start = figure.position;
+            float elapsed = 0f;
+            while (elapsed < MOVE_ANIMATION_SECONDS)
+            {
+                elapsed += Time.deltaTime;
+                figure.position = Vector3.Lerp(start, destination, elapsed / MOVE_ANIMATION_SECONDS);
+                yield return null;
+            }
+            figure.position = destination;
         }
 
         private void SpawnFigure(CombatUnit unit, Vector3 position, bool facingRight, float height)
@@ -509,6 +559,55 @@ namespace SticklersGate.UI
 
             go.SetActive(false);
             return go.AddComponent<TargetPanel>();
+        }
+
+        private MovementPanel CreateMovementPanel(Transform parent)
+        {
+            var go = CreateUIObject("MovementPanel", parent);
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.2f, 0.02f);
+            rect.anchorMax = new Vector2(0.8f, 0.18f);
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = go.AddComponent<Image>();
+            bg.color = new Color(0.12f, 0.15f, 0.22f, 0.9f);
+
+            // Prompt text
+            var promptGo = CreateUIObject("Prompt", go.transform);
+            var promptRect = promptGo.GetComponent<RectTransform>();
+            promptRect.anchorMin = new Vector2(0, 0);
+            promptRect.anchorMax = new Vector2(0.8f, 1);
+            promptRect.offsetMin = new Vector2(15, 5);
+            promptRect.offsetMax = new Vector2(-5, -5);
+            var prompt = promptGo.AddComponent<Text>();
+            prompt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            prompt.fontSize = 18;
+            prompt.color = Color.white;
+            prompt.alignment = TextAnchor.MiddleLeft;
+
+            // Skip button
+            var skipGo = CreateUIObject("SkipButton", go.transform);
+            var skipRect = skipGo.GetComponent<RectTransform>();
+            skipRect.anchorMin = new Vector2(0.82f, 0.15f);
+            skipRect.anchorMax = new Vector2(0.98f, 0.85f);
+            skipRect.offsetMin = Vector2.zero;
+            skipRect.offsetMax = Vector2.zero;
+            var skipImg = skipGo.AddComponent<Image>();
+            skipImg.color = new Color(0.3f, 0.3f, 0.5f);
+            var skipBtn = skipGo.AddComponent<Button>();
+            skipBtn.targetGraphic = skipImg;
+            var skipTextGo = CreateUIObject("Text", skipGo.transform);
+            FillParent(skipTextGo.GetComponent<RectTransform>());
+            var skipText = skipTextGo.AddComponent<Text>();
+            skipText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            skipText.text = "Don't Move";
+            skipText.fontSize = 16;
+            skipText.color = Color.white;
+            skipText.alignment = TextAnchor.MiddleCenter;
+
+            go.SetActive(false);
+            return go.AddComponent<MovementPanel>();
         }
 
         private CombatResultPanel CreateResultPanel(Transform parent)

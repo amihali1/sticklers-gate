@@ -183,6 +183,56 @@ namespace SticklersGate.Tests
             Assert.Throws<ArgumentNullException>(() => CombatGrid.FromLayout(null));
         }
 
+        [Test]
+        public void GetPositionsWithinDistance_CenterRangeOne_ReturnsFourNeighbors()
+        {
+            var tiles = _grid.GetPositionsWithinDistance(new GridPosition(3, 3), 1);
+
+            Assert.AreEqual(4, tiles.Count);
+            CollectionAssert.DoesNotContain(tiles, new GridPosition(3, 3));
+            CollectionAssert.Contains(tiles, new GridPosition(3, 2));
+            CollectionAssert.Contains(tiles, new GridPosition(4, 3));
+        }
+
+        [Test]
+        public void GetPositionsWithinDistance_RangeTwo_ReturnsDiamond()
+        {
+            // Manhattan radius 2 diamond = 12 tiles excluding origin, all in bounds here
+            var tiles = _grid.GetPositionsWithinDistance(new GridPosition(3, 3), 2);
+
+            Assert.AreEqual(12, tiles.Count);
+            foreach (var t in tiles)
+                Assert.LessOrEqual(t.ManhattanDistanceTo(new GridPosition(3, 3)), 2);
+        }
+
+        [Test]
+        public void GetPositionsWithinDistance_ClipsToGridBounds()
+        {
+            var tiles = _grid.GetPositionsWithinDistance(new GridPosition(0, 0), 1);
+
+            Assert.AreEqual(2, tiles.Count);
+            CollectionAssert.Contains(tiles, new GridPosition(1, 0));
+            CollectionAssert.Contains(tiles, new GridPosition(0, 1));
+        }
+
+        [Test]
+        public void GetPositionsWithinDistance_IgnoresOccupancyAndTerrain()
+        {
+            _grid.SetTerrain(new GridPosition(4, 3), TerrainType.Abyss);
+            _grid.PlaceOccupant(new object(), new GridPosition(2, 3));
+
+            var tiles = _grid.GetPositionsWithinDistance(new GridPosition(3, 3), 1);
+
+            CollectionAssert.Contains(tiles, new GridPosition(4, 3));
+            CollectionAssert.Contains(tiles, new GridPosition(2, 3));
+        }
+
+        [Test]
+        public void GetPositionsWithinDistance_ZeroRange_ReturnsEmpty()
+        {
+            Assert.IsEmpty(_grid.GetPositionsWithinDistance(new GridPosition(3, 3), 0));
+        }
+
         private static void SetPrivate(object target, string field, object value)
         {
             var info = target.GetType().GetField(field,

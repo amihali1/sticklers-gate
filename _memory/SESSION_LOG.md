@@ -273,3 +273,19 @@
 - CombatStateMachine movement flow (coroutine/MonoBehaviour) not unit-tested in EditMode — covered by DecideMovement unit tests + deferred to PR E integration.
 
 **Next session:** Commit + push PR C, open its PR (base feature/grid-combat-core). Then PR D (Grid UI) — makes the grid visible/playable.
+
+## Session 11 — September 29, 2026
+**Focus:** Fix CI, merge Phase 9 PRs A–C, build PR D (Grid UI)
+
+**What happened:**
+- CI had never passed. PR #18 fixed three stacked causes: Unity creds not passed (UNITY_EMAIL/PASSWORD), runner out of disk (added free-disk-space), missing `checks: write`. Also fixed/removed the 2 old test bugs → 111/111 green.
+- Rebased grid stack onto master, merged #14 → #15 → #16 (retargeted bases to master before each merge).
+- PR D on `feature/grid-ui`: GridRenderer + GridCoordinateMapper, MovementPanel (skip), tile-tap movement + tap-to-target, range-filtered targets, out-of-range ability greying, figures placed/animated on grid, CombatGrid.GetPositionsWithinDistance.
+- EditMode: 169/169
+
+**Decisions / gotchas:**
+- Legacy Input Manager is active (activeInputHandler=0), so grid input uses Input.GetMouseButtonDown (touch maps to mouse 0).
+- Grid visuals are SpriteRenderers on a runtime 1×1 white sprite — no art assets needed.
+- Items have no range, so item targeting is not range-filtered.
+
+**Next session:** Play-test PR D in the editor, merge, then PR E (grid content).
