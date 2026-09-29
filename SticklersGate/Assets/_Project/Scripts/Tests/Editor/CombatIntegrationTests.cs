@@ -266,7 +266,7 @@ namespace SticklersGate.Tests
         }
 
         [Test]
-        public void CombatUnit_LethalDamage_KillsEnemy()
+        public void CombatUnit_LethalDamage_DownsWithoutKilling()
         {
             var shiv = CreateAbilitySO("Shiv", AbilityCategory.MeleeAttack,
                 AbilityTargetType.SingleEnemy, 1, 4);
@@ -281,7 +281,14 @@ namespace SticklersGate.Tests
 
             unit.TakeDamage(20);
 
+            // Lethal damage only downs; the state machine decides death via Die()
             Assert.AreEqual(0, unit.CurrentHP);
+            Assert.IsFalse(unit.IsConscious);
+            Assert.IsTrue(unit.IsAlive);
+            Assert.IsFalse(deathFired);
+
+            unit.Die();
+
             Assert.IsFalse(unit.IsAlive);
             Assert.IsTrue(deathFired);
         }

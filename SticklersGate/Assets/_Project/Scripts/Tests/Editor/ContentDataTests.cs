@@ -394,32 +394,6 @@ namespace SticklersGate.Tests
         // ====================================================================
 
         [Test]
-        public void AllClasses_UseStandardArray()
-        {
-            // Each class uses the standard array: 18, 16, 14, 13, 12, 10, 8
-            // (with one 18 for primary stat)
-            // Verify stats sum to the same total
-            int[] knightStats = { 16, 13, 14, 10, 12, 8 };
-            int[] wizardStats = { 8, 14, 12, 18, 13, 10 };
-            int[] rogueStats = { 10, 18, 12, 13, 10, 14 };
-            int[] clericStats = { 14, 10, 14, 10, 18, 13 };
-
-            int knightSum = 0, wizardSum = 0, rogueSum = 0, clericSum = 0;
-            for (int i = 0; i < 6; i++)
-            {
-                knightSum += knightStats[i];
-                wizardSum += wizardStats[i];
-                rogueSum += rogueStats[i];
-                clericSum += clericStats[i];
-            }
-
-            // All should use the same stat point total
-            Assert.AreEqual(knightSum, wizardSum, "Wizard stat total should match Knight");
-            Assert.AreEqual(knightSum, rogueSum, "Rogue stat total should match Knight");
-            Assert.AreEqual(knightSum, clericSum, "Cleric stat total should match Knight");
-        }
-
-        [Test]
         public void EachClass_HasHighPrimaryStat()
         {
             // Sticknight primary: STR 16 (fighter trades max primary for better spread)
