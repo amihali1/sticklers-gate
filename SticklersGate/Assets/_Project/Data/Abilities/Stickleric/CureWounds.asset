@@ -15,7 +15,7 @@ MonoBehaviour:
   _abilityName: Cure Wounds
   _category: 3
   _targetType: 1
-  _range: 1
+  _range: 4
   _description: Channel divine energy to mend an ally's wounds. You're welcome.
   _damageDiceCount: 0
   _damageDiceSides: 0

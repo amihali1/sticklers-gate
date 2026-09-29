@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StickGoblin
   m_EditorClassIdentifier:
   _enemyName: Stick Goblin
-  _movementSpeed: 4
+  _movementSpeed: 3
   _tier: 0
   _description: A barely-drawn goblin with a rusty weapon. It looks more confused than threatening.
   _stats:

@@ -76,9 +76,9 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] CombatGrid.GetPositionsWithinDistance (ability reach; ignores terrain/occupancy) + tests; GridCoordinateMapperTests; TargetPanel range tests
 
 #### PR E: Content & Cleanup (`feature/grid-content`) — Complete
-- [x] 9.26 GridLayoutSO assets for all 3 encounters in `Data/Encounters/Layouts/` (8×6, spawns, terrain — only Difficult/Water/Abyss, the terrain types with working mechanics)
-- [x] 9.27 AbilitySO ranges — before this every ability defaulted to range 1 (spells/crossbows were melee-only). Values in CONTENT.md "Grid Values".
-- [x] 9.28 Movement speeds on all class/enemy SOs (2 slow casters/ogre, 3 standard, 4 rogue/goblin/spider)
+- [x] 9.26 GridLayoutSO assets for all 3 encounters in `Data/Encounters/Layouts/` (sizes per CONTENT.md: 8×6, 10×6, 8×8; spawns; terrain — only Difficult/Water/Abyss, the terrain types with working mechanics)
+- [x] 9.27 AbilitySO ranges — before this every ability defaulted to range 1 (spells/crossbows were melee-only). Values taken from CONTENT.md class/enemy sections.
+- [x] 9.28 Movement speeds on all class/enemy SOs, per CONTENT.md
 - [x] 9.29 EncounterSO._gridLayout; StartCombat falls back to encounter.GridLayout (bootstrapper `_gridLayout` field from PR D removed)
 - [x] 9.30 GridContentTests: real-asset checks (layouts, spawns, path connectivity, ranges, speeds) + enemies-engage-party simulation using real EnemyAI.DecideMovement
 - [x] 9.31 Combat.unity — no change needed: scene references the encounter, which now carries its layout

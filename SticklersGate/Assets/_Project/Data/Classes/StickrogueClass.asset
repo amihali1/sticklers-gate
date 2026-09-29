@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StickrogueClass
   m_EditorClassIdentifier:
   _className: Stickrogue
-  _movementSpeed: 4
+  _movementSpeed: 3
   _classType: 2
   _flavorText: Steals your gold. Then your heart. Then your gold again.
   _baseStats:
