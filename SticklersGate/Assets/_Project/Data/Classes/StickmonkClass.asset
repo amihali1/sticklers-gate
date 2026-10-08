@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8e126a3fe05f4ea44993189586e76, type: 3}
+  m_Name: StickmonkClass
+  m_EditorClassIdentifier:
+  _className: Stickmonk
+  _classType: 9
+  _flavorText: Achieved inner peace. Uses it to punch faster.
+  _baseStats:
+    strength: 10
+    dexterity: 18
+    constitution: 12
+    intelligence: 8
+    wisdom: 16
+    charisma: 8
+  _baseAC: 16
+  _hitDiceSides: 8
+  _movementSpeed: 4
+  _level1Abilities: 
+  - {fileID: 11400000, guid: 4b54c141cee14998bd21fec55bbbc854, type: 2}
+  - {fileID: 11400000, guid: f42974b15c8d4d44a9d8ffa8d0c0de4d, type: 2}
+  _level3Abilities: 
+  - {fileID: 11400000, guid: 372cf2b9e53c458e85766612d61db66c, type: 2}
+  _level5Abilities: 
+  - {fileID: 11400000, guid: 176bec6a954d465faa9b5594b3e23db4, type: 2}
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}

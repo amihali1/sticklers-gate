@@ -304,5 +304,6 @@
 **Bugs found and fixed:** Cunning Dodge did nothing; Shadow Step made the enemy invisible; 1-turn Stun/Frightened expired before taking effect (ticked at turn start before the check); Life Drain didn't heal; Ray of Frost didn't slow; enemies downed by Burning never died.
 
 - PR G (`feature/classes-casters`): Sticksorcerer, Stickwarlock, Stickdruid, Stickbard + ClassRosterTests. EditMode: 215/215.
+- PR H (`feature/classes-martial`): Stickbarbarian, Stickmonk, Stickranger, Stickpaladin. All 12 classes in. EditMode: 215/215.
 
-**Next session:** PR H (martial).
+**Next session:** merge E→F→G→H, play-test, choose next milestone.

@@ -57,6 +57,10 @@ sticklers-gate/
 | Stickwarlock | Ranged DPS / Debuffer | "Signed a contract without reading it. Twice." |
 | Stickdruid | Control / Healer | "Talks to trees. The trees have filed a restraining order." |
 | Stickbard | Support / Debuffer | "Fights with insults. Heals with songs. Never stops talking." |
+| Stickbarbarian | Melee Bruiser | "Solves problems. Mostly by hitting them. Sometimes by hitting them harder." |
+| Stickmonk | Mobile Skirmisher | "Achieved inner peace. Uses it to punch faster." |
+| Stickranger | Ranged DPS | "Prefers the company of animals. The animals are undecided." |
+| Stickpaladin | Tank / Off-healer | "Swore an oath. Mentions it constantly. Especially at parties." |
 
 ## Documentation
 
