@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _abilityName: Fireball
   _category: 2
-  _targetType: 2
+  _targetType: 5
+  _saveForHalfDamage: 1
+  _areaAffects: 0
+  _areaRadius: 2
+  _areaShape: 1
+  _range: 6
   _description: A massive ball of fire explodes among all enemies. The wizard's favorite.
   _damageDiceCount: 8
   _damageDiceSides: 6
@@ -26,8 +31,8 @@ MonoBehaviour:
   _flatHealBonus: 0
   _appliesEffect: 0
   _effectDurationTurns: 0
-  _savingThrowAbility: 0
-  _savingThrowDC: 0
+  _savingThrowAbility: 1
+  _savingThrowDC: 14
   _cooldownTurns: 4
   _unlockLevel: 3
   _hitQuips: 

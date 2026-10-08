@@ -20,7 +20,8 @@ namespace SticklersGate.UI
             None,
             Movement,
             AbilityRange,
-            ActiveUnit
+            ActiveUnit,
+            AreaPreview
         }
 
         [Header("Tile Look")]
@@ -40,6 +41,7 @@ namespace SticklersGate.UI
         [SerializeField] private Color _movementColor = new Color(0.25f, 0.5f, 1f, 0.45f);
         [SerializeField] private Color _abilityRangeColor = new Color(1f, 0.3f, 0.25f, 0.35f);
         [SerializeField] private Color _activeUnitColor = new Color(1f, 0.85f, 0.2f, 0.5f);
+        [SerializeField] private Color _areaPreviewColor = new Color(1f, 0.5f, 0f, 0.6f);
 
         /// <summary>Fired when the player clicks/taps a tile inside the grid.</summary>
         public event Action<GridPosition> OnTileClicked;
@@ -179,6 +181,7 @@ namespace SticklersGate.UI
                 case HighlightKind.Movement: return _movementColor;
                 case HighlightKind.AbilityRange: return _abilityRangeColor;
                 case HighlightKind.ActiveUnit: return _activeUnitColor;
+                case HighlightKind.AreaPreview: return _areaPreviewColor;
                 default: return Color.clear;
             }
         }

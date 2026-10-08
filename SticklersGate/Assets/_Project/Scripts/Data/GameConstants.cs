@@ -39,6 +39,23 @@ namespace SticklersGate.Data
         /// <summary>Movement cost of entering Difficult or Water terrain.</summary>
         public const int DIFFICULT_MOVEMENT_COST = 2;
 
+        // --- Status effect mechanics ---
+
+        /// <summary>AC bonus while Shielded (Cunning Dodge, Patient Defense, Aura of Protection).</summary>
+        public const int SHIELDED_AC_BONUS = 4;
+
+        /// <summary>Die added to attack rolls and saving throws while Blessed (5e Bless / Bardic Inspiration).</summary>
+        public const int BLESSED_BONUS_DIE = 4;
+
+        /// <summary>Tiles of movement lost while Slowed (5e Ray of Frost: -10 ft).</summary>
+        public const int SLOWED_MOVEMENT_PENALTY = 2;
+
+        /// <summary>Bonus damage on melee attacks while Raging.</summary>
+        public const int RAGE_DAMAGE_BONUS = 2;
+
+        /// <summary>Die of bonus damage the marker deals to a Marked target (5e Hunter's Mark / Hex: 1d6).</summary>
+        public const int MARKED_BONUS_DIE = 6;
+
         public const int ELEVATED_AC_BONUS = 1;
         public const int ELEVATED_RANGE_BONUS = 1;
         public const int COVER_AC_BONUS = 2;

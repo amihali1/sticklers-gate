@@ -25,8 +25,8 @@ MonoBehaviour:
   _healDiceCount: 0
   _healDiceSides: 0
   _flatHealBonus: 0
-  _appliesEffect: 0
-  _effectDurationTurns: 0
+  _appliesEffect: 6
+  _effectDurationTurns: 1
   _savingThrowAbility: 0
   _savingThrowDC: 0
   _cooldownTurns: 0

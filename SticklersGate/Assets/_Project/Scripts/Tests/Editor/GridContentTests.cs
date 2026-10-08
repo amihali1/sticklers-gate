@@ -132,6 +132,46 @@ namespace SticklersGate.Tests
         }
 
         [Test]
+        public void NoAbility_UsesWholeSideTargeting()
+        {
+            // Grid combat: areas have a range and a shape; nothing hits "all enemies" anywhere on the map
+            foreach (var ability in LoadAll<AbilitySO>())
+            {
+                Assert.AreNotEqual(AbilityTargetType.AllEnemies, ability.TargetType, ability.name);
+                Assert.AreNotEqual(AbilityTargetType.AllAllies, ability.TargetType, ability.name);
+            }
+        }
+
+        [Test]
+        public void AreaAbilities_HaveConsistentShapeTargetAndRadius()
+        {
+            foreach (var ability in LoadAll<AbilitySO>())
+            {
+                if (ability.TargetType == AbilityTargetType.Point)
+                {
+                    Assert.AreEqual(AreaShape.Sphere, ability.AreaShape, $"{ability.name}: Point targets a sphere.");
+                    Assert.GreaterOrEqual(ability.Range, 1, $"{ability.name}: sphere needs a range.");
+                }
+
+                if (ability.AreaShape == AreaShape.Emanation)
+                    Assert.AreEqual(AbilityTargetType.Self, ability.TargetType, $"{ability.name}: emanations center on the user.");
+
+                if (ability.IsArea)
+                    Assert.GreaterOrEqual(ability.AreaRadius, 1, $"{ability.name}: area radius must be at least 1.");
+            }
+        }
+
+        [Test]
+        public void SaveForHalfAbilities_HaveASavingThrow()
+        {
+            foreach (var ability in LoadAll<AbilitySO>())
+            {
+                if (ability.SaveForHalfDamage)
+                    Assert.Greater(ability.SavingThrowDC, 0, $"{ability.name}: save-for-half needs a DC.");
+            }
+        }
+
+        [Test]
         public void EveryClassAndEnemy_HasPositiveMovementSpeed()
         {
             foreach (var cls in LoadAll<CharacterClassSO>())

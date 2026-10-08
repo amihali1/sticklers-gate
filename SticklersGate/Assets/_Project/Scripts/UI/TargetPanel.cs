@@ -123,6 +123,39 @@ namespace SticklersGate.UI
         }
 
         /// <summary>
+        /// Show the aiming prompt for a Point (sphere) ability: no unit buttons,
+        /// the player taps a tile on the grid instead. Cancel stays available.
+        /// </summary>
+        public void ShowAreaPrompt(RuntimeAbility ability)
+        {
+            ClearButtons();
+            gameObject.SetActive(true);
+
+            if (_targetButtonPrefab != null && _buttonContainer != null)
+            {
+                var go = Instantiate(_targetButtonPrefab, _buttonContainer);
+                go.SetActive(true);
+                _spawnedButtons.Add(go);
+
+                var buttonText = go.GetComponentInChildren<Text>();
+                if (buttonText != null)
+                {
+                    buttonText.text = $"Tap a tile to aim {ability.Data.AbilityName}, tap again to cast";
+                }
+
+                var button = go.GetComponent<Button>();
+                if (button != null) button.interactable = false;
+            }
+
+            if (_cancelButton != null)
+            {
+                _cancelButton.gameObject.SetActive(true);
+                _cancelButton.onClick.RemoveAllListeners();
+                _cancelButton.onClick.AddListener(() => OnCancelled?.Invoke());
+            }
+        }
+
+        /// <summary>
         /// Hide the target panel.
         /// </summary>
         public void Hide()
@@ -194,7 +227,7 @@ namespace SticklersGate.UI
 
         /// <summary>
         /// True if the actor could use the ability on at least one target right
-        /// now (AoE and self abilities always qualify).
+        /// now (self, emanation and point-aimed area abilities always qualify).
         /// </summary>
         public static bool HasTargetInRange(AbilitySO ability, CombatUnit actor,
             IReadOnlyList<CombatUnit> playerUnits, IReadOnlyList<CombatUnit> enemyUnits)
@@ -202,6 +235,7 @@ namespace SticklersGate.UI
             switch (ability.TargetType)
             {
                 case AbilityTargetType.Self:
+                case AbilityTargetType.Point:
                 case AbilityTargetType.AllEnemies:
                 case AbilityTargetType.AllAllies:
                     return true;

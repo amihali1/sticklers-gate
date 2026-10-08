@@ -34,6 +34,19 @@ namespace SticklersGate.Combat
     }
 
     /// <summary>
+    /// Result of save-for-half damage (5e Fireball): the target's saving throw
+    /// and the damage after halving on a success.
+    /// </summary>
+    public struct SaveDamageResult
+    {
+        public SaveResult Save;
+        public int DamageRolled;
+        public int TotalDamage;
+        /// <summary>True if the ability's status effect should land (failed save).</summary>
+        public bool EffectApplies;
+    }
+
+    /// <summary>
     /// Result of a saving throw.
     /// </summary>
     public struct SaveResult
@@ -75,9 +88,9 @@ namespace SticklersGate.Combat
             result.IsCriticalHit = DiceRoller.IsCriticalHit(result.D20Roll);
             result.IsCriticalFail = DiceRoller.IsCriticalFail(result.D20Roll);
 
-            // Calculate attack roll
+            // Calculate attack roll (Blessed adds 1d4)
             result.Modifier = attacker.Stats.GetModifier(ability.AbilityModifier);
-            result.TotalAttackRoll = result.D20Roll + result.Modifier;
+            result.TotalAttackRoll = result.D20Roll + result.Modifier + RollBlessedBonus(attacker);
             result.TargetAC = target.EffectiveAC;
             result.WasInRange = IsInRange(attacker, target, ability);
 
@@ -92,13 +105,9 @@ namespace SticklersGate.Combat
             // Roll damage on hit
             if (result.IsHit)
             {
-                int diceCount = ability.DamageDiceCount;
-                if (result.IsCriticalHit) diceCount *= 2; // Double dice on crit
-
-                result.DamageRolled = DiceRoller.RollMultiple(diceCount, ability.DamageDiceSides);
-                result.TotalDamage = result.DamageRolled + result.Modifier + ability.FlatDamageBonus;
-
-                if (result.TotalDamage < 0) result.TotalDamage = 0;
+                result.DamageRolled = RollDamageDice(ability, result.IsCriticalHit);
+                int damage = result.DamageRolled + result.Modifier + ability.FlatDamageBonus;
+                result.TotalDamage = ApplyDamageModifiers(attacker, target, ability, damage);
 
                 // Apply status effect if ability has one
                 if (ability.AppliesStatusEffect)
@@ -109,6 +118,83 @@ namespace SticklersGate.Combat
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Resolve save-for-half damage: the target saves against the ability's
+        /// DC; full damage on a failure, half (rounded down) on a success. No
+        /// attack roll and no ability modifier to damage, as with 5e area spells.
+        /// </summary>
+        public static SaveDamageResult ResolveSaveDamage(CombatUnit attacker, CombatUnit target, AbilitySO ability)
+        {
+            var result = new SaveDamageResult();
+            result.Save = ResolveSavingThrow(target, ability.SavingThrowAbility, ability.SavingThrowDC);
+            result.DamageRolled = RollDamageDice(ability, isCritical: false);
+
+            int damage = result.DamageRolled + ability.FlatDamageBonus;
+            if (result.Save.Success) damage /= 2;
+
+            result.TotalDamage = ApplyDamageModifiers(attacker, target, ability, damage);
+            result.EffectApplies = !result.Save.Success && ability.AppliesStatusEffect;
+            return result;
+        }
+
+        /// <summary>
+        /// Roll an ability's damage dice: maximum on every die if the ability is
+        /// empowered, dice doubled on a critical hit.
+        /// </summary>
+        public static int RollDamageDice(AbilitySO ability, bool isCritical)
+        {
+            int diceCount = ability.DamageDiceCount;
+            if (isCritical) diceCount *= 2; // Double dice on crit
+
+            return ability.MaximizeDamage
+                ? diceCount * ability.DamageDiceSides
+                : DiceRoller.RollMultiple(diceCount, ability.DamageDiceSides);
+        }
+
+        /// <summary>
+        /// Apply status-driven damage modifiers: Raging attacker +2 on melee,
+        /// the marker's bonus 1d6 against a Marked target, and a Raging target
+        /// halving slashing/piercing/bludgeoning. Never below zero.
+        /// </summary>
+        public static int ApplyDamageModifiers(CombatUnit attacker, CombatUnit target, AbilitySO ability, int damage)
+        {
+            if (attacker != null && attacker.HasStatusEffect(StatusEffectType.Raging) &&
+                ability.Category == AbilityCategory.MeleeAttack)
+            {
+                damage += GameConstants.RAGE_DAMAGE_BONUS;
+            }
+
+            var mark = target.GetStatusEffect(StatusEffectType.Marked);
+            if (mark != null && attacker != null && mark.Source == attacker)
+            {
+                damage += DiceRoller.Roll(GameConstants.MARKED_BONUS_DIE);
+            }
+
+            if (target.HasStatusEffect(StatusEffectType.Raging) && IsPhysical(ability.DamageType))
+            {
+                damage /= 2;
+            }
+
+            return damage < 0 ? 0 : damage;
+        }
+
+        /// <summary>HP the user regains from lifesteal for the damage dealt.</summary>
+        public static int LifestealAmount(int damageDealt, int lifestealPercent)
+        {
+            if (damageDealt <= 0 || lifestealPercent <= 0) return 0;
+            return damageDealt * lifestealPercent / 100;
+        }
+
+        private static bool IsPhysical(DamageType type)
+        {
+            return type == DamageType.Slashing || type == DamageType.Piercing || type == DamageType.Bludgeoning;
+        }
+
+        private static int RollBlessedBonus(CombatUnit unit)
+        {
+            return unit.HasStatusEffect(StatusEffectType.Blessed) ? DiceRoller.Roll(GameConstants.BLESSED_BONUS_DIE) : 0;
         }
 
         /// <summary>
@@ -144,7 +230,7 @@ namespace SticklersGate.Combat
 
             result.D20Roll = DiceRoller.RollD20();
             result.Modifier = target.Stats.GetModifier(savingAbility);
-            result.TotalRoll = result.D20Roll + result.Modifier;
+            result.TotalRoll = result.D20Roll + result.Modifier + RollBlessedBonus(target);
             result.DC = dc;
 
             // Nat 20 always succeeds, nat 1 always fails
@@ -160,8 +246,9 @@ namespace SticklersGate.Combat
 
         /// <summary>
         /// Whether the target is within the ability's grid range (Manhattan
-        /// distance). Self and AoE (AllEnemies/AllAllies) abilities ignore range
-        /// and always return true.
+        /// distance). Self abilities (including emanations) and legacy
+        /// AllEnemies/AllAllies ignore range and always return true. For Point
+        /// abilities the target's tile is the area center being checked.
         /// </summary>
         /// <param name="attacker">The unit making the ability.</param>
         /// <param name="target">The unit being targeted.</param>
