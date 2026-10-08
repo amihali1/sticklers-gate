@@ -30,7 +30,7 @@ namespace SticklersGate.UI
         // the narrator (top), action panel (bottom), and HP bars (sides).
         private const float GRID_AREA_BOTTOM = 0.19f;
         private const float GRID_AREA_TOP = 0.78f;
-        private const float GRID_AREA_WIDTH = 0.72f;
+        private const float GRID_AREA_WIDTH = 0.62f; // clear of the side columns (HP bars, turn order)
         private const float MAX_TILE_SIZE = 1.2f;
 
         // Stick figure height as a fraction of tile size, and hip offset so the
@@ -144,13 +144,12 @@ namespace SticklersGate.UI
             // Grid — world-space tiles behind the stick figures
             _gridRenderer = new GameObject("CombatGrid").AddComponent<GridRenderer>();
 
-            // HP Bar containers — left side (players) and right side (enemies)
-            var playerHPContainer = CreatePanel(canvasTransform, "PlayerHPBars",
-                new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(10, -60),
-                new Vector2(220, 300));
-            var enemyHPContainer = CreatePanel(canvasTransform, "EnemyHPBars",
-                new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-230, -60),
-                new Vector2(220, 300));
+            // HP Bar columns — left side (players), right side under the turn order (enemies).
+            // Vertical layout so each unit gets its own row instead of stacking on top of each other.
+            var playerHPContainer = CreateHPColumn(canvasTransform, "PlayerHPBars",
+                new Vector2(0.005f, 0.2f), new Vector2(0.17f, 0.84f));
+            var enemyHPContainer = CreateHPColumn(canvasTransform, "EnemyHPBars",
+                new Vector2(0.83f, 0.2f), new Vector2(0.995f, 0.55f));
 
             // Popup canvas (same canvas)
             var popupContainer = CreatePanel(canvasTransform, "PopupCanvas",
@@ -425,8 +424,8 @@ namespace SticklersGate.UI
         {
             var go = CreateUIObject("TurnOrderDisplay", parent);
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.7f, 0.72f);
-            rect.anchorMax = new Vector2(0.98f, 0.84f);
+            rect.anchorMin = new Vector2(0.83f, 0.57f);
+            rect.anchorMax = new Vector2(0.995f, 0.84f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
@@ -436,13 +435,13 @@ namespace SticklersGate.UI
             // Label
             var labelGo = CreateUIObject("Label", go.transform);
             var labelRect = labelGo.GetComponent<RectTransform>();
-            labelRect.anchorMin = new Vector2(0, 0.7f);
+            labelRect.anchorMin = new Vector2(0, 0.88f);
             labelRect.anchorMax = new Vector2(1, 1);
             labelRect.offsetMin = new Vector2(5, 0);
             labelRect.offsetMax = new Vector2(-5, 0);
             var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = "Turn Order";
-            label.fontSize = 14;
+            label.fontSize = 18;
             label.color = Color.gray;
             label.alignment = TextAlignmentOptions.Center;
 
@@ -450,7 +449,7 @@ namespace SticklersGate.UI
             var containerGo = CreateUIObject("EntryContainer", go.transform);
             var containerRect = containerGo.GetComponent<RectTransform>();
             containerRect.anchorMin = new Vector2(0, 0);
-            containerRect.anchorMax = new Vector2(1, 0.7f);
+            containerRect.anchorMax = new Vector2(1, 0.88f);
             containerRect.offsetMin = new Vector2(5, 2);
             containerRect.offsetMax = new Vector2(-5, 0);
             var layout = containerGo.AddComponent<VerticalLayoutGroup>();
@@ -651,7 +650,7 @@ namespace SticklersGate.UI
         {
             var go = new GameObject("HPBarPrefab");
             var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(200, 40);
+            rect.sizeDelta = new Vector2(200, 52);
 
             var layout = go.AddComponent<VerticalLayoutGroup>();
             layout.spacing = 1;
@@ -666,18 +665,18 @@ namespace SticklersGate.UI
             // Name text
             var nameGo = CreateUIObject("NameText", go.transform);
             var nameText = nameGo.AddComponent<TextMeshProUGUI>();
-            nameText.fontSize = 13;
+            nameText.fontSize = 18;
             nameText.color = Color.white;
             nameText.alignment = TextAlignmentOptions.Left;
             var nameLayout = nameGo.AddComponent<LayoutElement>();
-            nameLayout.preferredHeight = 16;
+            nameLayout.preferredHeight = 22;
 
             // Bar background
             var barBgGo = CreateUIObject("BarBackground", go.transform);
             var barBgImg = barBgGo.AddComponent<Image>();
             barBgImg.color = new Color(0.2f, 0.2f, 0.2f);
             var barBgLayout = barBgGo.AddComponent<LayoutElement>();
-            barBgLayout.preferredHeight = 12;
+            barBgLayout.preferredHeight = 18;
 
             // Fill image (child of bar bg)
             var fillGo = CreateUIObject("Fill", barBgGo.transform);
@@ -699,7 +698,7 @@ namespace SticklersGate.UI
             hpTextRect.offsetMin = Vector2.zero;
             hpTextRect.offsetMax = Vector2.zero;
             var hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
-            hpText.fontSize = 11;
+            hpText.fontSize = 14;
             hpText.color = Color.white;
             hpText.alignment = TextAlignmentOptions.Center;
 
@@ -764,15 +763,15 @@ namespace SticklersGate.UI
         {
             var go = new GameObject("TurnEntryPrefab");
             var rect = go.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0, 16);
+            rect.sizeDelta = new Vector2(0, 24);
 
             var text = go.AddComponent<TextMeshProUGUI>();
-            text.fontSize = 13;
+            text.fontSize = 18;
             text.color = Color.white;
             text.alignment = TextAlignmentOptions.Left;
 
             var layoutEl = go.AddComponent<LayoutElement>();
-            layoutEl.preferredHeight = 16;
+            layoutEl.preferredHeight = 24;
 
             go.SetActive(false);
             DontDestroyOnLoad(go);
@@ -789,6 +788,25 @@ namespace SticklersGate.UI
             go.AddComponent<RectTransform>();
             go.transform.SetParent(parent, false);
             return go;
+        }
+
+        private static RectTransform CreateHPColumn(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            var go = CreateUIObject(name, parent);
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var layout = go.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = 6;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
+            layout.childForceExpandWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandHeight = false;
+            return rect;
         }
 
         private static RectTransform CreatePanel(Transform parent, string name,

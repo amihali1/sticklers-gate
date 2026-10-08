@@ -828,13 +828,14 @@ namespace SticklersGate.Combat
 
         private bool? CheckEndCondition()
         {
-            // Check if all players are dead
-            bool allPlayersDead = true;
+            // Defeat when no party member is still standing (5e: everyone at 0 HP is a wipe).
+            // Downed or stabilized players can't act or be targeted, so waiting on them would stall forever.
+            bool anyPlayerStanding = false;
             foreach (var unit in _playerUnits)
             {
-                if (unit.IsAlive) { allPlayersDead = false; break; }
+                if (unit.IsAlive && unit.IsConscious) { anyPlayerStanding = true; break; }
             }
-            if (allPlayersDead) return false;
+            if (!anyPlayerStanding) return false;
 
             // Check victory condition
             switch (_encounter.VictoryCondition)
