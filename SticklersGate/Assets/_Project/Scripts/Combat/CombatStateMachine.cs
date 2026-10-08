@@ -132,14 +132,15 @@ namespace SticklersGate.Combat
                         continue;
                     }
 
-                    // Turn start: always tick effects and cooldowns (even if stunned)
+                    // Turn start: tick cooldowns (status effects tick at turn end)
                     SetPhase(CombatPhase.TurnStart);
                     unit.TickTurnStart();
 
-                    // Skip stunned units (after ticking so stun can expire)
+                    // Skip stunned units; the stun still counts down at the end of the skipped turn
                     if (unit.HasStatusEffect(StatusEffectType.Stunned))
                     {
                         OnNarratorQuip?.Invoke($"{unit.Name} is stunned and loses their turn!");
+                        unit.TickTurnEnd();
                         continue;
                     }
 
@@ -153,6 +154,11 @@ namespace SticklersGate.Combat
                         if (!unit.IsConscious)
                         {
                             OnUnitDowned?.Invoke(unit);
+                            if (!unit.IsPlayer)
+                            {
+                                unit.Die();
+                                OnUnitDied?.Invoke(unit);
+                            }
                             continue;
                         }
                     }
@@ -184,6 +190,7 @@ namespace SticklersGate.Combat
                         yield return HandleEnemyTurn(unit);
                     }
 
+                    unit.TickTurnEnd();
                     OnTurnEnded?.Invoke(unit);
 
                     // Check end conditions
@@ -239,7 +246,7 @@ namespace SticklersGate.Combat
         private bool IsReachable(CombatUnit unit, GridPosition destination)
         {
             if (_grid == null) return false;
-            var reachable = Pathfinder.GetReachablePositions(_grid, unit.Position, unit.MovementSpeed);
+            var reachable = Pathfinder.GetReachablePositions(_grid, unit.Position, unit.EffectiveMovement);
             return reachable.Contains(destination);
         }
 
@@ -274,6 +281,10 @@ namespace SticklersGate.Combat
             if (CurrentUnit == null || !CurrentUnit.IsPlayer)
                 return;
 
+            // Point-targeted areas need a tile, not a unit
+            if (ability.Data.TargetType == AbilityTargetType.Point)
+                return;
+
             // Enforce ability range for single-target actions; keep the player's
             // turn so they can pick a reachable target (or move next time).
             if (!InRange(CurrentUnit, ability, target))
@@ -283,7 +294,27 @@ namespace SticklersGate.Combat
                 return;
             }
 
-            StartCoroutine(ResolvePlayerAction(ability, target));
+            StartCoroutine(ResolvePlayerAction(ability, target, null));
+        }
+
+        /// <summary>
+        /// Called by UI when the player aims a Point (sphere) ability at a tile.
+        /// Ignored if the tile is outside the grid or beyond the ability's range.
+        /// </summary>
+        public void SubmitPlayerAreaAction(RuntimeAbility ability, GridPosition point)
+        {
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseTarget)
+                return;
+
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer)
+                return;
+
+            if (ability.Data.TargetType != AbilityTargetType.Point ||
+                !AreaTargeting.IsValidCenter(_grid, ability.Data, CurrentUnit, point))
+                return;
+
+            StartCoroutine(ResolvePlayerAction(ability, null, point));
         }
 
         /// <summary>
@@ -328,7 +359,7 @@ namespace SticklersGate.Combat
             _inventory.Remove(item);
             OnItemUsed?.Invoke(user, item);
 
-            var targets = GatherTargets(user, target, item.TargetType);
+            var targets = GatherTargetsByType(user, target, item.TargetType);
 
             foreach (var t in targets)
             {
@@ -366,7 +397,7 @@ namespace SticklersGate.Combat
 
                 if (item.AppliesEffect != StatusEffectType.None && item.EffectDuration > 0)
                 {
-                    t.ApplyStatusEffect(item.AppliesEffect, item.EffectDuration);
+                    t.ApplyStatusEffect(item.AppliesEffect, item.EffectDuration, user);
                 }
 
                 if (targets.Count > 1)
@@ -385,12 +416,12 @@ namespace SticklersGate.Combat
             SetPhase(CombatPhase.TurnEnd);
         }
 
-        private IEnumerator ResolvePlayerAction(RuntimeAbility ability, CombatUnit target)
+        private IEnumerator ResolvePlayerAction(RuntimeAbility ability, CombatUnit target, GridPosition? point)
         {
             SetPhase(CombatPhase.ResolveAction);
             var unit = CurrentUnit;
 
-            yield return ResolveAbility(unit, target, ability);
+            yield return ResolveAbility(unit, target, ability, point);
 
             ability.StartCooldown();
 
@@ -429,7 +460,11 @@ namespace SticklersGate.Combat
                 yield break;
             }
 
-            yield return ResolveAbility(enemy, decision.Target, decision.ChosenAbility);
+            // Enemies aim spheres at their chosen target's tile
+            GridPosition? point = decision.ChosenAbility.Data.TargetType == AbilityTargetType.Point
+                ? decision.Target.Position
+                : (GridPosition?)null;
+            yield return ResolveAbility(enemy, decision.Target, decision.ChosenAbility, point);
 
             decision.ChosenAbility.StartCooldown();
 
@@ -437,20 +472,39 @@ namespace SticklersGate.Combat
             SetPhase(CombatPhase.TurnEnd);
         }
 
-        private IEnumerator ResolveAbility(CombatUnit actor, CombatUnit target, RuntimeAbility runtimeAbility)
+        private IEnumerator ResolveAbility(CombatUnit actor, CombatUnit target, RuntimeAbility runtimeAbility, GridPosition? point)
         {
             var ability = runtimeAbility.Data;
+            var targets = GatherTargets(actor, target, ability, point);
 
-            // Gather all targets for multi-target abilities
-            var targets = GatherTargets(actor, target, ability.TargetType);
+            if (ability.IsArea && targets.Count == 0)
+            {
+                OnNarratorQuip?.Invoke($"{actor.Name}'s {ability.AbilityName} hits nothing but paper.");
+            }
+
+            int totalDamageDealt = 0;
 
             foreach (var currentTarget in targets)
             {
-                if (!currentTarget.IsAlive || !currentTarget.IsConscious) continue;
+                if (!currentTarget.IsAlive) continue;
+                if (!currentTarget.IsConscious && !ability.Heals) continue;
 
                 if (ability.DealsDamage)
                 {
-                    yield return ResolveDamage(actor, currentTarget, ability);
+                    if (ability.SaveForHalfDamage && ability.SavingThrowDC > 0)
+                    {
+                        totalDamageDealt += ResolveSaveDamage(actor, currentTarget, ability);
+                    }
+                    else
+                    {
+                        // Area attacks roll once per creature; single targets may strike several times
+                        int hits = ability.IsArea ? 1 : ability.HitCount;
+                        for (int i = 0; i < hits && currentTarget.IsConscious; i++)
+                        {
+                            totalDamageDealt += ResolveDamage(actor, currentTarget, ability);
+                            if (hits > 1) yield return new WaitForSeconds(0.15f);
+                        }
+                    }
                 }
                 else if (ability.Heals)
                 {
@@ -474,7 +528,7 @@ namespace SticklersGate.Combat
 
                     if (applyEffect)
                     {
-                        currentTarget.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns);
+                        currentTarget.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns, actor);
                     }
                 }
 
@@ -484,10 +538,67 @@ namespace SticklersGate.Combat
                 }
             }
 
+            // Lifesteal (Vampiric Touch, Life Drain)
+            int stolen = DamageCalculator.LifestealAmount(totalDamageDealt, ability.LifestealPercent);
+            if (stolen > 0 && actor.IsAlive)
+            {
+                actor.Heal(stolen);
+                OnHealResolved?.Invoke(actor, actor, new HealResult { TotalHealed = stolen });
+            }
+
+            // Effect on the user (Shadow Step: vanish after striking)
+            if (ability.AppliesSelfEffect && actor.IsAlive)
+            {
+                actor.ApplyStatusEffect(ability.SelfEffect, ability.SelfEffectDurationTurns, actor);
+            }
+
             yield return new WaitForSeconds(0.3f);
         }
 
-        private List<CombatUnit> GatherTargets(CombatUnit actor, CombatUnit singleTarget, AbilityTargetType targetType)
+        /// <summary>
+        /// Every unit an ability resolves against: the area's occupants for
+        /// sphere/emanation abilities, otherwise the chosen target plus any
+        /// Twinned extra targets.
+        /// </summary>
+        private List<CombatUnit> GatherTargets(CombatUnit actor, CombatUnit singleTarget, AbilitySO ability, GridPosition? point)
+        {
+            if (ability.IsArea)
+            {
+                return AreaTargeting.GetAffectedUnits(ability, actor, point ?? actor.Position, _allUnits);
+            }
+
+            var targets = GatherTargetsByType(actor, singleTarget, ability.TargetType);
+
+            if (ability.ExtraTargets > 0 && singleTarget != null && ability.TargetType == AbilityTargetType.SingleEnemy)
+            {
+                targets.AddRange(FindExtraTargets(actor, singleTarget, ability));
+            }
+
+            return targets;
+        }
+
+        /// <summary>
+        /// Twinned Spell: other conscious enemies within the ability's range of the
+        /// user, nearest to the primary target first.
+        /// </summary>
+        private List<CombatUnit> FindExtraTargets(CombatUnit actor, CombatUnit primary, AbilitySO ability)
+        {
+            var candidates = new List<CombatUnit>();
+            foreach (var u in actor.IsPlayer ? _enemyUnits : _playerUnits)
+            {
+                if (u != primary && u.IsAlive && u.IsConscious && DamageCalculator.IsInRange(actor, u, ability))
+                    candidates.Add(u);
+            }
+
+            candidates.Sort((a, b) =>
+                a.Position.ManhattanDistanceTo(primary.Position).CompareTo(b.Position.ManhattanDistanceTo(primary.Position)));
+
+            if (candidates.Count > ability.ExtraTargets)
+                candidates.RemoveRange(ability.ExtraTargets, candidates.Count - ability.ExtraTargets);
+            return candidates;
+        }
+
+        private List<CombatUnit> GatherTargetsByType(CombatUnit actor, CombatUnit singleTarget, AbilityTargetType targetType)
         {
             var targets = new List<CombatUnit>();
 
@@ -517,15 +628,25 @@ namespace SticklersGate.Combat
             return targets;
         }
 
-        private IEnumerator ResolveDamage(CombatUnit actor, CombatUnit target, AbilitySO ability)
+        /// <summary>
+        /// Resolve one attack roll against a target. Returns the damage dealt (0 on a miss).
+        /// 5e advantage: attacker unseen (Invisible) or target Restrained. Disadvantage:
+        /// attacker Frightened/Poisoned/Restrained or target Invisible.
+        /// </summary>
+        private int ResolveDamage(CombatUnit actor, CombatUnit target, AbilitySO ability)
         {
-            bool advantage = target.HasStatusEffect(StatusEffectType.Invisible) ? false :
-                             actor.HasStatusEffect(StatusEffectType.Invisible);
+            bool advantage = actor.HasStatusEffect(StatusEffectType.Invisible) ||
+                             target.HasStatusEffect(StatusEffectType.Restrained);
             bool disadvantage = actor.HasStatusEffect(StatusEffectType.Frightened) ||
-                                actor.HasStatusEffect(StatusEffectType.Poisoned);
+                                actor.HasStatusEffect(StatusEffectType.Poisoned) ||
+                                actor.HasStatusEffect(StatusEffectType.Restrained) ||
+                                target.HasStatusEffect(StatusEffectType.Invisible);
 
             var result = DamageCalculator.ResolveAttack(actor, target, ability, advantage, disadvantage);
             OnAttackResolved?.Invoke(actor, target, result);
+
+            // Attacking reveals an invisible attacker (5e)
+            actor.RemoveStatusEffect(StatusEffectType.Invisible);
 
             if (result.IsHit)
             {
@@ -538,25 +659,16 @@ namespace SticklersGate.Combat
                         var save = DamageCalculator.ResolveSavingThrow(target, ability.SavingThrowAbility, ability.SavingThrowDC);
                         if (!save.Success)
                         {
-                            target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration);
+                            target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration, actor);
                         }
                     }
                     else
                     {
-                        target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration);
+                        target.ApplyStatusEffect(result.AppliedEffect, result.EffectDuration, actor);
                     }
                 }
 
-                if (!target.IsConscious)
-                {
-                    OnUnitDowned?.Invoke(target);
-
-                    if (!target.IsPlayer)
-                    {
-                        target.Die();
-                        OnUnitDied?.Invoke(target);
-                    }
-                }
+                HandleDownedAfterDamage(target);
 
                 if (result.IsCriticalHit && ability.CritQuips != null && ability.CritQuips.Length > 0)
                 {
@@ -579,7 +691,56 @@ namespace SticklersGate.Combat
                 }
             }
 
-            yield return null;
+            return result.IsHit ? result.TotalDamage : 0;
+        }
+
+        /// <summary>
+        /// Resolve save-for-half damage against one target (5e Fireball). Returns damage dealt.
+        /// </summary>
+        private int ResolveSaveDamage(CombatUnit actor, CombatUnit target, AbilitySO ability)
+        {
+            var result = DamageCalculator.ResolveSaveDamage(actor, target, ability);
+
+            // Report as an attack so popups and animations work: a successful save reads as a glancing hit
+            OnAttackResolved?.Invoke(actor, target, new AttackResult
+            {
+                IsHit = result.TotalDamage > 0,
+                DamageRolled = result.DamageRolled,
+                TotalDamage = result.TotalDamage,
+                TargetAC = target.EffectiveAC,
+                WasInRange = true
+            });
+
+            if (result.Save.Success)
+            {
+                OnNarratorQuip?.Invoke($"{target.Name} dives aside and takes half damage.");
+            }
+
+            if (result.TotalDamage > 0)
+            {
+                target.TakeDamage(result.TotalDamage);
+            }
+
+            if (result.EffectApplies)
+            {
+                target.ApplyStatusEffect(ability.AppliesEffect, ability.EffectDurationTurns, actor);
+            }
+
+            HandleDownedAfterDamage(target);
+            return result.TotalDamage;
+        }
+
+        /// <summary>Fire downed/died events after damage; enemies die outright at 0 HP.</summary>
+        private void HandleDownedAfterDamage(CombatUnit target)
+        {
+            if (target.IsConscious) return;
+
+            OnUnitDowned?.Invoke(target);
+            if (!target.IsPlayer)
+            {
+                target.Die();
+                OnUnitDied?.Invoke(target);
+            }
         }
 
         private IEnumerator HandleDeathSaves(CombatUnit unit)

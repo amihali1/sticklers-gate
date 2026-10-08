@@ -44,6 +44,10 @@ namespace SticklersGate.UI
         private RuntimeAbility _selectedAbility;
         private ItemSO _selectedItem;
 
+        // Point (sphere) aiming: first tap previews the area, second tap on the same tile casts
+        private RuntimeAbility _aimingAbility;
+        private GridPosition? _pendingAreaCenter;
+
         private void Awake()
         {
             if (_actionPanel != null) _actionPanel.Hide();
@@ -153,7 +157,7 @@ namespace SticklersGate.UI
             var grid = _combatStateMachine.Grid;
             if (grid != null)
             {
-                _reachableTiles.UnionWith(Pathfinder.GetReachablePositions(grid, unit.Position, unit.MovementSpeed));
+                _reachableTiles.UnionWith(Pathfinder.GetReachablePositions(grid, unit.Position, unit.EffectiveMovement));
             }
 
             if (_gridRenderer != null)
@@ -185,6 +189,12 @@ namespace SticklersGate.UI
                 return;
             }
 
+            if (_aimingAbility != null)
+            {
+                HandleAreaAimTap(current, tile);
+                return;
+            }
+
             // Tap a unit on the grid as an alternative to the target buttons
             if (_selectableTargets.Count > 0 &&
                 _combatStateMachine.Grid?.GetOccupant(tile) is CombatUnit occupant &&
@@ -192,6 +202,49 @@ namespace SticklersGate.UI
             {
                 HandleTargetSelected(occupant);
             }
+        }
+
+        private void HandleAreaAimTap(CombatUnit caster, GridPosition tile)
+        {
+            var grid = _combatStateMachine.Grid;
+            var ability = _aimingAbility.Data;
+            if (grid == null || !AreaTargeting.IsValidCenter(grid, ability, caster, tile)) return;
+
+            if (_pendingAreaCenter.HasValue && _pendingAreaCenter.Value == tile)
+            {
+                var toCast = _aimingAbility;
+                ClearAreaAim();
+                if (_targetPanel != null) _targetPanel.Hide();
+                if (_gridRenderer != null) _gridRenderer.ClearHighlights();
+                _selectedAbility = null;
+                _combatStateMachine.SubmitPlayerAreaAction(toCast, tile);
+                return;
+            }
+
+            _pendingAreaCenter = tile;
+            ShowAreaRange(caster, ability);
+            if (_gridRenderer != null)
+            {
+                _gridRenderer.AddHighlights(AreaTargeting.GetAreaTiles(grid, ability, caster, tile),
+                    GridRenderer.HighlightKind.AreaPreview);
+            }
+        }
+
+        private void ShowAreaRange(CombatUnit caster, AbilitySO ability)
+        {
+            var grid = _combatStateMachine.Grid;
+            if (_gridRenderer == null || grid == null) return;
+
+            // A sphere may be centered anywhere within range, including the caster's own tile
+            var tiles = grid.GetPositionsWithinDistance(caster.Position, ability.Range);
+            tiles.Add(caster.Position);
+            _gridRenderer.ShowHighlights(tiles, GridRenderer.HighlightKind.AbilityRange);
+        }
+
+        private void ClearAreaAim()
+        {
+            _aimingAbility = null;
+            _pendingAreaCenter = null;
         }
 
         private void HandlePlayerActionNeeded(CombatUnit unit)
@@ -226,6 +279,18 @@ namespace SticklersGate.UI
             }
 
             var actor = _combatStateMachine.CurrentUnit;
+
+            // Spheres: aim at a tile on the grid instead of picking a unit
+            if (ability.Data.TargetType == AbilityTargetType.Point)
+            {
+                _aimingAbility = ability;
+                _pendingAreaCenter = null;
+                _selectableTargets.Clear();
+                ShowAreaRange(actor, ability.Data);
+                if (_targetPanel != null) _targetPanel.ShowAreaPrompt(ability);
+                return;
+            }
+
             _selectableTargets.Clear();
             _selectableTargets.AddRange(TargetPanel.GetTargetsInRange(ability.Data, actor,
                 _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits));
@@ -307,6 +372,7 @@ namespace SticklersGate.UI
             _selectedAbility = null;
             _selectedItem = null;
             _selectableTargets.Clear();
+            ClearAreaAim();
 
             // Re-show action panel
             var current = _combatStateMachine.CurrentUnit;

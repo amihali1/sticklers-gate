@@ -27,7 +27,8 @@ namespace SticklersGate.Data
         Radiant,
         Necrotic,
         Psychic,
-        Force
+        Force,
+        Thunder
     }
 
     /// <summary>
@@ -37,9 +38,37 @@ namespace SticklersGate.Data
     {
         SingleEnemy,
         SingleAlly,
+        /// <summary>Items only. Abilities use grid areas (<see cref="Point"/> / emanation) instead.</summary>
         AllEnemies,
+        /// <summary>Items only. Abilities use grid areas (<see cref="Point"/> / emanation) instead.</summary>
         AllAllies,
-        Self
+        Self,
+        /// <summary>A tile within range: the center of a <see cref="AreaShape.Sphere"/>.</summary>
+        Point
+    }
+
+    /// <summary>
+    /// Shape of an ability's area of effect on the grid (D&amp;D 5e templates).
+    /// </summary>
+    public enum AreaShape
+    {
+        /// <summary>Single target, no area.</summary>
+        None,
+        /// <summary>Every tile within the radius of a chosen point (Fireball). Can include the caster.</summary>
+        Sphere,
+        /// <summary>Every tile within the radius of the caster. Harmful ones exclude the caster (Thunderwave); ally-only auras include them (Aura of Protection).</summary>
+        Emanation
+    }
+
+    /// <summary>
+    /// Which creatures inside an area are affected, relative to the caster.
+    /// </summary>
+    public enum AreaAffects
+    {
+        /// <summary>Everyone in the area, friend or foe (5e default for damaging areas).</summary>
+        AllCreatures,
+        AlliesOnly,
+        EnemiesOnly
     }
 
     /// <summary>
@@ -66,9 +95,16 @@ namespace SticklersGate.Data
         Blessed,
         Shielded,
         Burning,
-        Frozen,
+        /// <summary>Movement reduced (Ray of Frost).</summary>
+        Slowed,
         Frightened,
-        Invisible
+        Invisible,
+        /// <summary>Can't move; attacks against it have advantage, its attacks have disadvantage (Entangle).</summary>
+        Restrained,
+        /// <summary>Barbarian Rage: bonus melee damage, half damage from slashing/piercing/bludgeoning.</summary>
+        Raging,
+        /// <summary>Hunter's Mark / Hex: the marker's attacks deal bonus damage to this unit.</summary>
+        Marked
     }
 
     /// <summary>

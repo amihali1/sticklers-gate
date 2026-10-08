@@ -72,40 +72,106 @@ namespace SticklersGate.Combat
                 return decision;
             }
 
-            // Pick best damaging ability, weighing multi-target higher when multiple targets exist
+            // Pick best damaging ability. Areas score by how many foes (minus friends)
+            // they'd catch; areas that would hit nobody, or mostly friends, are skipped.
             RuntimeAbility bestAbility = null;
+            CombatUnit bestAreaTarget = null;
             int bestScore = 0;
 
             foreach (var ability in readyAbilities)
             {
-                if (ability.Data.DealsDamage)
+                if (!ability.Data.DealsDamage) continue;
+
+                int baseDamage = ability.Data.DamageDiceCount * ability.Data.DamageDiceSides + ability.Data.FlatDamageBonus;
+                int score = baseDamage * ability.Data.HitCount;
+                CombatUnit areaTarget = null;
+
+                if (ability.Data.IsArea)
                 {
-                    int baseDamage = ability.Data.DamageDiceCount * ability.Data.DamageDiceSides + ability.Data.FlatDamageBonus;
-                    int score = baseDamage;
+                    int net = BestAreaValue(enemy, ability.Data, validTargets, enemyUnits, out areaTarget);
+                    if (net <= 0) continue;
+                    score *= net;
+                }
+                else if (ability.Data.TargetType == AbilityTargetType.AllEnemies)
+                {
+                    score *= validTargets.Count;
+                }
 
-                    // Multi-target abilities score higher with more targets
-                    if (ability.Data.TargetType == AbilityTargetType.AllEnemies)
-                    {
-                        score *= validTargets.Count;
-                    }
-
-                    if (score > bestScore)
-                    {
-                        bestScore = score;
-                        bestAbility = ability;
-                    }
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestAbility = ability;
+                    bestAreaTarget = areaTarget;
                 }
             }
 
             // Fall back to first ready ability if no damage ability found
             decision.ChosenAbility = bestAbility ?? readyAbilities[0];
 
-            // Select target based on AI preference
-            // For multi-target abilities, target is just a placeholder (CombatStateMachine gathers all)
+            // Areas aim at the best cluster; otherwise select target by AI preference
+            if (bestAbility != null && bestAreaTarget != null)
+            {
+                decision.Target = bestAreaTarget;
+                return decision;
+            }
+
             var preference = enemyData != null ? enemyData.TargetPreference : AITargetPreference.Random;
             decision.Target = SelectTarget(validTargets, preference);
 
             return decision;
+        }
+
+        /// <summary>
+        /// Net value of an area ability: foes caught minus friends caught (friendly
+        /// fire only counts when the area hits all creatures). For a Sphere, tries
+        /// centering on each foe within range and returns the best; for an
+        /// Emanation, measures around the caster. <paramref name="aimAt"/> is the
+        /// foe to aim at (sphere center) or one foe in reach (emanation).
+        /// </summary>
+        public static int BestAreaValue(CombatUnit caster, AbilitySO ability, List<CombatUnit> foes,
+            List<CombatUnit> friends, out CombatUnit aimAt)
+        {
+            aimAt = null;
+            int best = 0;
+
+            if (ability.AreaShape == AreaShape.Emanation)
+            {
+                int value = AreaValue(caster, ability, caster.Position, foes, friends, out var firstFoe);
+                aimAt = firstFoe;
+                return value;
+            }
+
+            foreach (var foe in foes)
+            {
+                if (caster.Position.ManhattanDistanceTo(foe.Position) > ability.Range) continue;
+
+                int value = AreaValue(caster, ability, foe.Position, foes, friends, out _);
+                if (value > best)
+                {
+                    best = value;
+                    aimAt = foe;
+                }
+            }
+
+            return best;
+        }
+
+        private static int AreaValue(CombatUnit caster, AbilitySO ability, GridPosition point,
+            List<CombatUnit> foes, List<CombatUnit> friends, out CombatUnit firstFoe)
+        {
+            firstFoe = null;
+            int foesHit = 0;
+            foreach (var unit in AreaTargeting.GetAffectedUnits(ability, caster, point, foes))
+            {
+                foesHit++;
+                if (firstFoe == null) firstFoe = unit;
+            }
+
+            int friendsHit = friends != null
+                ? AreaTargeting.GetAffectedUnits(ability, caster, point, friends).Count
+                : 0;
+
+            return foesHit - friendsHit;
         }
 
         /// <summary>
@@ -124,7 +190,7 @@ namespace SticklersGate.Combat
             int desiredRange = MaxAbilityRange(enemy);
 
             // Staying put is always an option.
-            var candidates = Pathfinder.GetReachablePositions(grid, enemy.Position, enemy.MovementSpeed);
+            var candidates = Pathfinder.GetReachablePositions(grid, enemy.Position, enemy.EffectiveMovement);
             candidates.Add(enemy.Position);
 
             GridPosition best = enemy.Position;

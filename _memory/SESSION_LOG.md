@@ -291,3 +291,16 @@
 **Next session:** Play-test PR D in the editor, merge, then PR E (grid content).
 
 **Later in session 11:** Merged PR D (#19). Built PR E (`feature/grid-content`): GridLayoutSO assets for all 3 encounters, ranges on 23 single-target abilities (all had silently defaulted to 1 — spells were melee-only), movement speeds on all classes/enemies, EncounterSO.GridLayout, GridContentTests over real assets incl. an enemies-engage simulation. EditMode: 179/179. Phase 9 complete.
+
+## Session 12 — October 8, 2026
+**Focus:** Class roster expansion — design + mechanics (PR F)
+
+**What happened:**
+- PR E (#20) values corrected to match CONTENT.md (first pass had invented ranges/speeds/grid sizes).
+- Drafted the 8 new classes. User feedback: follow 5e on the grid — no all-enemies/all-allies targeting, AoE needs range + shape, area spells hit allies. Party design decided (own character + recruited NPCs, 4 per battle, swap at camp → Milestone 3).
+- PR F (`feature/class-mechanics`): sphere/emanation areas with friendly fire + save-for-half, area aiming UI, AI area scoring, status mechanics (Shielded, Blessed, Slowed, Restrained, Raging, Marked), effect ticking moved to turn end, self-effect / lifesteal / multi-hit / twin / empower, converted the 4 old AoE abilities.
+- EditMode: 208/208
+
+**Bugs found and fixed:** Cunning Dodge did nothing; Shadow Step made the enemy invisible; 1-turn Stun/Frightened expired before taking effect (ticked at turn start before the check); Life Drain didn't heal; Ray of Frost didn't slow; enemies downed by Burning never died.
+
+**Next session:** PR G (casters), PR H (martial).

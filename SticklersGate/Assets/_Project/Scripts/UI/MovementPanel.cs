@@ -25,7 +25,7 @@ namespace SticklersGate.UI
 
             if (_promptText != null)
             {
-                _promptText.text = $"{unit.Name}: tap a blue tile to move (up to {unit.MovementSpeed})";
+                _promptText.text = $"{unit.Name}: tap a blue tile to move (up to {unit.EffectiveMovement})";
             }
 
             if (_skipButton != null)

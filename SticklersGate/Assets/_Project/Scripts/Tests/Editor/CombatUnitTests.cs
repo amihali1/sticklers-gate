@@ -220,12 +220,14 @@ namespace SticklersGate.Tests
         }
 
         [Test]
-        public void TickTurnStart_ExpiresEffects()
+        public void TickTurnEnd_ExpiresEffects()
         {
             _unit.ApplyStatusEffect(StatusEffectType.Blessed, 1);
 
             _unit.TickTurnStart();
+            Assert.IsTrue(_unit.HasStatusEffect(StatusEffectType.Blessed), "Effects no longer tick at turn start.");
 
+            _unit.TickTurnEnd();
             Assert.IsFalse(_unit.HasStatusEffect(StatusEffectType.Blessed));
         }
 

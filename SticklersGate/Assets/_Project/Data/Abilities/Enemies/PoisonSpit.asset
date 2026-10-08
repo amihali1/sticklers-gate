@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _abilityName: Poison Spit
   _category: 2
-  _targetType: 2
+  _targetType: 5
+  _saveForHalfDamage: 1
+  _areaAffects: 0
+  _areaRadius: 1
+  _areaShape: 1
+  _range: 3
   _description: The spider sprays venom at everyone. It's not picky about who it hits.
   _damageDiceCount: 1
   _damageDiceSides: 4

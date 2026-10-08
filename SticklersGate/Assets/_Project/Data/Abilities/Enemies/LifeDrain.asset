@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Life Drain
   _category: 2
   _targetType: 0
+  _lifestealPercent: 50
   _range: 4
   _description: Steals your life force. The necromancer considers this 'recycling.'
   _damageDiceCount: 1

@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _abilityName: Ground Slam
   _category: 0
-  _targetType: 2
+  _targetType: 4
+  _saveForHalfDamage: 1
+  _areaAffects: 0
+  _areaRadius: 1
+  _areaShape: 2
   _description: The ogre slams the ground, sending shockwaves through all enemies.
   _damageDiceCount: 1
   _damageDiceSides: 10
@@ -26,8 +30,8 @@ MonoBehaviour:
   _flatHealBonus: 0
   _appliesEffect: 0
   _effectDurationTurns: 0
-  _savingThrowAbility: 0
-  _savingThrowDC: 0
+  _savingThrowAbility: 1
+  _savingThrowDC: 14
   _cooldownTurns: 3
   _unlockLevel: 1
   _hitQuips: 

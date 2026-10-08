@@ -83,8 +83,31 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.30 GridContentTests: real-asset checks (layouts, spawns, path connectivity, ranges, speeds) + enemies-engage-party simulation using real EnemyAI.DecideMovement
 - [x] 9.31 Combat.unity — no change needed: scene references the encounter, which now carries its layout
 
+### Phase 10: Class Roster Expansion — In Progress
+Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: follow 5e closely on the grid — ranges and area templates, no whole-side targeting; area spells hit allies too.
+
+#### PR F: Class Mechanics (`feature/class-mechanics`) — Complete
+- [x] Grid areas: sphere (point within range) + emanation (around user), AreaAffects, friendly fire, save-for-half damage
+- [x] Area aiming UI: tap a tile in range to preview the blast, tap again to cast
+- [x] Enemy AI scores areas by foes minus friends caught
+- [x] Status mechanics: Shielded, Blessed, Slowed (was Frozen), Restrained, Raging, Marked (+source)
+- [x] Effects tick at the end of the affected unit's turn (fixes 1-turn Stun/Frightened expiring before doing anything); self-applied effects keep full duration
+- [x] Ability extras: self effect, lifesteal, multi-hit, Twinned extra targets, Empowered max damage; Thunder damage type
+- [x] Converted Fireball, Mass Heal, Ground Slam, Poison Spit to grid areas
+- [x] Fixed: Cunning Dodge did nothing (Shielded had no mechanic); Shadow Step made the *target* invisible; Life Drain didn't heal; Ray of Frost didn't slow; enemies downed by Burning never died
+- [x] Tests: AreaTargetingTests, StatusEffectMechanicsTests, content guards (no AllEnemies/AllAllies abilities, area consistency)
+
+#### PR G: Arcane & Nature Classes (`feature/classes-casters`)
+- [ ] Sticksorcerer, Stickwarlock, Stickdruid, Stickbard: CharacterClassType entries, class + ability assets, stick-figure colors, tests
+
+#### PR H: Martial Classes (`feature/classes-martial`)
+- [ ] Stickbarbarian, Stickmonk, Stickranger, Stickpaladin: same as PR G
+
+#### Later (Milestone 3): Party & Recruitment — decided 2026-10-08
+Player creates their own character (any class). A few NPCs of varied classes are found early and can join. Roster size unlimited; only 4 fight per battle; party swaps only at camp. Until then new classes are data-only (swap via CombatBootstrapper `_partyClasses`).
+
 ## Next Action
-Phase 9 done. Play-test all 3 encounters in the editor (visuals/input + balance of the new ranges/speeds are untested by EditMode). Then either class roster expansion (8 new classes — see below) or Phase 8 polish/difficulty (was deferred until grid landed). Terrain effects for Elevated/Cover/Lava are still unimplemented — layouts avoid them.
+PR E (#20) and PR F open. Next: PR G (Sorcerer, Warlock, Druid, Bard), then PR H (Barbarian, Monk, Ranger, Paladin). Play-test Phase 9 + area aiming in the editor when possible.
 
 ## CI
 GitHub Actions `unity-tests.yml` (game-ci/unity-test-runner@v4) green since PR #18 (2026-09-29). Needs UNITY_EMAIL + UNITY_PASSWORD + UNITY_LICENSE secrets, a free-disk-space step (Unity 6 image is huge), and `checks: write`. Runs on PRs to any branch. The 2 old test bugs (LethalDamage, StandardArray) were fixed/removed in #18.
@@ -95,7 +118,6 @@ Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickw
 ## Known Issues / Decisions Pending
 - Input System package not installed (Unity shows deprecation warning for legacy Input Manager)
 - .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
-- Life Drain ability doesn't actually heal the necromancer yet (needs code support for "damage + heal self" pattern)
 - Phase 8 (polish/difficulty) deferred until grid system is complete
 - Elevated/Cover/Lava terrain effects (AC/range bonus, fire damage) not implemented — only movement cost (Difficult/Water) and impassable (Abyss) work
 - Grid UI (PR D) visuals/input verified only by EditMode logic tests — needs an in-editor play-test

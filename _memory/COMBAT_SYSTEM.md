@@ -58,6 +58,32 @@ Player action turns pause coroutine loop, resume via SubmitPlayerAction().
 - GridLayoutSO — per-encounter grid dimensions, terrain map, spawn points
 - GridRenderer — UI: draws tiles, highlights movement/ability range
 
+## Areas of Effect (Phase 10 PR F)
+5e templates on the grid, Manhattan distance like movement/range. No ability uses AllEnemies/AllAllies any more (items only; GridContentTests enforce it).
+- **Sphere** (`TargetType.Point`): player taps a tile within range to preview, taps again to cast. Covers center + radius. Can catch the caster.
+- **Emanation** (`TargetType.Self`): around the user. Harmful ones exclude the user; ally-only auras include them.
+- **AreaAffects:** AllCreatures (default — friendly fire, 5e), AlliesOnly, EnemiesOnly.
+- **Damage:** `_saveForHalfDamage` → target saves vs DC; full on fail, half on success, no attack roll, no ability mod to damage; status effect only on a failed save. Otherwise one attack roll per creature.
+- **Enemy AI:** scores areas by foes caught minus friends caught; skips areas worth ≤ 0; aims spheres at the best cluster.
+- Logic in `AreaTargeting` (pure, tested); `CombatStateMachine.SubmitPlayerAreaAction(ability, tile)`.
+
+## Status Effects (Phase 10 PR F)
+Durations count the affected unit's turns and tick at the **end** of its turn (5e "until the end of its next turn"); an effect a unit puts on itself doesn't lose a turn on the turn it's cast. Cooldowns still tick at turn start.
+| Effect | Mechanic |
+|---|---|
+| Stunned | Skips its turn |
+| Burning | 1d6 fire at turn start |
+| Poisoned / Frightened | Disadvantage on attacks |
+| Invisible | Advantage on attacks; attackers have disadvantage; attacking ends it |
+| Shielded | +4 AC |
+| Blessed | +1d4 to attack rolls and saving throws |
+| Slowed | −2 movement |
+| Restrained | 0 movement; attacks against it have advantage, its attacks disadvantage |
+| Raging | +2 melee damage; half slashing/piercing/bludgeoning damage taken |
+| Marked | The unit that marked it deals +1d6 on attacks against it |
+
+**Ability extras:** `_selfEffect` (applied to the user after resolving), `_lifestealPercent`, `_hitCount` (separate attack rolls), `_extraTargets` (Twinned: more enemies within range, nearest the primary first), `_maximizeDamage` (Empowered: max on every die).
+
 ## Data Models — All Implemented
 
 ### ScriptableObjects (Scripts/Data/)

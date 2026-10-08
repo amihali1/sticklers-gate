@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _abilityName: Mass Heal
   _category: 3
-  _targetType: 3
+  _targetType: 5
+  _areaAffects: 1
+  _areaRadius: 2
+  _areaShape: 1
+  _range: 4
   _description: A wave of healing energy washes over all allies. Grudge list temporarily suspended.
   _damageDiceCount: 0
   _damageDiceSides: 0

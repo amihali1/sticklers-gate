@@ -47,10 +47,21 @@ namespace SticklersGate.Combat
         public StatusEffectType Type { get; }
         public int RemainingTurns { get; private set; }
 
-        public ActiveStatusEffect(StatusEffectType type, int duration)
+        /// <summary>Unit that applied the effect (null for items/environment). Marked uses it.</summary>
+        public CombatUnit Source { get; }
+
+        /// <summary>
+        /// Set when a unit applies an effect to itself during its own turn, so the
+        /// end of that same turn doesn't consume a turn of duration.
+        /// </summary>
+        public bool SkipNextTick { get; private set; }
+
+        public ActiveStatusEffect(StatusEffectType type, int duration, CombatUnit source = null, bool skipNextTick = false)
         {
             Type = type;
             RemainingTurns = duration;
+            Source = source;
+            SkipNextTick = skipNextTick;
         }
 
         /// <summary>
@@ -58,6 +69,12 @@ namespace SticklersGate.Combat
         /// </summary>
         public bool Tick()
         {
+            if (SkipNextTick)
+            {
+                SkipNextTick = false;
+                return false;
+            }
+
             RemainingTurns--;
             return RemainingTurns <= 0;
         }
@@ -78,8 +95,22 @@ namespace SticklersGate.Combat
         public int MaxHP { get; }
         public int BaseAC { get; }
 
-        /// <summary>Tiles this unit can move per turn on the combat grid.</summary>
+        /// <summary>Base tiles this unit can move per turn (from its SO).</summary>
         public int MovementSpeed { get; }
+
+        /// <summary>
+        /// Tiles this unit can move this turn after status effects: 0 while
+        /// Restrained, reduced while Slowed. Use this for pathing.
+        /// </summary>
+        public int EffectiveMovement
+        {
+            get
+            {
+                if (HasStatusEffect(StatusEffectType.Restrained)) return 0;
+                int penalty = HasStatusEffect(StatusEffectType.Slowed) ? GameConstants.SLOWED_MOVEMENT_PENALTY : 0;
+                return Mathf.Max(0, MovementSpeed - penalty);
+            }
+        }
 
         // --- Mutable State ---
         public int CurrentHP { get; private set; }
@@ -175,9 +206,10 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
-        /// Current effective AC including temporary bonuses (defend, buffs, terrain).
+        /// Current effective AC including temporary bonuses (defend, Shielded).
         /// </summary>
-        public int EffectiveAC => BaseAC + BonusAC;
+        public int EffectiveAC =>
+            BaseAC + BonusAC + (HasStatusEffect(StatusEffectType.Shielded) ? GameConstants.SHIELDED_AC_BONUS : 0);
 
         /// <summary>
         /// Apply damage to this unit. Handles downing and death.
@@ -266,14 +298,28 @@ namespace SticklersGate.Combat
 
         /// <summary>
         /// Apply a status effect. Replaces existing effect of the same type.
+        /// Duration counts this unit's turns; effects tick at the end of each of
+        /// its turns. A unit applying an effect to itself (on its own turn) keeps
+        /// the full duration through its following turns.
         /// </summary>
-        public void ApplyStatusEffect(StatusEffectType type, int duration)
+        /// <param name="source">Unit that applied it (used by Marked); null for items/environment.</param>
+        public void ApplyStatusEffect(StatusEffectType type, int duration, CombatUnit source = null)
         {
             if (type == StatusEffectType.None) return;
 
             RemoveStatusEffect(type);
-            StatusEffects.Add(new ActiveStatusEffect(type, duration));
+            StatusEffects.Add(new ActiveStatusEffect(type, duration, source, skipNextTick: source == this));
             OnStatusEffectApplied?.Invoke(type);
+        }
+
+        /// <summary>Returns the active effect of a type, or null.</summary>
+        public ActiveStatusEffect GetStatusEffect(StatusEffectType type)
+        {
+            foreach (var effect in StatusEffects)
+            {
+                if (effect.Type == type) return effect;
+            }
+            return null;
         }
 
         /// <summary>
@@ -304,11 +350,28 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
-        /// Tick all status effects and cooldowns at turn start. Removes expired effects.
+        /// Tick ability cooldowns and reset per-turn bonuses at turn start.
+        /// Status effects tick at turn end (<see cref="TickTurnEnd"/>).
         /// </summary>
         public void TickTurnStart()
         {
-            // Tick status effects
+            // Tick ability cooldowns
+            foreach (var ability in Abilities)
+            {
+                ability.TickCooldown();
+            }
+
+            // Reset per-turn bonuses
+            BonusAC = 0;
+        }
+
+        /// <summary>
+        /// Tick status effects at the end of this unit's turn (5e "until the end
+        /// of its next turn"), so a 1-turn Stun skips exactly one turn and a
+        /// 1-turn debuff lasts through the target's next turn. Removes expired effects.
+        /// </summary>
+        public void TickTurnEnd()
+        {
             for (int i = StatusEffects.Count - 1; i >= 0; i--)
             {
                 if (StatusEffects[i].Tick())
@@ -318,15 +381,6 @@ namespace SticklersGate.Combat
                     OnStatusEffectRemoved?.Invoke(type);
                 }
             }
-
-            // Tick ability cooldowns
-            foreach (var ability in Abilities)
-            {
-                ability.TickCooldown();
-            }
-
-            // Reset per-turn bonuses
-            BonusAC = 0;
         }
     }
 }
