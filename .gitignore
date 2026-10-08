@@ -54,3 +54,6 @@ Thumbs.db
 # Plastic SCM
 *.private.0
 *.private
+
+# Autoplay harness output (screenshots, combat logs)
+SticklersGate/Autoplay/

@@ -116,6 +116,19 @@ Player creates their own character (any class). A few NPCs of varied classes are
 - [x] Split movement: per-turn movement budget usable in several moves, before and after the action; tapping your own tile does nothing; End Turn button after acting
 - [x] Player turn no longer advances while the action is still resolving
 
+### Autoplay Harness (`feature/autoplay-harness`) — 2026-10-08
+- [x] `AutoPilot` (runtime, tested): player-side policy reusing EnemyAI movement/area scoring
+- [x] PlayMode `AutoplayTests`: real scene, screenshots + combat logs + summary.csv; Autoplay (default party, full 12-class roster × 3 encounters) and Balance (win rates) categories
+- [x] DamagePopup works on camera-space canvases (harness renders UI to a texture)
+
+**Bugs the harness found (fixed):**
+- Enemies almost never attacked: AI chose its target by preference among *all* players, then forfeited when that target was out of range. Now only reachable targets are considered.
+- HP bars stacked on top of each other (one visible per side, player bar half off-screen) → vertical columns; turn order overlapped wide grids → moved to the right column; UI text enlarged.
+- Battles never ended when the whole party was downed/stabilized (defeat required everyone *dead*) → defeat when no party member is standing.
+- Water tiles looked identical to the blue movement highlight → water is teal.
+
+**Balance at party level 1 (10 sims each, after fixes):** Inkwell ~100% wins, 4/4 survivors (Easy). Bandit Crossing 90–100%, ~3.6 survivors (Medium). Necromancer's Study 90–100%, ~2.7–3.2 survivors (Hard). The autopilot is simple, so real players should do at least as well.
+
 ## Next Action
 Stacked PRs open: E (#20) → F (#21) → G (#22) → H. Merge in order. Then play-test (grid UI, area aiming, a few new classes swapped into the party) and pick the next milestone: Phase 8 polish/difficulty, terrain effects (Elevated/Cover/Lava), or Milestone 3 (character creation + NPC recruitment + camp).
 

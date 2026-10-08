@@ -64,18 +64,26 @@ namespace SticklersGate.Combat
             var validTargets = GetValidTargets(playerUnits);
             if (validTargets.Count == 0) return decision;
 
-            // 20% chance of random suboptimal choice
+            var preference = enemyData != null ? enemyData.TargetPreference : AITargetPreference.Random;
+
+            // 20% chance of a random (but still usable) single-target choice
             if (Random.value < SUBOPTIMAL_CHANCE)
             {
-                decision.ChosenAbility = readyAbilities[Random.Range(0, readyAbilities.Count)];
-                decision.Target = SelectTarget(validTargets, AITargetPreference.Random);
-                return decision;
+                var usable = readyAbilities.FindAll(a => !a.Data.IsArea && TargetsInRange(enemy, a.Data, validTargets).Count > 0);
+                if (usable.Count > 0)
+                {
+                    decision.ChosenAbility = usable[Random.Range(0, usable.Count)];
+                    decision.Target = SelectTarget(TargetsInRange(enemy, decision.ChosenAbility.Data, validTargets), AITargetPreference.Random);
+                    return decision;
+                }
             }
 
             // Pick best damaging ability. Areas score by how many foes (minus friends)
             // they'd catch; areas that would hit nobody, or mostly friends, are skipped.
+            // Single-target abilities only consider targets they can actually reach.
             RuntimeAbility bestAbility = null;
             CombatUnit bestAreaTarget = null;
+            List<CombatUnit> bestInRange = null;
             int bestScore = 0;
 
             foreach (var ability in readyAbilities)
@@ -85,6 +93,7 @@ namespace SticklersGate.Combat
                 int baseDamage = ability.Data.DamageDiceCount * ability.Data.DamageDiceSides + ability.Data.FlatDamageBonus;
                 int score = baseDamage * ability.Data.HitCount;
                 CombatUnit areaTarget = null;
+                List<CombatUnit> inRange = null;
 
                 if (ability.Data.IsArea)
                 {
@@ -96,29 +105,40 @@ namespace SticklersGate.Combat
                 {
                     score *= validTargets.Count;
                 }
+                else
+                {
+                    inRange = TargetsInRange(enemy, ability.Data, validTargets);
+                    if (inRange.Count == 0) continue;
+                }
 
                 if (score > bestScore)
                 {
                     bestScore = score;
                     bestAbility = ability;
                     bestAreaTarget = areaTarget;
+                    bestInRange = inRange;
                 }
             }
 
-            // Fall back to first ready ability if no damage ability found
+            // Nothing reachable: pick the first ready ability on the preferred target
+            // (the state machine will report it can't reach and hold position)
             decision.ChosenAbility = bestAbility ?? readyAbilities[0];
 
-            // Areas aim at the best cluster; otherwise select target by AI preference
+            // Areas aim at the best cluster; otherwise the preferred target among those in reach
             if (bestAbility != null && bestAreaTarget != null)
             {
                 decision.Target = bestAreaTarget;
                 return decision;
             }
 
-            var preference = enemyData != null ? enemyData.TargetPreference : AITargetPreference.Random;
-            decision.Target = SelectTarget(validTargets, preference);
-
+            decision.Target = SelectTarget(bestInRange ?? validTargets, preference);
             return decision;
+        }
+
+        /// <summary>Targets within the ability's range of the user (all of them for self/legacy whole-side abilities).</summary>
+        private static List<CombatUnit> TargetsInRange(CombatUnit user, AbilitySO ability, List<CombatUnit> targets)
+        {
+            return targets.FindAll(t => DamageCalculator.IsInRange(user, t, ability));
         }
 
         /// <summary>

@@ -65,6 +65,20 @@ SticklersGate/Assets/_Project/
 - Coroutines for sequenced game events
 - Group usings: System → UnityEngine → project namespaces
 
+## Testing
+
+**EditMode** (`Scripts/Tests/Editor/`, CI on every PR): pure logic + checks over the real content assets.
+
+**Autoplay harness** (`Scripts/Tests/PlayMode/`, local; needs graphics so no `-nographics`, and the Unity editor must be closed):
+builds the real Combat scene through `CombatBootstrapper` and plays the player side with `AutoPilot` (same CombatStateMachine API as the UI). Output in `SticklersGate/Autoplay/<timestamp>/` (gitignored): screenshots (first player turn, first area spell, every 12 turns, end), a combat log per battle, `summary.csv`. Fails on exceptions/error logs, battles that never end (200 turns), or commands the game rejects.
+
+```
+Unity.exe -batchmode -projectPath SticklersGate -runTests -testPlatform PlayMode -testCategory Autoplay -testResults autoplay.xml
+# balance: win rates per encounter x party (env AUTOPLAY_SIMS=20, AUTOPLAY_LEVEL=1) -> balance.csv
+Unity.exe -batchmode -projectPath SticklersGate -runTests -testPlatform PlayMode -testCategory Balance -testResults balance.xml
+```
+The UI renders into a 1920x1080 RenderTexture (overlay canvases are switched to camera space) so screenshots are deterministic.
+
 ## Dependencies
 | Package | Purpose | Status |
 |---|---|---|

@@ -32,7 +32,7 @@ namespace SticklersGate.UI
         [SerializeField] private Color _normalColor = new Color(0.9f, 0.88f, 0.82f);
         [SerializeField] private Color _difficultColor = new Color(0.72f, 0.62f, 0.45f);
         [SerializeField] private Color _elevatedColor = new Color(0.68f, 0.72f, 0.66f);
-        [SerializeField] private Color _waterColor = new Color(0.55f, 0.72f, 0.9f);
+        [SerializeField] private Color _waterColor = new Color(0.33f, 0.62f, 0.6f); // teal: distinct from the blue movement highlight
         [SerializeField] private Color _lavaColor = new Color(0.95f, 0.45f, 0.25f);
         [SerializeField] private Color _abyssColor = new Color(0.15f, 0.15f, 0.18f);
         [SerializeField] private Color _coverColor = new Color(0.6f, 0.6f, 0.6f);

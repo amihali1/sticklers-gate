@@ -62,6 +62,11 @@ sticklers-gate/
 | Stickranger | Ranged DPS | "Prefers the company of animals. The animals are undecided." |
 | Stickpaladin | Tank / Off-healer | "Swore an oath. Mentions it constantly. Especially at parties." |
 
+## Testing
+
+- **EditMode tests** run in CI on every PR.
+- **Autoplay harness** plays full battles headless with an AI-driven party, saving screenshots, combat logs, and balance stats to `SticklersGate/Autoplay/`. See `_memory/ARCHITECTURE.md` → Testing.
+
 ## Documentation
 
 - **Game Design Document:** `_docs/Sticklers_Gate_GDD.md`
