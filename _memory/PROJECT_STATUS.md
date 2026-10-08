@@ -83,7 +83,7 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.30 GridContentTests: real-asset checks (layouts, spawns, path connectivity, ranges, speeds) + enemies-engage-party simulation using real EnemyAI.DecideMovement
 - [x] 9.31 Combat.unity — no change needed: scene references the encounter, which now carries its layout
 
-### Phase 10: Class Roster Expansion — In Progress
+### Phase 10: Class Roster Expansion — Complete (PRs F, G, H)
 Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: follow 5e closely on the grid — ranges and area templates, no whole-side targeting; area spells hit allies too.
 
 #### PR F: Class Mechanics (`feature/class-mechanics`) — Complete
@@ -103,14 +103,15 @@ Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: f
 - [x] ClassRosterTests over real class assets (one asset per type, naming, stat budget 70–80, D&D hit dice, level progression, builds a CombatUnit)
 - [x] Touch spells (Vampiric Touch) allowlisted in the ranged-reach guard
 
-#### PR H: Martial Classes (`feature/classes-martial`)
-- [ ] Stickbarbarian, Stickmonk, Stickranger, Stickpaladin: same as PR G
+#### PR H: Martial Classes (`feature/classes-martial`) — Complete
+- [x] Stickbarbarian, Stickmonk, Stickranger, Stickpaladin: class + 16 ability assets
+- [x] Range guard now skips Self abilities (range is ignored for self/emanation)
 
 #### Later (Milestone 3): Party & Recruitment — decided 2026-10-08
 Player creates their own character (any class). A few NPCs of varied classes are found early and can join. Roster size unlimited; only 4 fight per battle; party swaps only at camp. Until then new classes are data-only (swap via CombatBootstrapper `_partyClasses`).
 
 ## Next Action
-PR E (#20), PR F (#21) and PR G open (stacked). Next: PR H (Barbarian, Monk, Ranger, Paladin). Play-test Phase 9 + area aiming in the editor when possible.
+Stacked PRs open: E (#20) → F (#21) → G (#22) → H. Merge in order. Then play-test (grid UI, area aiming, a few new classes swapped into the party) and pick the next milestone: Phase 8 polish/difficulty, terrain effects (Elevated/Cover/Lava), or Milestone 3 (character creation + NPC recruitment + camp).
 
 ## CI
 GitHub Actions `unity-tests.yml` (game-ci/unity-test-runner@v4) green since PR #18 (2026-09-29). Needs UNITY_EMAIL + UNITY_PASSWORD + UNITY_LICENSE secrets, a free-disk-space step (Unity 6 image is huge), and `checks: write`. Runs on PRs to any branch. The 2 old test bugs (LethalDamage, StandardArray) were fixed/removed in #18.

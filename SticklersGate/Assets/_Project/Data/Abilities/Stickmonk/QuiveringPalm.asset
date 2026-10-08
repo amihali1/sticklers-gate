@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: QuiveringPalm
+  m_EditorClassIdentifier:
+  _abilityName: Quivering Palm
+  _category: 0
+  _targetType: 0
+  _description: A gentle touch that sets the target vibrating from the inside. Constitution save for half.
+  _damageDiceCount: 6
+  _damageDiceSides: 10
+  _damageType: 7
+  _abilityModifier: 0
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 2
+  _savingThrowDC: 15
+  _saveForHalfDamage: 1
+  _range: 1
+  _areaShape: 0
+  _areaRadius: 0
+  _areaAffects: 0
+  _selfEffect: 0
+  _selfEffectDurationTurns: 0
+  _lifestealPercent: 0
+  _hitCount: 1
+  _extraTargets: 0
+  _maximizeDamage: 0
+  _cooldownTurns: 5
+  _unlockLevel: 5
+  _hitQuips: 
+  - 'A light tap. A long pause. Then: vibrations.'
+  - The monk walks away calmly. The enemy does not.
+  _missQuips: 
+  - The palm quivers. The enemy shrugs it off. Barely.
+  _critQuips: 
+  - 'CRITICAL QUIVER! The enemy is vibrating at a frequency only dogs can hear!'

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8e126a3fe05f4ea44993189586e76, type: 3}
+  m_Name: StickpaladinClass
+  m_EditorClassIdentifier:
+  _className: Stickpaladin
+  _classType: 11
+  _flavorText: Swore an oath. Mentions it constantly. Especially at parties.
+  _baseStats:
+    strength: 16
+    dexterity: 10
+    constitution: 14
+    intelligence: 8
+    wisdom: 12
+    charisma: 16
+  _baseAC: 18
+  _hitDiceSides: 10
+  _movementSpeed: 3
+  _level1Abilities: 
+  - {fileID: 11400000, guid: 49a8bfe098d341f88b8da8f605a8925a, type: 2}
+  - {fileID: 11400000, guid: 8d6d0ca45cea41aaa04f8475590a6788, type: 2}
+  _level3Abilities: 
+  - {fileID: 11400000, guid: 4584f7dcd92d463f8f2d9faebb4261ce, type: 2}
+  _level5Abilities: 
+  - {fileID: 11400000, guid: 8802180798ac4cdcbee095cf7ff29215, type: 2}
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}

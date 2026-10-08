@@ -171,22 +171,22 @@ Full 12-class D&D roster. Same format as above; abilities L1 / L1 / L3 / L5. AoE
 - **Stats:** STR 8, DEX 14, CON 12, INT 12, WIS 10, CHA 18 · **HD** d8 · **AC** 13 · **Move** 3
 - **Abilities:** Vicious Mockery 1d6+CHA psychic, range 4, Frightened 1t (WIS DC 13) · Bardic Inspiration: ally Blessed 2t (+1d4 attacks/saves), range 4, 2t CD · (L3) Healing Word: heal 2d4+3, range 5, 2t CD · (L5) Shatter: sphere r1 within range 6, 3d8 thunder, CON DC 14 half, 4t CD
 
-### Stickbarbarian (Barbarian) — PR H
+### Stickbarbarian (Barbarian) — Implemented (PR H)
 - **Role:** Melee bruiser (STR)
 - **Stats:** STR 18, DEX 14, CON 16, INT 8, WIS 10, CHA 8 · **HD** d12 · **AC** 14 · **Move** 3
 - **Abilities:** Greataxe Chop 1d12+STR, range 1 · Rage: self Raging 3t (+2 melee damage, half slashing/piercing/bludgeoning taken), 5t CD · (L3) Reckless Swing 3d12+STR, range 1, 3t CD · (L5) Brutal Frenzy: 2 attacks of 2d12+STR, range 1, 4t CD
 
-### Stickmonk (Monk) — PR H
+### Stickmonk (Monk) — Implemented (PR H)
 - **Role:** Mobile skirmisher (DEX/WIS)
 - **Stats:** STR 10, DEX 18, CON 12, INT 8, WIS 16, CHA 8 · **HD** d8 · **AC** 16 · **Move** 4
 - **Abilities:** Flurry of Blows: 2 attacks of 1d6+DEX, range 1 · Patient Defense: self Shielded 1t, 2t CD · (L3) Stunning Strike 1d8+DEX, range 1, Stunned 1t (CON DC 14), 4t CD · (L5) Quivering Palm 6d10 necrotic, range 1, CON DC 15 half, 5t CD
 
-### Stickranger (Ranger) — PR H
+### Stickranger (Ranger) — Implemented (PR H)
 - **Role:** Ranged DPS (DEX)
 - **Stats:** STR 12, DEX 18, CON 14, INT 10, WIS 14, CHA 8 · **HD** d10 · **AC** 14 · **Move** 3
 - **Abilities:** Longbow Shot 1d8+DEX, range 6 · Hunter's Mark: target Marked 3t, range 6, 3t CD · (L3) Volley: sphere r1 within range 6, 2d8+DEX piercing, attack roll vs each enemy in it (enemies only), 4t CD · (L5) Sharpshooter 4d10+DEX, range 7, 4t CD
 
-### Stickpaladin (Paladin) — PR H
+### Stickpaladin (Paladin) — Implemented (PR H)
 - **Role:** Tank / off-healer (STR/CHA)
 - **Stats:** STR 16, DEX 10, CON 14, INT 8, WIS 12, CHA 16 · **HD** d10 · **AC** 18 · **Move** 3
 - **Abilities:** Longsword Strike 1d8+STR, range 1 · Lay on Hands: heal 3d8, range 1, 3t CD · (L3) Divine Smite 4d8+STR radiant, range 1, 3t CD · (L5) Aura of Protection: allies within 2 tiles (incl. the paladin) Shielded 2t, 5t CD

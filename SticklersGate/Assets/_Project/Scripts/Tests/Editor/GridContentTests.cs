@@ -112,10 +112,11 @@ namespace SticklersGate.Tests
         }
 
         [Test]
-        public void EveryAbility_HasPositiveRange()
+        public void EveryTargetedAbility_HasPositiveRange()
         {
             foreach (var ability in LoadAll<AbilitySO>())
             {
+                if (ability.TargetType == AbilityTargetType.Self) continue; // self/emanation ignore range
                 Assert.GreaterOrEqual(ability.Range, 1, $"{ability.name} has range < 1.");
             }
         }

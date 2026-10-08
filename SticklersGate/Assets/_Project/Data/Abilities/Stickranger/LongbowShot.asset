@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4d00a4c02545b42850efa556de8129, type: 3}
+  m_Name: LongbowShot
+  m_EditorClassIdentifier:
+  _abilityName: Longbow Shot
+  _category: 1
+  _targetType: 0
+  _description: 'An arrow from very, very far away. The ranger likes it that way.'
+  _damageDiceCount: 1
+  _damageDiceSides: 8
+  _damageType: 1
+  _abilityModifier: 1
+  _flatDamageBonus: 0
+  _healDiceCount: 0
+  _healDiceSides: 0
+  _flatHealBonus: 0
+  _appliesEffect: 0
+  _effectDurationTurns: 0
+  _savingThrowAbility: 0
+  _savingThrowDC: 0
+  _saveForHalfDamage: 0
+  _range: 6
+  _areaShape: 0
+  _areaRadius: 0
+  _areaAffects: 0
+  _selfEffect: 0
+  _selfEffectDurationTurns: 0
+  _lifestealPercent: 0
+  _hitCount: 1
+  _extraTargets: 0
+  _maximizeDamage: 0
+  _cooldownTurns: 0
+  _unlockLevel: 1
+  _hitQuips: 
+  - Thwip. Bullseye. The ranger nods to nobody.
+  - Shot from so far away the enemy assumed it was weather.
+  _missQuips: 
+  - The arrow is now part of the scenery.
+  - Missed. The ranger blames the wind. There is no wind.
+  _critQuips: 
+  - 'CRITICAL SHOT! Right through the dot of an i!'
