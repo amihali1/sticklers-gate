@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8e126a3fe05f4ea44993189586e76, type: 3}
+  m_Name: SticksorcererClass
+  m_EditorClassIdentifier:
+  _className: Sticksorcerer
+  _classType: 4
+  _flavorText: 'Didn''t study. Was born like this. Won''t stop mentioning it.'
+  _baseStats:
+    strength: 8
+    dexterity: 14
+    constitution: 14
+    intelligence: 10
+    wisdom: 12
+    charisma: 18
+  _baseAC: 12
+  _hitDiceSides: 6
+  _movementSpeed: 2
+  _level1Abilities: 
+  - {fileID: 11400000, guid: 4148f347bcc44026a90aebce82b92f21, type: 2}
+  _level3Abilities: 
+  - {fileID: 11400000, guid: 2b7809fc10aa45fc9e7753850297317c, type: 2}
+  _level5Abilities: 
+  - {fileID: 11400000, guid: d4dbfdfed60046e7b4745556786778e3, type: 2}
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}

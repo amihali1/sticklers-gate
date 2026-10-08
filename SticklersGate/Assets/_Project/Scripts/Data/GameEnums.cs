@@ -133,7 +133,15 @@ namespace SticklersGate.Data
         Sticknight,
         Stickwizard,
         Stickrogue,
-        Stickleric
+        Stickleric,
+        Sticksorcerer,
+        Stickwarlock,
+        Stickdruid,
+        Stickbard,
+        Stickbarbarian,
+        Stickmonk,
+        Stickranger,
+        Stickpaladin
     }
 
     /// <summary>

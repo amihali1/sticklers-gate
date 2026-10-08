@@ -16,6 +16,9 @@ namespace SticklersGate.Tests
     {
         private const string DATA_ROOT = "Assets/_Project/Data";
 
+        /// <summary>5e touch spells: spell attacks that legitimately reach only adjacent tiles.</summary>
+        private static readonly HashSet<string> TOUCH_SPELLS = new HashSet<string> { "Vampiric Touch" };
+
         /// <summary>Enemies must be able to attack someone within this many rounds.</summary>
         private const int MAX_ROUNDS_TO_ENGAGE = 4;
 
@@ -125,6 +128,7 @@ namespace SticklersGate.Tests
                 bool rangedOrSpell = ability.Category == AbilityCategory.RangedAttack ||
                                      ability.Category == AbilityCategory.Spell;
                 if (!rangedOrSpell || ability.TargetType != AbilityTargetType.SingleEnemy) continue;
+                if (TOUCH_SPELLS.Contains(ability.AbilityName)) continue;
 
                 Assert.Greater(ability.Range, GameConstants.DEFAULT_MELEE_RANGE,
                     $"{ability.name} is a ranged/spell attack but only reaches melee range.");

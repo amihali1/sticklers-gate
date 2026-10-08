@@ -150,23 +150,23 @@
 
 Full 12-class D&D roster. Same format as above; abilities L1 / L1 / L3 / L5. AoE follows 5e templates on the grid (sphere at a point within range, or emanation around the user) with friendly fire — no "all enemies" targeting. Base stat totals ~72–76 like the original four.
 
-### Sticksorcerer (Sorcerer) — PR G
+### Sticksorcerer (Sorcerer) — Implemented (PR G)
 - **Role:** Burst DPS (CHA). Fewer abilities than the Stickwizard, bigger single-target hits, metamagic.
 - **Stats:** STR 8, DEX 14, CON 14, INT 10, WIS 12, CHA 18 · **HD** d6 · **AC** 12 · **Move** 2
 - **Flavor:** "Didn't study. Was born like this. Won't stop mentioning it."
 - **Abilities (3):** Chaos Bolt 2d8+CHA, range 5 · (L3) Twinned Chaos Bolt 3d8+CHA, range 5, also hits 1 more enemy in range (Twinned Spell), 3t CD · (L5) Empowered Blast 6d10+CHA force, range 4, dice maximized (Empowered Spell), 5t CD
 
-### Stickwarlock (Warlock) — PR G
+### Stickwarlock (Warlock) — Implemented (PR G)
 - **Role:** Ranged DPS / debuffer (CHA)
 - **Stats:** STR 8, DEX 14, CON 14, INT 12, WIS 10, CHA 18 · **HD** d8 · **AC** 13 · **Move** 2
 - **Abilities:** Eldritch Blast 1d10+CHA force, range 6 · Hex: target Marked 3t (your attacks +1d6), range 5, 3t CD · (L3) Vampiric Touch 3d6+CHA necrotic, range 1, heals 50% of damage, 3t CD · (L5) Hunger of Hadar: sphere r2 within range 6, 2d6 cold, DEX DC 14 half + Slowed, 5t CD
 
-### Stickdruid (Druid) — PR G
+### Stickdruid (Druid) — Implemented (PR G)
 - **Role:** Control / healer (WIS)
 - **Stats:** STR 10, DEX 12, CON 14, INT 12, WIS 18, CHA 10 · **HD** d8 · **AC** 13 · **Move** 3
 - **Abilities:** Thorn Whip 1d6+WIS piercing, range 3 · Healing Spores: heal 1d8+4, range 3, 2t CD · (L3) Entangle: sphere r1 within range 6, Restrained 2t (STR DC 13), 4t CD · (L5) Call Lightning: sphere r1 within range 6, 4d10 lightning, DEX DC 14 half, 4t CD
 
-### Stickbard (Bard) — PR G
+### Stickbard (Bard) — Implemented (PR G)
 - **Role:** Support / debuffer (CHA)
 - **Stats:** STR 8, DEX 14, CON 12, INT 12, WIS 10, CHA 18 · **HD** d8 · **AC** 13 · **Move** 3
 - **Abilities:** Vicious Mockery 1d6+CHA psychic, range 4, Frightened 1t (WIS DC 13) · Bardic Inspiration: ally Blessed 2t (+1d4 attacks/saves), range 4, 2t CD · (L3) Healing Word: heal 2d4+3, range 5, 2t CD · (L5) Shatter: sphere r1 within range 6, 3d8 thunder, CON DC 14 half, 4t CD

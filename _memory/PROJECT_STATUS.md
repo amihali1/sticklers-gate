@@ -97,8 +97,11 @@ Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: f
 - [x] Fixed: Cunning Dodge did nothing (Shielded had no mechanic); Shadow Step made the *target* invisible; Life Drain didn't heal; Ray of Frost didn't slow; enemies downed by Burning never died
 - [x] Tests: AreaTargetingTests, StatusEffectMechanicsTests, content guards (no AllEnemies/AllAllies abilities, area consistency)
 
-#### PR G: Arcane & Nature Classes (`feature/classes-casters`)
-- [ ] Sticksorcerer, Stickwarlock, Stickdruid, Stickbard: CharacterClassType entries, class + ability assets, stick-figure colors, tests
+#### PR G: Arcane & Nature Classes (`feature/classes-casters`) — Complete
+- [x] Sticksorcerer, Stickwarlock, Stickdruid, Stickbard: class + 15 ability assets (`Data/Abilities/<Class>/`), stick-figure colors
+- [x] CharacterClassType entries for all 8 new classes (PR H reuses them)
+- [x] ClassRosterTests over real class assets (one asset per type, naming, stat budget 70–80, D&D hit dice, level progression, builds a CombatUnit)
+- [x] Touch spells (Vampiric Touch) allowlisted in the ranged-reach guard
 
 #### PR H: Martial Classes (`feature/classes-martial`)
 - [ ] Stickbarbarian, Stickmonk, Stickranger, Stickpaladin: same as PR G
@@ -107,7 +110,7 @@ Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: f
 Player creates their own character (any class). A few NPCs of varied classes are found early and can join. Roster size unlimited; only 4 fight per battle; party swaps only at camp. Until then new classes are data-only (swap via CombatBootstrapper `_partyClasses`).
 
 ## Next Action
-PR E (#20) and PR F open. Next: PR G (Sorcerer, Warlock, Druid, Bard), then PR H (Barbarian, Monk, Ranger, Paladin). Play-test Phase 9 + area aiming in the editor when possible.
+PR E (#20), PR F (#21) and PR G open (stacked). Next: PR H (Barbarian, Monk, Ranger, Paladin). Play-test Phase 9 + area aiming in the editor when possible.
 
 ## CI
 GitHub Actions `unity-tests.yml` (game-ci/unity-test-runner@v4) green since PR #18 (2026-09-29). Needs UNITY_EMAIL + UNITY_PASSWORD + UNITY_LICENSE secrets, a free-disk-space step (Unity 6 image is huge), and `checks: write`. Runs on PRs to any branch. The 2 old test bugs (LethalDamage, StandardArray) were fixed/removed in #18.
