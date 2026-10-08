@@ -26,6 +26,7 @@ MonoBehaviour:
   _victoryCondition: 0
   _survivalTurns: 0
   _background: {fileID: 0}
+  _gridLayout: {fileID: 11400000, guid: 12a76b6b4a8d462da4e236460267eb8d, type: 2}
   _introLines: 
   - You approach the Inkwell Tavern. Well, 'tavern' is generous. It's a circle with a door.
   - Three goblins emerge. They were hiding behind an apostrophe.

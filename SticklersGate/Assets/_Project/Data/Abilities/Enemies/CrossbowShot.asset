@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Crossbow Shot
   _category: 1
   _targetType: 0
+  _range: 4
   _description: A bolt from across the page. Bandits love ranged attacks - less chance of getting drawn on.
   _damageDiceCount: 1
   _damageDiceSides: 8

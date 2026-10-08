@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Web Spit
   _category: 5
   _targetType: 0
+  _range: 3
   _description: Sticky, gross, and surprisingly accurate for something with no nose.
   _damageDiceCount: 0
   _damageDiceSides: 0

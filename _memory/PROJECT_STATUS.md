@@ -34,7 +34,7 @@ All phases done: Project bootstrap, core data model, combat engine, combat UI, c
 
 *Deferred until after grid system is in place, since grid changes encounter design significantly.*
 
-### Phase 9: Grid Combat System — In Progress
+### Phase 9: Grid Combat System — Complete (PRs #14–#16, #19, PR E)
 
 Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs:
 
@@ -66,7 +66,7 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.19 EnemyAIMovementTests (5 tests, all pass)
 - [x] BONUS: hard range enforcement now ON — SubmitPlayerAction rejects out-of-range single-target (keeps turn); enemy forfeits attack if unreachable after moving. Fixed IsInRange AoE/self short-circuit (was rejecting AoE w/ null target).
 
-#### PR D: Grid UI (`feature/grid-ui`) — Complete
+#### PR D: Grid UI (`feature/grid-ui`) — Merged (#19)
 - [x] 9.20 GridRenderer: world-space tile grid (terrain-colored, runtime-generated square sprite), Movement / AbilityRange / ActiveUnit highlight overlays. Coordinate math in plain-C# GridCoordinateMapper (row 0 = top, grid centered, FitTileSize).
 - [x] 9.21 Movement input: tile click/tap → SubmitPlayerMovement (own tile = stay). Legacy Input (activeInputHandler=0); clicks over UI ignored via EventSystem.IsPointerOverGameObject.
 - [x] 9.22 CombatBootstrapper: builds grid on OnCombatStarted sized to free screen band; stick figures placed on tiles (height = 0.65 × tile); OnUnitMoved lerps figure; optional `_gridLayout` field passed to StartCombat. Old spawn-point transforms removed.
@@ -75,16 +75,16 @@ Replacing front-row/back-row with a full grid movement system. Broken into 5 PRs
 - [x] 9.25 TargetPanel: GetTargetsInRange filters by DamageCalculator.IsInRange (items unaffected — no range)
 - [x] CombatGrid.GetPositionsWithinDistance (ability reach; ignores terrain/occupancy) + tests; GridCoordinateMapperTests; TargetPanel range tests
 
-#### PR E: Content & Cleanup (`feature/grid-content`)
-- [ ] 9.26 GridLayoutSO assets for all 3 encounters (with spawn points)
-- [ ] 9.27 Update all AbilitySO assets with range values
-- [ ] 9.28 Update CharacterClassSO / EnemySO assets with movement speeds
-- [ ] 9.29 Update EncounterSO to reference GridLayoutSO
-- [ ] 9.30 Integration tests for full grid combat flow
-- [ ] 9.31 Update Combat.unity scene
+#### PR E: Content & Cleanup (`feature/grid-content`) — Complete
+- [x] 9.26 GridLayoutSO assets for all 3 encounters in `Data/Encounters/Layouts/` (sizes per CONTENT.md: 8×6, 10×6, 8×8; spawns; terrain — only Difficult/Water/Abyss, the terrain types with working mechanics)
+- [x] 9.27 AbilitySO ranges — before this every ability defaulted to range 1 (spells/crossbows were melee-only). Values taken from CONTENT.md class/enemy sections.
+- [x] 9.28 Movement speeds on all class/enemy SOs, per CONTENT.md
+- [x] 9.29 EncounterSO._gridLayout; StartCombat falls back to encounter.GridLayout (bootstrapper `_gridLayout` field from PR D removed)
+- [x] 9.30 GridContentTests: real-asset checks (layouts, spawns, path connectivity, ranges, speeds) + enemies-engage-party simulation using real EnemyAI.DecideMovement
+- [x] 9.31 Combat.unity — no change needed: scene references the encounter, which now carries its layout
 
 ## Next Action
-PR D (Grid UI) open on `feature/grid-ui`. Needs a play-test in the editor (visuals/input aren't covered by EditMode tests). Then PR E: Content & Cleanup (`feature/grid-content`) — GridLayoutSO assets w/ spawn points + terrain for the 3 encounters, range values on AbilitySOs, movement speeds on class/enemy SOs, integration tests, scene update. After PR E: class roster expansion.
+Phase 9 done. Play-test all 3 encounters in the editor (visuals/input + balance of the new ranges/speeds are untested by EditMode). Then either class roster expansion (8 new classes — see below) or Phase 8 polish/difficulty (was deferred until grid landed). Terrain effects for Elevated/Cover/Lava are still unimplemented — layouts avoid them.
 
 ## CI
 GitHub Actions `unity-tests.yml` (game-ci/unity-test-runner@v4) green since PR #18 (2026-09-29). Needs UNITY_EMAIL + UNITY_PASSWORD + UNITY_LICENSE secrets, a free-disk-space step (Unity 6 image is huge), and `checks: write`. Runs on PRs to any branch. The 2 old test bugs (LethalDamage, StandardArray) were fixed/removed in #18.
@@ -97,7 +97,7 @@ Full 12-class D&D set decided 2026-07-29. Current 4: Sticknight(Fighter), Stickw
 - .meta files for scripts are minimal (missing MonoImporter section) — Unity accepts them fine
 - Life Drain ability doesn't actually heal the necromancer yet (needs code support for "damage + heal self" pattern)
 - Phase 8 (polish/difficulty) deferred until grid system is complete
-- Terrain effects beyond Normal are planned but not implemented until content needs them
+- Elevated/Cover/Lava terrain effects (AC/range bonus, fire damage) not implemented — only movement cost (Difficult/Water) and impassable (Abyss) work
 - Grid UI (PR D) visuals/input verified only by EditMode logic tests — needs an in-editor play-test
 
 ## Session Count: 7

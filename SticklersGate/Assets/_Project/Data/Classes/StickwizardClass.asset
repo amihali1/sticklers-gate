@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickwizardClass
   m_EditorClassIdentifier:
   _className: Stickwizard
+  _movementSpeed: 2
   _classType: 1
   _flavorText: Glass cannon. Emphasis on glass.
   _baseStats:

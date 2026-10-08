@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Disintegrate
   _category: 2
   _targetType: 0
+  _range: 6
   _description: A thin green ray erases the target from existence. 10d6 + 40 force damage.
   _damageDiceCount: 10
   _damageDiceSides: 6

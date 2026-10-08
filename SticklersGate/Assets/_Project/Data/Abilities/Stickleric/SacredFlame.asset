@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Sacred Flame
   _category: 2
   _targetType: 0
+  _range: 4
   _description: Divine radiance descends upon the target.
   _damageDiceCount: 2
   _damageDiceSides: 8

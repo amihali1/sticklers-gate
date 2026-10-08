@@ -24,7 +24,7 @@ A turn-based RPG for Android and iOS, built in Unity (C#). A loving parody of Ba
 ## Project Status
 
 **Current Milestone:** 2 — Full Party Combat
-**Current Phase:** 9 — Grid Combat System (grid data, combat integration, movement, grid UI done; grid content next)
+**Current Phase:** 9 — Grid Combat System (complete: tactical grid, movement, ranges, per-encounter battlefields)
 
 See `_memory/PROJECT_STATUS.md` for detailed progress tracking.
 

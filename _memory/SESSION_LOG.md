@@ -289,3 +289,5 @@
 - Items have no range, so item targeting is not range-filtered.
 
 **Next session:** Play-test PR D in the editor, merge, then PR E (grid content).
+
+**Later in session 11:** Merged PR D (#19). Built PR E (`feature/grid-content`): GridLayoutSO assets for all 3 encounters, ranges on 23 single-target abilities (all had silently defaulted to 1 — spells were melee-only), movement speeds on all classes/enemies, EncounterSO.GridLayout, GridContentTests over real assets incl. an enemies-engage simulation. EditMode: 179/179. Phase 9 complete.

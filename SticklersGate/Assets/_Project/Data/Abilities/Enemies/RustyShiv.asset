@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Rusty Shiv
   _category: 0
   _targetType: 0
+  _range: 1
   _description: A crude stab with a rusty blade. Tetanus sold separately.
   _damageDiceCount: 1
   _damageDiceSides: 4

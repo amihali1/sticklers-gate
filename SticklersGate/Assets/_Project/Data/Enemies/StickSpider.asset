@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StickSpider
   m_EditorClassIdentifier:
   _enemyName: Stick Spider
+  _movementSpeed: 3
   _tier: 1
   _description: Eight lines pretending to be legs. The artist clearly has arachnophobia.
   _stats:

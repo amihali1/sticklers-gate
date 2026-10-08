@@ -26,6 +26,7 @@ MonoBehaviour:
   _victoryCondition: 0
   _survivalTurns: 0
   _background: {fileID: 0}
+  _gridLayout: {fileID: 11400000, guid: 35b5168fc65a44b0aedc435f06443f0c, type: 2}
   _introLines:
   - The road narrows between two paragraphs. Classic ambush territory.
   - Bandits emerge from the margins! And is that... a spider? Great. Just great.

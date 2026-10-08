@@ -15,6 +15,7 @@ MonoBehaviour:
   _abilityName: Bone Throw
   _category: 1
   _targetType: 0
+  _range: 3
   _description: The skeleton detaches a rib and throws it. Resourceful.
   _damageDiceCount: 1
   _damageDiceSides: 4

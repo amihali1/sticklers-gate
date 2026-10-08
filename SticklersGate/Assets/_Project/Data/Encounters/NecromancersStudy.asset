@@ -26,6 +26,7 @@ MonoBehaviour:
   _victoryCondition: 0
   _survivalTurns: 0
   _background: {fileID: 0}
+  _gridLayout: {fileID: 11400000, guid: 47a85ab2854041ffbbffd2f5818a4ce7, type: 2}
   _introLines:
   - You enter a room full of scribbled arcane circles. Someone's been busy.
   - A necromancer stands behind two skeletal guards. They're reading from 'Raising the Dead for Dummies.'

@@ -146,6 +146,15 @@
 
 ---
 
+## Grid Values (Phase 9)
+
+Ranges and movement speeds in the class/enemy sections above are the source of truth; PR E wrote them into the .asset files. AoE/self abilities ignore range.
+
+**Layouts** (`Data/Encounters/Layouts/`, row 0 = top). Party spawn order: Sticknight, Stickwizard, Stickrogue, Stickleric.
+- **Ambush at the Inkwell (8×6):** party (2,2) (0,3) (2,3) (1,2); ink puddle (Difficult) at (4,2) (4,3) (5,2); goblins fan out at (6,0) (7,3) (5,5).
+- **The Bandit Crossing (10×6):** party (2,2) (0,3) (2,3) (1,2); river (Water) down column 5 with a bridge at rows 2–3, reeds (Difficult) at (3,0) (7,5); bandits hold the bridge at (7,2) (7,3), spider at (8,0).
+- **The Necromancer's Study (8×8):** party (2,3) (0,4) (2,4) (1,3); bookshelves (Abyss, impassable) down column 4 leaving a gap at rows 3–4, bone piles (Difficult) at (6,1) (6,6); Bone Guards at the gap (5,3) (5,4), necromancer at (7,3).
+
 ## Narrator Quip Pool
 
 *To be written in full during Phase 3 Task 3.4. Core categories:*
