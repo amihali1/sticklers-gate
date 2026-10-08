@@ -408,6 +408,22 @@ namespace SticklersGate.UI
                     return new Color(0.3f, 0.7f, 0.3f);  // Green
                 case Data.CharacterClassType.Stickleric:
                     return new Color(0.9f, 0.8f, 0.3f);  // Gold
+                case Data.CharacterClassType.Sticksorcerer:
+                    return new Color(0.95f, 0.35f, 0.55f); // Magenta
+                case Data.CharacterClassType.Stickwarlock:
+                    return new Color(0.35f, 0.2f, 0.45f);  // Deep violet
+                case Data.CharacterClassType.Stickdruid:
+                    return new Color(0.45f, 0.55f, 0.2f);  // Moss
+                case Data.CharacterClassType.Stickbard:
+                    return new Color(0.95f, 0.55f, 0.2f);  // Orange
+                case Data.CharacterClassType.Stickbarbarian:
+                    return new Color(0.75f, 0.25f, 0.15f); // Rust red
+                case Data.CharacterClassType.Stickmonk:
+                    return new Color(0.85f, 0.65f, 0.4f);  // Saffron
+                case Data.CharacterClassType.Stickranger:
+                    return new Color(0.25f, 0.45f, 0.3f);  // Forest green
+                case Data.CharacterClassType.Stickpaladin:
+                    return new Color(0.85f, 0.85f, 0.95f); // Silver
                 default:
                     return Color.white;
             }

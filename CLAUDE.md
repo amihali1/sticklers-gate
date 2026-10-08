@@ -75,4 +75,4 @@ Keep `README.md` up to date as the project evolves. When making changes that aff
 - Target platforms: Android (API 24+), iOS (14+), landscape only
 - TextMeshPro for all text, DOTween for animations, new Input System for touch
 - Simplified D&D 5e: cooldowns instead of spell slots; tactical grid movement (Phase 9) replaced front/back row
-- 4 classes: Sticknight, Stickwizard, Stickrogue, Stickleric
+- Classes (full 12-class D&D roster, Phase 10): Sticknight, Stickwizard, Stickrogue, Stickleric, Sticksorcerer, Stickwarlock, Stickdruid, Stickbard; Stickbarbarian, Stickmonk, Stickranger, Stickpaladin in progress

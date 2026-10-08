@@ -53,6 +53,10 @@ sticklers-gate/
 | Stickwizard | Ranged AoE DPS | "Glass cannon. Emphasis on glass." |
 | Stickrogue | Burst DPS / Utility | "Steals your gold. Then your heart. Then your gold again." |
 | Stickleric | Healer / Support | "Prays for you. Judges you. Heals you anyway." |
+| Sticksorcerer | Burst DPS (metamagic) | "Didn't study. Was born like this. Won't stop mentioning it." |
+| Stickwarlock | Ranged DPS / Debuffer | "Signed a contract without reading it. Twice." |
+| Stickdruid | Control / Healer | "Talks to trees. The trees have filed a restraining order." |
+| Stickbard | Support / Debuffer | "Fights with insults. Heals with songs. Never stops talking." |
 
 ## Documentation
 

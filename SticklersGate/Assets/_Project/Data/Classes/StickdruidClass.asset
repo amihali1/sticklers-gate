@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8e126a3fe05f4ea44993189586e76, type: 3}
+  m_Name: StickdruidClass
+  m_EditorClassIdentifier:
+  _className: Stickdruid
+  _classType: 6
+  _flavorText: Talks to trees. The trees have filed a restraining order.
+  _baseStats:
+    strength: 10
+    dexterity: 12
+    constitution: 14
+    intelligence: 12
+    wisdom: 18
+    charisma: 10
+  _baseAC: 13
+  _hitDiceSides: 8
+  _movementSpeed: 3
+  _level1Abilities: 
+  - {fileID: 11400000, guid: fddb7afc36904e94880a5b514fa955bc, type: 2}
+  - {fileID: 11400000, guid: 7c16ee38b1e74b9d934c1b020bfb2765, type: 2}
+  _level3Abilities: 
+  - {fileID: 11400000, guid: be30688946924457a4ffe24904a9f050, type: 2}
+  _level5Abilities: 
+  - {fileID: 11400000, guid: b455b0fbc148405d9c6b78ae4631715d, type: 2}
+  _idleSprite: {fileID: 0}
+  _attackSprite: {fileID: 0}
+  _hitSprite: {fileID: 0}
+  _deathSprite: {fileID: 0}
