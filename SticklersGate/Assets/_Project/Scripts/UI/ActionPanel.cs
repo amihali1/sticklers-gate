@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 using SticklersGate.Data;
 
@@ -68,7 +69,7 @@ namespace SticklersGate.UI
                 go.SetActive(true);
                 _spawnedButtons.Add(go);
 
-                var buttonText = go.GetComponentInChildren<Text>();
+                var buttonText = go.GetComponentInChildren<TMP_Text>();
                 var button = go.GetComponent<Button>();
 
                 bool isReady = ability.IsReady;
@@ -111,7 +112,7 @@ namespace SticklersGate.UI
                     go.SetActive(true);
                     _spawnedButtons.Add(go);
 
-                    var buttonText = go.GetComponentInChildren<Text>();
+                    var buttonText = go.GetComponentInChildren<TMP_Text>();
                     var button = go.GetComponent<Button>();
                     var img = go.GetComponent<Image>();
 

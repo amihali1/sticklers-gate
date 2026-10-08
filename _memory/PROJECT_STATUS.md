@@ -110,6 +110,12 @@ Design approved 2026-10-08 (see CONTENT.md "Planned Classes"). User direction: f
 #### Later (Milestone 3): Party & Recruitment — decided 2026-10-08
 Player creates their own character (any class). A few NPCs of varied classes are found early and can join. Roster size unlimited; only 4 fight per battle; party swaps only at camp. Until then new classes are data-only (swap via CombatBootstrapper `_partyClasses`).
 
+### Play-test Round 1 Fixes (`fix/playtest-round-1`) — 2026-10-08
+- [x] Enemy names blank (empty `nameOverride` string) → fall back to EnemyName; duplicates lettered (Stick Goblin A/B/C) via `UnitNaming`
+- [x] Blurry text → all UI on TextMeshPro (TMP Essential Resources imported; `Assets/Editor/ProjectSetup.ImportTmpEssentials` can re-run headless)
+- [x] Split movement: per-turn movement budget usable in several moves, before and after the action; tapping your own tile does nothing; End Turn button after acting
+- [x] Player turn no longer advances while the action is still resolving
+
 ## Next Action
 Stacked PRs open: E (#20) → F (#21) → G (#22) → H. Merge in order. Then play-test (grid UI, area aiming, a few new classes swapped into the party) and pick the next milestone: Phase 8 polish/difficulty, terrain effects (Elevated/Cover/Lava), or Milestone 3 (character creation + NPC recruitment + camp).
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 
 namespace SticklersGate.UI
@@ -12,8 +13,8 @@ namespace SticklersGate.UI
     {
         [Header("References")]
         [SerializeField] private Image _fillImage;
-        [SerializeField] private Text _nameText;
-        [SerializeField] private Text _hpText;
+        [SerializeField] private TMP_Text _nameText;
+        [SerializeField] private TMP_Text _hpText;
         [SerializeField] private Image _backgroundImage;
 
         [Header("Colors")]

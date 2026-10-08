@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 using SticklersGate.Data;
 
@@ -181,16 +182,16 @@ namespace SticklersGate.UI
             SetField(turnOrderDisplay, "_entryPrefab", turnEntryPrefab);
 
             // Wire NarratorDisplay
-            SetField(narratorDisplay, "_narratorText", narratorDisplay.GetComponentInChildren<Text>());
+            SetField(narratorDisplay, "_narratorText", narratorDisplay.GetComponentInChildren<TMP_Text>());
             SetField(narratorDisplay, "_canvasGroup", narratorDisplay.GetComponent<CanvasGroup>());
 
             // Wire MovementPanel
-            SetField(movementPanel, "_promptText", movementPanel.transform.Find("Prompt").GetComponent<Text>());
-            SetField(movementPanel, "_skipButton", movementPanel.transform.Find("SkipButton").GetComponent<Button>());
+            SetField(movementPanel, "_promptText", movementPanel.transform.Find("Prompt").GetComponent<TMP_Text>());
+            SetField(movementPanel, "_endTurnButton", movementPanel.transform.Find("EndTurnButton").GetComponent<Button>());
 
             // Wire CombatResultPanel
-            SetField(resultPanel, "_titleText", resultPanel.transform.Find("Title").GetComponent<Text>());
-            SetField(resultPanel, "_subtitleText", resultPanel.transform.Find("Subtitle").GetComponent<Text>());
+            SetField(resultPanel, "_titleText", resultPanel.transform.Find("Title").GetComponent<TMP_Text>());
+            SetField(resultPanel, "_subtitleText", resultPanel.transform.Find("Subtitle").GetComponent<TMP_Text>());
             SetField(resultPanel, "_backgroundImage", resultPanel.GetComponent<Image>());
 
             // Create and wire CombatUIController
@@ -411,12 +412,11 @@ namespace SticklersGate.UI
             textRect.anchorMax = Vector2.one;
             textRect.offsetMin = new Vector2(15, 5);
             textRect.offsetMax = new Vector2(-15, -5);
-            var text = textGo.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var text = textGo.AddComponent<TextMeshProUGUI>();
             text.fontSize = 20;
             text.color = new Color(0.95f, 0.9f, 0.7f);
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontStyle = FontStyle.Italic;
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontStyle = FontStyles.Italic;
 
             return go.AddComponent<NarratorDisplay>();
         }
@@ -440,12 +440,11 @@ namespace SticklersGate.UI
             labelRect.anchorMax = new Vector2(1, 1);
             labelRect.offsetMin = new Vector2(5, 0);
             labelRect.offsetMax = new Vector2(-5, 0);
-            var label = labelGo.AddComponent<Text>();
-            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = "Turn Order";
             label.fontSize = 14;
             label.color = Color.gray;
-            label.alignment = TextAnchor.MiddleCenter;
+            label.alignment = TextAlignmentOptions.Center;
 
             // Entry container with vertical layout
             var containerGo = CreateUIObject("EntryContainer", go.transform);
@@ -500,12 +499,11 @@ namespace SticklersGate.UI
             defendBtn.targetGraphic = defendImg;
             var defendTextGo = CreateUIObject("Text", defendGo.transform);
             FillParent(defendTextGo.GetComponent<RectTransform>());
-            var defendText = defendTextGo.AddComponent<Text>();
-            defendText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var defendText = defendTextGo.AddComponent<TextMeshProUGUI>();
             defendText.text = "Defend";
             defendText.fontSize = 16;
             defendText.color = Color.white;
-            defendText.alignment = TextAnchor.MiddleCenter;
+            defendText.alignment = TextAlignmentOptions.Center;
 
             go.SetActive(false);
             return go.AddComponent<ActionPanel>();
@@ -549,12 +547,11 @@ namespace SticklersGate.UI
             cancelBtn.targetGraphic = cancelImg;
             var cancelTextGo = CreateUIObject("Text", cancelGo.transform);
             FillParent(cancelTextGo.GetComponent<RectTransform>());
-            var cancelText = cancelTextGo.AddComponent<Text>();
-            cancelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cancelText = cancelTextGo.AddComponent<TextMeshProUGUI>();
             cancelText.text = "Cancel";
             cancelText.fontSize = 16;
             cancelText.color = Color.white;
-            cancelText.alignment = TextAnchor.MiddleCenter;
+            cancelText.alignment = TextAlignmentOptions.Center;
 
             go.SetActive(false);
             return go.AddComponent<TargetPanel>();
@@ -579,14 +576,13 @@ namespace SticklersGate.UI
             promptRect.anchorMax = new Vector2(0.8f, 1);
             promptRect.offsetMin = new Vector2(15, 5);
             promptRect.offsetMax = new Vector2(-5, -5);
-            var prompt = promptGo.AddComponent<Text>();
-            prompt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var prompt = promptGo.AddComponent<TextMeshProUGUI>();
             prompt.fontSize = 18;
             prompt.color = Color.white;
-            prompt.alignment = TextAnchor.MiddleLeft;
+            prompt.alignment = TextAlignmentOptions.Left;
 
-            // Skip button
-            var skipGo = CreateUIObject("SkipButton", go.transform);
+            // End Turn button
+            var skipGo = CreateUIObject("EndTurnButton", go.transform);
             var skipRect = skipGo.GetComponent<RectTransform>();
             skipRect.anchorMin = new Vector2(0.82f, 0.15f);
             skipRect.anchorMax = new Vector2(0.98f, 0.85f);
@@ -598,12 +594,11 @@ namespace SticklersGate.UI
             skipBtn.targetGraphic = skipImg;
             var skipTextGo = CreateUIObject("Text", skipGo.transform);
             FillParent(skipTextGo.GetComponent<RectTransform>());
-            var skipText = skipTextGo.AddComponent<Text>();
-            skipText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            skipText.text = "Don't Move";
+            var skipText = skipTextGo.AddComponent<TextMeshProUGUI>();
+            skipText.text = "End Turn";
             skipText.fontSize = 16;
             skipText.color = Color.white;
-            skipText.alignment = TextAnchor.MiddleCenter;
+            skipText.alignment = TextAlignmentOptions.Center;
 
             go.SetActive(false);
             return go.AddComponent<MovementPanel>();
@@ -627,12 +622,11 @@ namespace SticklersGate.UI
             titleRect.anchorMax = new Vector2(1, 0.9f);
             titleRect.offsetMin = new Vector2(20, 0);
             titleRect.offsetMax = new Vector2(-20, -10);
-            var title = titleGo.AddComponent<Text>();
-            title.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var title = titleGo.AddComponent<TextMeshProUGUI>();
             title.fontSize = 48;
             title.color = Color.white;
-            title.alignment = TextAnchor.MiddleCenter;
-            title.fontStyle = FontStyle.Bold;
+            title.alignment = TextAlignmentOptions.Center;
+            title.fontStyle = FontStyles.Bold;
 
             var subGo = CreateUIObject("Subtitle", go.transform);
             var subRect = subGo.GetComponent<RectTransform>();
@@ -640,11 +634,10 @@ namespace SticklersGate.UI
             subRect.anchorMax = new Vector2(1, 0.5f);
             subRect.offsetMin = new Vector2(20, 0);
             subRect.offsetMax = new Vector2(-20, 0);
-            var sub = subGo.AddComponent<Text>();
-            sub.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var sub = subGo.AddComponent<TextMeshProUGUI>();
             sub.fontSize = 22;
             sub.color = new Color(0.8f, 0.8f, 0.8f);
-            sub.alignment = TextAnchor.MiddleCenter;
+            sub.alignment = TextAlignmentOptions.Center;
 
             go.SetActive(false);
             return go.AddComponent<CombatResultPanel>();
@@ -672,11 +665,10 @@ namespace SticklersGate.UI
 
             // Name text
             var nameGo = CreateUIObject("NameText", go.transform);
-            var nameText = nameGo.AddComponent<Text>();
-            nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var nameText = nameGo.AddComponent<TextMeshProUGUI>();
             nameText.fontSize = 13;
             nameText.color = Color.white;
-            nameText.alignment = TextAnchor.MiddleLeft;
+            nameText.alignment = TextAlignmentOptions.Left;
             var nameLayout = nameGo.AddComponent<LayoutElement>();
             nameLayout.preferredHeight = 16;
 
@@ -706,11 +698,10 @@ namespace SticklersGate.UI
             hpTextRect.anchorMax = Vector2.one;
             hpTextRect.offsetMin = Vector2.zero;
             hpTextRect.offsetMax = Vector2.zero;
-            var hpText = hpTextGo.AddComponent<Text>();
-            hpText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var hpText = hpTextGo.AddComponent<TextMeshProUGUI>();
             hpText.fontSize = 11;
             hpText.color = Color.white;
-            hpText.alignment = TextAnchor.MiddleCenter;
+            hpText.alignment = TextAlignmentOptions.Center;
 
             // Add UnitHPBar component and wire its fields
             var hpBar = go.AddComponent<UnitHPBar>();
@@ -730,12 +721,11 @@ namespace SticklersGate.UI
             var rect = go.AddComponent<RectTransform>();
             rect.sizeDelta = new Vector2(120, 40);
 
-            var text = go.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var text = go.AddComponent<TextMeshProUGUI>();
             text.fontSize = 28;
             text.color = Color.red;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.fontStyle = FontStyle.Bold;
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontStyle = FontStyles.Bold;
             text.raycastTarget = false;
 
             var popup = go.AddComponent<DamagePopup>();
@@ -760,11 +750,10 @@ namespace SticklersGate.UI
 
             var textGo = CreateUIObject("Text", go.transform);
             FillParent(textGo.GetComponent<RectTransform>());
-            var text = textGo.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var text = textGo.AddComponent<TextMeshProUGUI>();
             text.fontSize = 15;
             text.color = Color.white;
-            text.alignment = TextAnchor.MiddleCenter;
+            text.alignment = TextAlignmentOptions.Center;
 
             go.SetActive(false);
             DontDestroyOnLoad(go);
@@ -777,11 +766,10 @@ namespace SticklersGate.UI
             var rect = go.AddComponent<RectTransform>();
             rect.sizeDelta = new Vector2(0, 16);
 
-            var text = go.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var text = go.AddComponent<TextMeshProUGUI>();
             text.fontSize = 13;
             text.color = Color.white;
-            text.alignment = TextAnchor.MiddleLeft;
+            text.alignment = TextAlignmentOptions.Left;
 
             var layoutEl = go.AddComponent<LayoutElement>();
             layoutEl.preferredHeight = 16;

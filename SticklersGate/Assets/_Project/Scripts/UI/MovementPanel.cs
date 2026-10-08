@@ -1,22 +1,23 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 
 namespace SticklersGate.UI
 {
     /// <summary>
-    /// Shown during the movement phase: prompts the player to tap a highlighted
-    /// tile and offers a Skip button to stay put.
+    /// Shown after the player's action while movement remains: prompts the
+    /// player to keep moving on blue tiles or end the turn.
     /// </summary>
     public class MovementPanel : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Text _promptText;
-        [SerializeField] private Button _skipButton;
+        [SerializeField] private TMP_Text _promptText;
+        [SerializeField] private Button _endTurnButton;
 
-        /// <summary>Fired when the player chooses not to move this turn.</summary>
-        public event Action OnSkipSelected;
+        /// <summary>Fired when the player ends their turn, leaving any movement unused.</summary>
+        public event Action OnEndTurnSelected;
 
         /// <summary>Show the movement prompt for the given unit.</summary>
         public void Show(CombatUnit unit)
@@ -25,13 +26,13 @@ namespace SticklersGate.UI
 
             if (_promptText != null)
             {
-                _promptText.text = $"{unit.Name}: tap a blue tile to move (up to {unit.EffectiveMovement})";
+                _promptText.text = $"{unit.Name}: {unit.RemainingMovement} movement left. Tap a blue tile to move, or end your turn.";
             }
 
-            if (_skipButton != null)
+            if (_endTurnButton != null)
             {
-                _skipButton.onClick.RemoveAllListeners();
-                _skipButton.onClick.AddListener(() => OnSkipSelected?.Invoke());
+                _endTurnButton.onClick.RemoveAllListeners();
+                _endTurnButton.onClick.AddListener(() => OnEndTurnSelected?.Invoke());
             }
         }
 

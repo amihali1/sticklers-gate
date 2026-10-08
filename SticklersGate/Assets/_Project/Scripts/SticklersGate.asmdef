@@ -2,7 +2,8 @@
     "name": "SticklersGate",
     "rootNamespace": "SticklersGate",
     "references": [
-        "Unity.ugui"
+        "Unity.ugui",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

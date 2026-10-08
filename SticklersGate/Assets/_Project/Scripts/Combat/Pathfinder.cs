@@ -31,6 +31,24 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
+        /// Cheapest movement cost to every tile reachable within
+        /// <paramref name="movementBudget"/>, excluding the start tile. Used to
+        /// spend the right amount of movement for a move.
+        /// </summary>
+        public static Dictionary<GridPosition, int> GetReachableCosts(
+            CombatGrid grid, GridPosition start, int movementBudget)
+        {
+            var costs = Dijkstra(grid, start, movementBudget, null, out _);
+            var result = new Dictionary<GridPosition, int>();
+            foreach (var pair in costs)
+            {
+                if (pair.Key != start && pair.Value <= movementBudget)
+                    result[pair.Key] = pair.Value;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Shortest path from <paramref name="start"/> to <paramref name="goal"/>
         /// as an ordered list including both endpoints, or null if the goal is
         /// unreachable. If a movement budget is given, returns null when the

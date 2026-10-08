@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace SticklersGate.UI
 {
@@ -12,7 +13,7 @@ namespace SticklersGate.UI
     public class NarratorDisplay : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Text _narratorText;
+        [SerializeField] private TMP_Text _narratorText;
         [SerializeField] private CanvasGroup _canvasGroup;
 
         [Header("Settings")]

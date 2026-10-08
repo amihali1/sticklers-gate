@@ -73,12 +73,17 @@ namespace SticklersGate.Combat
             _playerUnits = new List<CombatUnit>(playerUnits);
             _turnCount = 0;
 
-            // Spawn enemies from encounter data
+            // Spawn enemies from encounter data; duplicates get letters (Stick Goblin A, B, C)
             _enemyUnits = new List<CombatUnit>();
+            var baseNames = new List<string>();
             foreach (var spawn in encounter.Enemies)
             {
-                var unit = CombatUnit.FromEnemy(spawn.enemyData, spawn.nameOverride);
-                _enemyUnits.Add(unit);
+                baseNames.Add(string.IsNullOrWhiteSpace(spawn.nameOverride) ? spawn.enemyData.EnemyName : spawn.nameOverride);
+            }
+            var names = UnitNaming.DisambiguateNames(baseNames);
+            for (int i = 0; i < encounter.Enemies.Length; i++)
+            {
+                _enemyUnits.Add(CombatUnit.FromEnemy(encounter.Enemies[i].enemyData, names[i]));
             }
 
             _allUnits = new List<CombatUnit>();
@@ -166,20 +171,15 @@ namespace SticklersGate.Combat
                     OnTurnStarted?.Invoke(unit);
                     _turnCount++;
 
+                    unit.ResetMovement();
+
                     if (unit.IsPlayer)
                     {
-                        // Movement phase: player picks a reachable tile or skips.
-                        SetPhase(CombatPhase.PlayerChooseMovement);
-                        OnMovementPhaseStarted?.Invoke(unit);
-                        while (_currentPhase == CombatPhase.PlayerChooseMovement)
-                        {
-                            yield return null;
-                        }
-
-                        // SubmitPlayerMovement/SkipMovement advances into the action
-                        // phase and fires OnPlayerActionNeeded. Wait for the action.
-                        while (_currentPhase == CombatPhase.PlayerChooseAction ||
-                               _currentPhase == CombatPhase.PlayerChooseTarget)
+                        // Player turn (5e): move any number of times within the movement
+                        // budget, before and/or after one action. Ends when movement and
+                        // action are spent or the player ends the turn.
+                        BeginPlayerActionPhase();
+                        while (_currentPhase != CombatPhase.TurnEnd)
                         {
                             yield return null;
                         }
@@ -206,34 +206,42 @@ namespace SticklersGate.Combat
         }
 
         /// <summary>
-        /// Called by UI when the player moves the active unit to a tile. Ignored
-        /// if the tile is not reachable within the unit's movement this turn.
-        /// Advances to the action phase on success.
+        /// Called by UI when the player moves the active unit. Allowed before the
+        /// action (PlayerChooseAction) and after it (PlayerChooseMovement); spends
+        /// the path's movement cost so the unit can move again with what's left.
+        /// Ignored if the tile isn't reachable with the remaining movement.
         /// </summary>
         public void SubmitPlayerMovement(GridPosition destination)
         {
-            if (_currentPhase != CombatPhase.PlayerChooseMovement) return;
-            if (CurrentUnit == null || !CurrentUnit.IsPlayer) return;
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseMovement) return;
+            if (CurrentUnit == null || !CurrentUnit.IsPlayer || _grid == null) return;
+            if (destination == CurrentUnit.Position) return;
 
-            if (destination != CurrentUnit.Position)
+            var costs = Pathfinder.GetReachableCosts(_grid, CurrentUnit.Position, CurrentUnit.RemainingMovement);
+            if (!costs.TryGetValue(destination, out int cost)) return;
+
+            CurrentUnit.SpendMovement(cost);
+            MoveUnitTo(CurrentUnit, destination);
+
+            // After acting, running out of movement ends the turn
+            if (_currentPhase == CombatPhase.PlayerChooseMovement && CurrentUnit.RemainingMovement <= 0)
             {
-                if (!IsReachable(CurrentUnit, destination)) return;
-                MoveUnitTo(CurrentUnit, destination);
+                SetPhase(CombatPhase.TurnEnd);
             }
-
-            BeginPlayerActionPhase();
         }
 
         /// <summary>
-        /// Called by UI when the player declines to move. Advances to the action
-        /// phase without moving.
+        /// Called by UI to end the player's turn, forfeiting any remaining
+        /// movement (and the action, if it hasn't been used).
         /// </summary>
-        public void SkipMovement()
+        public void EndTurn()
         {
-            if (_currentPhase != CombatPhase.PlayerChooseMovement) return;
+            if (_currentPhase != CombatPhase.PlayerChooseAction &&
+                _currentPhase != CombatPhase.PlayerChooseMovement) return;
             if (CurrentUnit == null || !CurrentUnit.IsPlayer) return;
 
-            BeginPlayerActionPhase();
+            SetPhase(CombatPhase.TurnEnd);
         }
 
         private void BeginPlayerActionPhase()
@@ -242,12 +250,24 @@ namespace SticklersGate.Combat
             OnPlayerActionNeeded?.Invoke(CurrentUnit);
         }
 
-        /// <summary>True if the tile is reachable by the unit within its movement this turn.</summary>
-        private bool IsReachable(CombatUnit unit, GridPosition destination)
+        /// <summary>
+        /// After the player's action resolves: if the unit can still move and the
+        /// fight isn't over, open post-action movement; otherwise end the turn.
+        /// </summary>
+        private void FinishPlayerAction()
         {
-            if (_grid == null) return false;
-            var reachable = Pathfinder.GetReachablePositions(_grid, unit.Position, unit.EffectiveMovement);
-            return reachable.Contains(destination);
+            var unit = CurrentUnit;
+            bool canStillMove = unit != null && unit.IsAlive && unit.IsConscious && unit.RemainingMovement > 0;
+
+            if (canStillMove && !CheckEndCondition().HasValue)
+            {
+                SetPhase(CombatPhase.PlayerChooseMovement);
+                OnMovementPhaseStarted?.Invoke(unit);
+            }
+            else
+            {
+                SetPhase(CombatPhase.TurnEnd);
+            }
         }
 
         /// <summary>Moves a unit on the grid, updates its position, and fires OnUnitMoved.</summary>
@@ -331,7 +351,7 @@ namespace SticklersGate.Combat
 
             CurrentUnit.BonusAC = GameConstants.DEFEND_AC_BONUS;
             OnNarratorQuip?.Invoke($"{CurrentUnit.Name} takes a defensive stance. (+{GameConstants.DEFEND_AC_BONUS} AC)");
-            SetPhase(CombatPhase.TurnEnd);
+            FinishPlayerAction();
         }
 
         /// <summary>
@@ -413,7 +433,7 @@ namespace SticklersGate.Combat
             }
 
             yield return new WaitForSeconds(0.3f);
-            SetPhase(CombatPhase.TurnEnd);
+            FinishPlayerAction();
         }
 
         private IEnumerator ResolvePlayerAction(RuntimeAbility ability, CombatUnit target, GridPosition? point)
@@ -425,7 +445,7 @@ namespace SticklersGate.Combat
 
             ability.StartCooldown();
 
-            SetPhase(CombatPhase.TurnEnd);
+            FinishPlayerAction();
         }
 
         private IEnumerator HandleEnemyTurn(CombatUnit enemy)
