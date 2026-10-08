@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace SticklersGate.UI
 {
@@ -11,7 +12,7 @@ namespace SticklersGate.UI
     public class DamagePopup : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Text _text;
+        [SerializeField] private TMP_Text _text;
 
         [Header("Animation")]
         [SerializeField] private float _floatSpeed = 50f;

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace SticklersGate.UI
 {
@@ -9,8 +10,8 @@ namespace SticklersGate.UI
     public class CombatResultPanel : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private Text _titleText;
-        [SerializeField] private Text _subtitleText;
+        [SerializeField] private TMP_Text _titleText;
+        [SerializeField] private TMP_Text _subtitleText;
         [SerializeField] private Image _backgroundImage;
 
         [Header("Colors")]

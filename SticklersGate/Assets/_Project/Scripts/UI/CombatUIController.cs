@@ -64,6 +64,7 @@ namespace SticklersGate.UI
             _combatStateMachine.OnInitiativeRolled += HandleInitiativeRolled;
             _combatStateMachine.OnTurnStarted += HandleTurnStarted;
             _combatStateMachine.OnMovementPhaseStarted += HandleMovementPhaseStarted;
+            _combatStateMachine.OnUnitMoved += HandleUnitMoved;
             _combatStateMachine.OnPlayerActionNeeded += HandlePlayerActionNeeded;
             _combatStateMachine.OnAttackResolved += HandleAttackResolved;
             _combatStateMachine.OnHealResolved += HandleHealResolved;
@@ -85,7 +86,7 @@ namespace SticklersGate.UI
                 _targetPanel.OnCancelled += HandleTargetCancelled;
             }
 
-            if (_movementPanel != null) _movementPanel.OnSkipSelected += HandleSkipMovement;
+            if (_movementPanel != null) _movementPanel.OnEndTurnSelected += HandleEndTurn;
             if (_gridRenderer != null) _gridRenderer.OnTileClicked += HandleTileClicked;
         }
 
@@ -97,6 +98,7 @@ namespace SticklersGate.UI
             _combatStateMachine.OnInitiativeRolled -= HandleInitiativeRolled;
             _combatStateMachine.OnTurnStarted -= HandleTurnStarted;
             _combatStateMachine.OnMovementPhaseStarted -= HandleMovementPhaseStarted;
+            _combatStateMachine.OnUnitMoved -= HandleUnitMoved;
             _combatStateMachine.OnPlayerActionNeeded -= HandlePlayerActionNeeded;
             _combatStateMachine.OnAttackResolved -= HandleAttackResolved;
             _combatStateMachine.OnHealResolved -= HandleHealResolved;
@@ -118,7 +120,7 @@ namespace SticklersGate.UI
                 _targetPanel.OnCancelled -= HandleTargetCancelled;
             }
 
-            if (_movementPanel != null) _movementPanel.OnSkipSelected -= HandleSkipMovement;
+            if (_movementPanel != null) _movementPanel.OnEndTurnSelected -= HandleEndTurn;
             if (_gridRenderer != null) _gridRenderer.OnTileClicked -= HandleTileClicked;
         }
 
@@ -151,13 +153,57 @@ namespace SticklersGate.UI
             ShowActiveUnitHighlight(unit);
         }
 
+        /// <summary>Post-action movement: the action is spent but movement remains.</summary>
         private void HandleMovementPhaseStarted(CombatUnit unit)
+        {
+            if (_actionPanel != null) _actionPanel.Hide();
+            ShowMovementOptions(unit);
+            if (_movementPanel != null) _movementPanel.Show(unit);
+        }
+
+        private void HandleEndTurn()
+        {
+            if (_movementPanel != null) _movementPanel.Hide();
+            if (_gridRenderer != null) _gridRenderer.ClearHighlights();
+            _combatStateMachine.EndTurn();
+        }
+
+        /// <summary>
+        /// Refresh after the active player moves: new reachable tiles from the
+        /// remaining movement, and ability availability from the new position.
+        /// </summary>
+        private void HandleUnitMoved(CombatUnit unit, GridPosition from, GridPosition to)
+        {
+            if (unit != _combatStateMachine.CurrentUnit || !unit.IsPlayer) return;
+
+            switch (_combatStateMachine.CurrentPhase)
+            {
+                case CombatPhase.PlayerChooseAction:
+                    ShowMovementOptions(unit);
+                    if (_actionPanel != null)
+                        _actionPanel.ShowActions(unit, _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);
+                    break;
+                case CombatPhase.PlayerChooseMovement:
+                    ShowMovementOptions(unit);
+                    if (_movementPanel != null) _movementPanel.Show(unit);
+                    break;
+                default:
+                    // Out of movement after acting: the turn is over
+                    _reachableTiles.Clear();
+                    if (_movementPanel != null) _movementPanel.Hide();
+                    if (_gridRenderer != null) _gridRenderer.ClearHighlights();
+                    break;
+            }
+        }
+
+        /// <summary>Highlight tiles reachable with the unit's remaining movement, plus its own tile.</summary>
+        private void ShowMovementOptions(CombatUnit unit)
         {
             _reachableTiles.Clear();
             var grid = _combatStateMachine.Grid;
-            if (grid != null)
+            if (grid != null && unit.RemainingMovement > 0)
             {
-                _reachableTiles.UnionWith(Pathfinder.GetReachablePositions(grid, unit.Position, unit.EffectiveMovement));
+                _reachableTiles.UnionWith(Pathfinder.GetReachablePositions(grid, unit.Position, unit.RemainingMovement));
             }
 
             if (_gridRenderer != null)
@@ -165,29 +211,12 @@ namespace SticklersGate.UI
                 _gridRenderer.ShowHighlights(_reachableTiles, GridRenderer.HighlightKind.Movement);
                 _gridRenderer.AddHighlights(new[] { unit.Position }, GridRenderer.HighlightKind.ActiveUnit);
             }
-
-            if (_movementPanel != null) _movementPanel.Show(unit);
-        }
-
-        private void HandleSkipMovement()
-        {
-            _combatStateMachine.SkipMovement();
         }
 
         private void HandleTileClicked(GridPosition tile)
         {
             var current = _combatStateMachine.CurrentUnit;
             if (current == null || !current.IsPlayer) return;
-
-            if (_combatStateMachine.CurrentPhase == CombatPhase.PlayerChooseMovement)
-            {
-                // Tapping your own tile means "stay here"
-                if (tile == current.Position || _reachableTiles.Contains(tile))
-                {
-                    _combatStateMachine.SubmitPlayerMovement(tile);
-                }
-                return;
-            }
 
             if (_aimingAbility != null)
             {
@@ -196,11 +225,23 @@ namespace SticklersGate.UI
             }
 
             // Tap a unit on the grid as an alternative to the target buttons
-            if (_selectableTargets.Count > 0 &&
-                _combatStateMachine.Grid?.GetOccupant(tile) is CombatUnit occupant &&
-                _selectableTargets.Contains(occupant))
+            if (_selectableTargets.Count > 0)
             {
-                HandleTargetSelected(occupant);
+                if (_combatStateMachine.Grid?.GetOccupant(tile) is CombatUnit occupant &&
+                    _selectableTargets.Contains(occupant))
+                {
+                    HandleTargetSelected(occupant);
+                }
+                return;
+            }
+
+            // Otherwise a blue tile moves the unit (before or after its action)
+            var phase = _combatStateMachine.CurrentPhase;
+            bool canMove = phase == CombatPhase.PlayerChooseMovement ||
+                           (phase == CombatPhase.PlayerChooseAction && _selectedAbility == null && _selectedItem == null);
+            if (canMove && _reachableTiles.Contains(tile))
+            {
+                _combatStateMachine.SubmitPlayerMovement(tile);
             }
         }
 
@@ -249,9 +290,8 @@ namespace SticklersGate.UI
 
         private void HandlePlayerActionNeeded(CombatUnit unit)
         {
-            _reachableTiles.Clear();
             if (_movementPanel != null) _movementPanel.Hide();
-            ShowActiveUnitHighlight(unit);
+            ShowMovementOptions(unit);
 
             if (_actionPanel != null)
             {
@@ -378,7 +418,7 @@ namespace SticklersGate.UI
             var current = _combatStateMachine.CurrentUnit;
             if (current != null && current.IsPlayer)
             {
-                ShowActiveUnitHighlight(current);
+                ShowMovementOptions(current);
                 if (_actionPanel != null)
                 {
                     _actionPanel.ShowActions(current, _combatStateMachine.PlayerUnits, _combatStateMachine.EnemyUnits);

@@ -113,6 +113,13 @@ namespace SticklersGate.Combat
         }
 
         // --- Mutable State ---
+
+        /// <summary>
+        /// Movement left this turn. Reset to <see cref="EffectiveMovement"/> at the
+        /// start of each turn; spent tile-by-tile so a unit can move several times.
+        /// </summary>
+        public int RemainingMovement { get; private set; }
+
         public int CurrentHP { get; private set; }
         public int Initiative { get; set; }
 
@@ -193,7 +200,7 @@ namespace SticklersGate.Combat
             }
 
             return new CombatUnit(
-                name: nameOverride ?? enemyData.EnemyName,
+                name: string.IsNullOrWhiteSpace(nameOverride) ? enemyData.EnemyName : nameOverride,
                 isPlayer: false,
                 stats: enemyData.Stats,
                 maxHP: enemyData.HitPoints,
@@ -347,6 +354,18 @@ namespace SticklersGate.Combat
                 if (effect.Type == type) return true;
             }
             return false;
+        }
+
+        /// <summary>Refill this turn's movement from current effective movement.</summary>
+        public void ResetMovement()
+        {
+            RemainingMovement = EffectiveMovement;
+        }
+
+        /// <summary>Spend movement for a move; never drops below zero.</summary>
+        public void SpendMovement(int cost)
+        {
+            RemainingMovement = Mathf.Max(0, RemainingMovement - Mathf.Max(0, cost));
         }
 
         /// <summary>

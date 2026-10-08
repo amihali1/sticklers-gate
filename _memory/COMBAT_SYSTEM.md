@@ -31,10 +31,9 @@
 
 ## Combat Flow
 ```
-Setup → Roll Initiative → [Turn Loop: TurnStart → Movement → Choose Action → Choose Target → Resolve → TurnEnd → Check End] → Victory/Defeat
+Setup → Roll Initiative → [Turn Loop: TurnStart → (move ↔ move …) → Action → (move …) → TurnEnd → Check End] → Victory/Defeat
 ```
-Movement phase: player chooses a tile within movement range (or skips). Enemy AI moves automatically.
-Player action turns pause coroutine loop, resume via SubmitPlayerAction().
+**Split movement (5e):** each turn `ResetMovement()` fills `RemainingMovement` from `EffectiveMovement`. In `PlayerChooseAction` the player can tap blue tiles any number of times (`SubmitPlayerMovement` spends the path cost from `Pathfinder.GetReachableCosts`), then act. After the action, if movement remains the phase becomes `PlayerChooseMovement` (blue tiles + End Turn button); running out of movement or `EndTurn()` ends the turn. The player turn loop waits for `TurnEnd`, so an action fully resolves before the next unit goes. Enemy AI still makes one move, then acts.
 
 ## Grid System (Phase 9 — complete)
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 
 namespace SticklersGate.UI
@@ -40,7 +41,7 @@ namespace SticklersGate.UI
                 {
                     Unit = unit,
                     Root = go,
-                    Label = go.GetComponentInChildren<Text>()
+                    Label = go.GetComponentInChildren<TMP_Text>()
                 };
 
                 if (entry.Label != null)
@@ -69,12 +70,12 @@ namespace SticklersGate.UI
                 else if (entry.Unit == activeUnit)
                 {
                     entry.Label.color = _activeColor;
-                    entry.Label.fontStyle = FontStyle.Bold;
+                    entry.Label.fontStyle = FontStyles.Bold;
                 }
                 else
                 {
                     entry.Label.color = entry.Unit.IsPlayer ? _playerColor : _enemyColor;
-                    entry.Label.fontStyle = FontStyle.Normal;
+                    entry.Label.fontStyle = FontStyles.Normal;
                 }
             }
         }
@@ -93,7 +94,7 @@ namespace SticklersGate.UI
         {
             public CombatUnit Unit;
             public GameObject Root;
-            public Text Label;
+            public TMP_Text Label;
         }
     }
 }

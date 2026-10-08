@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using SticklersGate.Combat;
 using SticklersGate.Data;
 
@@ -49,7 +50,7 @@ namespace SticklersGate.UI
                 go.SetActive(true);
                 _spawnedButtons.Add(go);
 
-                var buttonText = go.GetComponentInChildren<Text>();
+                var buttonText = go.GetComponentInChildren<TMP_Text>();
                 var button = go.GetComponent<Button>();
 
                 if (buttonText != null)
@@ -99,7 +100,7 @@ namespace SticklersGate.UI
                 go.SetActive(true);
                 _spawnedButtons.Add(go);
 
-                var buttonText = go.GetComponentInChildren<Text>();
+                var buttonText = go.GetComponentInChildren<TMP_Text>();
                 var button = go.GetComponent<Button>();
 
                 if (buttonText != null)
@@ -137,7 +138,7 @@ namespace SticklersGate.UI
                 go.SetActive(true);
                 _spawnedButtons.Add(go);
 
-                var buttonText = go.GetComponentInChildren<Text>();
+                var buttonText = go.GetComponentInChildren<TMP_Text>();
                 if (buttonText != null)
                 {
                     buttonText.text = $"Tap a tile to aim {ability.Data.AbilityName}, tap again to cast";
